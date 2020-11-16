@@ -8,6 +8,7 @@
   <title>
     @yield('title')
   </title>
+  <link rel="icon" href="/images/run.png" style="border-radius:10px">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <!-- Bootstrap core CSS -->
