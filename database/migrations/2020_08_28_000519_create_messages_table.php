@@ -15,7 +15,7 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('message');
+            $table->longText('message');
             $table->integer('checked');
             $table->string('sent_to')->nullable();
             $table->integer('apply_record_id');

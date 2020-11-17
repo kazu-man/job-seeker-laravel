@@ -15,8 +15,8 @@ class CreateSavedJobsTable extends Migration
     {
         Schema::create('saved_jobs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('job_id');
-            $table->integer('user_id');
+            $table->unsignedBigInteger('job_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('saved_job_status')->default('A');
             $table->timestamps();
 

@@ -16,12 +16,12 @@ class CreateJobsTable extends Migration
         Schema::create('jobs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('job_title');
-            $table->integer('annual_salary');
-            $table->integer('job_description_id');
-            $table->integer('company_id');
-            $table->integer('category_id');
-            $table->integer('city_id');
-            $table->integer('job_type_id');
+            $table->string('annual_salary');
+            $table->unsignedBigInteger('job_description_id');
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('city_id');
+            $table->unsignedBigInteger('job_type_id');
             $table->date('job_created_date')->nullable();
             $table->string('job_status')->default('A');
             $table->timestamps();

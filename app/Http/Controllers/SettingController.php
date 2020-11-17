@@ -42,10 +42,16 @@ class SettingController extends Controller
     public function getPlaceData() 
     {
         $country = Country::with('provinces.cities')
-        ->where('city_status','!=','D')
-        ->where('province_status','!=','D')
-        ->where('country_status','!=','D')
-        ->orderBy('province_id', 'DESC')
+        // ->where('city_status','!=','D')
+        // ->where('province_status','!=','D')
+            ->whereHas('provinces.cities', function ($query) {
+                return $query->where('city_status','!=','D');
+            })
+            ->whereHas('provinces', function ($query) {
+                return $query->where('province_status','!=','D')
+                ->orderBy('id', 'DESC');
+            })
+            ->where('country_status','!=','D')
         ->orderBy('created_at', 'DESC')
         ->get();
 

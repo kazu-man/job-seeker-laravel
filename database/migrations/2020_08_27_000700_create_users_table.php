@@ -27,12 +27,11 @@ class CreateUsersTable extends Migration
             $table->string('user_profile')->nullable();
             $table->string('user_status')->default('A');
             $table->string('user_type')->default('U');
-            $table->integer('company_id')->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
 
             $table->rememberToken();
             $table->timestamps();
 
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
         });
     }

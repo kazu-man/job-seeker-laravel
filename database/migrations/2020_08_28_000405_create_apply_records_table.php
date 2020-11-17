@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCompaniesTable extends Migration
+class CreateApplyRecordsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,16 @@ class CreateCompaniesTable extends Migration
      */
     public function up()
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('apply_records', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('company_name');
-            $table->integer('user_id');
-            // $table->string('company_email');
-            // $table->string('company_password');
-            $table->string('company_image')->nullable();
-            $table->string('company_status')->default('A');
-            // $table->string('user_type')->default('P');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('job_id');
+            $table->string('apply_status')->default('A');
+            $table->date('apply_date')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('job_id')->references('id')->on('jobs')->onDelete('cascade');
         });
     }
 
@@ -35,6 +33,6 @@ class CreateCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('apply_records');
     }
 }

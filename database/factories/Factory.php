@@ -34,13 +34,13 @@ $factory->define(User::class, function (Faker $faker) {
         'email' => $faker->unique()->safeEmail,
         'email_verified_at' => now(),
         'password' => Hash::make('password'),
-        'user_firstname' => $faker->firstName, // password
-        'user_lastname' => $faker->name, // password
-        'user_birthday' => $faker->date, // password
-        'user_profile' => 'password', // password
-        'user_status' => 'A', // password
-        'user_type' => 'U', // password
-        'company_id' => null, // password
+        'user_firstname' => $faker->firstName, 
+        'user_lastname' => $faker->name, 
+        'user_birthday' => $faker->date, 
+        'user_profile' => 'password', 
+        'user_status' => 'A', 
+        'user_type' => 'U', 
+        'company_id' => null, 
         'remember_token' => Str::random(10),
     ];
 });
@@ -50,11 +50,11 @@ $factory->define(User::class, function (Faker $faker) {
 $factory->define(Profile::class, function (Faker $faker) {
     return [
         //
-        'user_id' => factory(App\User::class)->create()->id, // password
-        'experience' => $faker->sentence, // password
-        'skill' => $faker->sentence, // password
-        'gender' => 'Male', // password
-        'education' => $faker->sentence, // password
+        'user_id' => factory(App\User::class)->create()->id, 
+        'experience' => $faker->sentence, 
+        'skill' => $faker->sentence, 
+        'gender' => 'Male', 
+        'education' => $faker->sentence, 
 
     ];
 });
@@ -71,10 +71,10 @@ $factory->define(Company::class, function (Faker $faker) {
         '/images/Philippines.jpeg'
     );
     return [
-        'company_name' => $faker->name, // password
-        'company_image' => $companyImages[random_int(0,6)], // password
+        'company_name' => $faker->name, 
+        'company_image' => $companyImages[random_int(0,6)], 
         'company_status' => 'A',
-        'user_id' => factory(User::class)->create()->id // password
+        'user_id' => factory(User::class)->create()->id 
     ];
 });
 
@@ -91,56 +91,56 @@ $factory->define(Country::class, function (Faker $faker) {
     );
 
     return [
-        'country_name' => $faker->country, // password
-        'country_status' => 'A', // password
-        'country_image' => $countryImages[random_int(0,6)], // password
+        'country_name' => $faker->country, 
+        'country_status' => 'A', 
+        'country_image' => $countryImages[random_int(0,6)], 
     ];
 });
 
 $factory->define(Province::class, function (Faker $faker) {
     return [
-        'province_name' => $faker->country, // password
-        'country_id' => 1, // password
-        'province_status' => 'A', // password
+        'province_name' => $faker->country, 
+        'country_id' => 1, 
+        'province_status' => 'A', 
     ];
 });
 $factory->define(City::class, function (Faker $faker) {
     return [
-        'city_name' => $faker->country, // password
-        'province_id' => 1, // password
-        'city_status' => 'A', // password
+        'city_name' => $faker->country, 
+        'province_id' => 1, 
+        'city_status' => 'A', 
     ];
 });
 
 $factory->define(Category::class, function (Faker $faker) {
     return [
-        'category_name' => $faker->jobTitle, // password
-        'category_status' => 'A', // password
+        'category_name' => $faker->jobTitle, 
+        'category_status' => 'A', 
 
     ];
 });
 
 $factory->define(Job::class, function (Faker $faker) {
     return [
-        'job_title' => $faker->jobTitle, // password
-        'annual_salary' => $faker->numberBetween(1,999999), // password
-        'job_description_id' => factory(JobDescription::class)->create()->id, // password
-        'company_id' => $faker->numberBetween(1,10), // password
-        'category_id' => $faker->numberBetween(1,10), // password
-        'city_id' => $faker->numberBetween(1,10), // password
-        'job_type_id' => $faker->numberBetween(1,3), // password
-        'job_created_date' => $faker->dateTime, // password
-        'job_status' => 'A', // password
+        'job_title' => $faker->jobTitle, 
+        'annual_salary' => $faker->numberBetween(1,999999), 
+        'job_description_id' => factory(JobDescription::class)->create()->id, 
+        'company_id' => $faker->numberBetween(1,10), 
+        'category_id' => $faker->numberBetween(1,10), 
+        'city_id' => $faker->numberBetween(1,10), 
+        'job_type_id' => $faker->numberBetween(1,3), 
+        'job_created_date' => $faker->dateTime, 
+        'job_status' => 'A', 
     ];
 });
 
 $factory->define(JobDescription::class, function (Faker $faker) {
     return [
-        'description' => $faker->paragraph, // password
-        'requirement' => $faker->paragraph, // password
-        'benefit' => $faker->paragraph, // password
-        'experience' => $faker->paragraph, // password
-        'job_title' => $faker->paragraph, // password
+        'description' => $faker->paragraph, 
+        'requirement' => $faker->paragraph, 
+        'benefit' => $faker->paragraph, 
+        'experience' => $faker->paragraph, 
+        'job_title' => $faker->jobTitle, 
     ];
 });
 
@@ -161,18 +161,18 @@ $factory->define(ApplyRecord::class, function (Faker $faker) {
     //     }
     // }
     return [
-        'user_id' => $userId, // password
-        'job_id' => $jobId, // password
-        'apply_status' => 'A', // password
+        'user_id' => $userId, 
+        'job_id' => $jobId, 
+        'apply_status' => 'A', 
     ];
 });
 
 
 $factory->define(Message::class, function (Faker $faker) {
     return [
-        'message' => $faker->paragraph, // password
-        'checked' => 0, // password
-        'sent_to' => random_int(0,1) == 1 ? 'U' : 'C', // password
-        'apply_record_id' => 1, // password
+        'message' => $faker->paragraph, 
+        'checked' => 0, 
+        'sent_to' => random_int(0,1) == 1 ? 'U' : 'C', 
+        'apply_record_id' => 1, 
     ];
 });

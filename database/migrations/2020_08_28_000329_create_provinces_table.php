@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateJobDescriptionsTable extends Migration
+class CreateProvincesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateJobDescriptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('job_descriptions', function (Blueprint $table) {
+        Schema::create('provinces', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('description')->nullable();
-            $table->string('requirement')->nullable();
-            $table->string('benefit')->nullable();
-            $table->string('experience')->nullable();
-            $table->string('job_title')->nullable();
+            $table->string('province_name');
+            $table->unsignedBigInteger('country_id');
+            $table->string('province_status')->default('A');
             $table->timestamps();
+
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
         });
     }
 
@@ -31,6 +31,6 @@ class CreateJobDescriptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('job_descriptions');
+        Schema::dropIfExists('provinces');
     }
 }
