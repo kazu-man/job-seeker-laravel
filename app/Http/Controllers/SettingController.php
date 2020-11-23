@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Model\Job;
 use App\Model\City;
 use App\Model\Company;
 use App\Model\Country;
 use App\Model\JobType;
 use App\Model\Category;
 use App\Model\Province;
-use App\Model\Job;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class SettingController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource
      *
      * @return \Illuminate\Http\Response
      */
@@ -159,8 +161,7 @@ class SettingController extends Controller
 
     }
 
-    public function getTargetProvinces($country_id){
-        \Log::info("asdfasdffasfasdlfjaslfjhlasjfhlaiusfhl");        
+    public function getTargetProvinces($country_id){     
 
         $target = Province::where('country_id',$country_id)->get();
 
@@ -231,4 +232,24 @@ class SettingController extends Controller
 
         return "category saved";
     }
+
+    public function passwordUpdate(Request $request)
+    {
+        $this->validate($request,[
+            'password' => 'required|confirmed|min:8',
+        ]);
+        $auth = Auth::User();
+
+        $form = $request->all();
+        
+                
+        if (isset($form['password'])) {
+        
+        $form['password'] = Hash::make($form['password']);
+        
+         }
+        
+        $auth->fill($form)->save();
+    }
+    
 }

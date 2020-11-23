@@ -30,7 +30,7 @@ return [
         'array' => 'The :attribute must have between :min and :max items.',
     ],
     'boolean' => 'The :attribute field must be true or false.',
-    'confirmed' => ':attributeが一致しませんでした',
+    'confirmed' => ':attributeが一致していません',
     'date' => ':attributeが無効な値です',
     'date_equals' => 'The :attribute must be a date equal to :date.',
     'date_format' => 'The :attribute does not match the format :format.',

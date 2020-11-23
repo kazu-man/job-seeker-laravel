@@ -10,6 +10,7 @@ import top from './components/jobList/TopComponent.vue'
 import postsList from './components/jobList/PostsListComponent.vue'
 import profile from './components/jobList/ProfileComponent.vue'
 import applyRecordTable from './components/jobList/ApplyrecordTable.vue'
+import passwordReset from './components/resetPassword/resetPassword.vue'
 
 
 
@@ -35,6 +36,10 @@ const routes = [
             path: 'top',
             component: top
           },    
+          {
+            path: 'password/reset/:token',
+            component: passwordReset
+            },          
           {
             path: 'country/:country',
             component: top,
@@ -137,8 +142,6 @@ const routes = [
             });
           }
         },  
-
-
         {
           path: 'setting',
           component: Setting,
@@ -219,7 +222,7 @@ const routes = [
   {
     path: '/500',
     component: SystemError
-  }
+  },
 ]
 
 // VueRouterインスタンスを作成する

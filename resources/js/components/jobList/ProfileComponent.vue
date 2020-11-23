@@ -3,7 +3,7 @@
         <div class="card-header mb-5">
             <h2 class="text-center">Edit Your Profile</h2>
             <div class="changePassword">
-                <div @click="modalShow" class="btn btn-info p-2" >
+                <div @click="changePassModalUp" class="btn btn-info p-2">
                     Change Password
                 </div>
             </div>
@@ -206,8 +206,9 @@ export default {
             console.log(file);
             console.log(file);
         },
-        modalShow(){
-            this.$emit('modalShow','changePassword');
+        changePassModalUp:function(){
+            console.log('osita?');
+            this.$store.commit('common/setModalTarget', 'changePassword');
         },
         resumeDownLoad(){
             var data = {

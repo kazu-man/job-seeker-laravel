@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/addAdmin', 'SettingController@addAdmin')->name('addAdmin');
     Route::post('/userDelete', 'SettingController@userDelete')->name('userDelete');
     Route::post('/registerCountry', 'SettingController@registerCountry')->name('registerCountry');
+    Route::post('/passwordUpdate', 'SettingController@passwordUpdate')->name('passwordUpdate');
 });
 
 //post
@@ -88,6 +89,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 //auth
 Auth::routes();
+Route::get('/checkUrlBeforeChangePassword/{token}', 'Auth\ResetPasswordController@checkUrlBeforeChangePassword')->name('getNewcheckUrlBeforeChangePasswordMessageExistFlg');
+
 Route::get('/user', function(){ 
     return Auth::user();
 })->name('user');

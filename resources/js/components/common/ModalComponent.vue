@@ -21,6 +21,7 @@
                         <input type="password" name="password" class="form-control col-8" v-model="loginForm.password">
                     </div>
                     <div @click="registerFormShow" style="text-align:right;margin-right:90px">登録する</div>
+                    <div @click="passworForgotModal" style="text-align:right;margin-right:90px">パスワード忘れた</div>
 
                     <div class="form-group row">
                         <div class="btn submit" @click="login">Login</div>
@@ -145,22 +146,52 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="email" class="col-4">Email</label>
-                        <input type="text" name="email" class="form-control col-8" v-model="loginForm.email">
+                        <label for="email" class="col-4">Password</label>
+                        <input type="password" name="password" class="form-control col-7" v-model="passwordResetForm.password">
                     </div>
                     <div class="form-group row">
-                        <label for="password" class="col-4">Password</label>
-                        <input type="password" name="password" class="form-control col-8" v-model="loginForm.password">
+                        <label for="email" class="col-4">Password (comfirm)</label>
+                        <input type="password" name="password_comfirmation" class="form-control col-7" v-model="passwordResetForm.password_confirmation">
                     </div>
                     <div class="form-group row">
-                        <div class="btn submit" @click="login">Login</div>
+                        <div class="btn submit" style="margin:auto;margin-top:10px;" @click="changePassword">Send</div>
                     </div>
 
                     </form>
                 </div>  
             </modal> 
 
+            <modal name="forgotPassword" :draggable="false" class="forgotPassword">
+                <div class="modal-header">
+                    <div v-if="alert" class="alert">
+                        <p>{{message}}</p>
+                    </div>   
+                    <p>Change Password</p>
+                    <div v-on:click="modalHide('forgotPassword')" class="close">X</div>
+                </div>
+                <div class="modal-body">
+                    <form class="form" @submit.prevent="login">
 
+                    <div v-if="loginErrors" class="errors">
+                        <ul v-if="loginErrors.email">
+                        <li v-for="msg in loginErrors.email" :key="msg">{{ msg }}</li>
+                        </ul>
+                        <ul v-if="loginErrors.password">
+                        <li v-for="msg in loginErrors.password" :key="msg">{{ msg }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="email" class="col-4">Email</label>
+                        <input type="email" name="password" class="form-control col-7" v-model="forgotPasswordForm.email">
+                    </div>
+                    <div class="form-group row">
+                        <div class="btn submit" style="margin:auto;margin-top:10px;" @click="forgotPassword">Send</div>
+                    </div>
+
+                    </form>
+                </div>  
+            </modal> 
             <modal name="editPost" :draggable="false"  :scrollable="true" :height="600" :width="1000" class="editPost" style="overflow-y:scroll">
                 <div v-on:click="modalHide('editPost')" class="close">X</div>
                 <div class="job-content">
@@ -582,6 +613,13 @@ export default {
             countryImage:null,  
             modalUploadedFile:null,
         },
+        passwordResetForm:{
+            "password":"",
+            "password_confirmation":""
+        },
+        forgotPasswordForm:{
+            "email":""
+        },
         modalCurrentBgImage:null,
         defaultImage: "/images/search.jpg",
     }},
@@ -623,9 +661,12 @@ export default {
                 this.$store.commit('common/setEditPost', null)
                 this.$store.commit('common/setAlertModalMessage', null)
                 }
+                this.passwordResetForm.password = "";
+                this.passwordResetForm.password_confirmation = "";
             }else{
                 this.$modal.hide(target);
             }
+            
 
             this.clearError();
         },
@@ -655,7 +696,6 @@ export default {
             if(adminFlg){
                 this.registerForm.userType = "A";
             }
-            console.log("tetettt")
             await this.$store.dispatch('auth/register', this.registerForm)
 
             if (this.apiStatus) {
@@ -810,7 +850,33 @@ export default {
                 "resumeFile":this.resumeName
             }
             this.download(data);
-        }    },
+        },
+        async changePassword(){
+            console.log('changePass');
+            await axios.post('/api/passwordUpdate',this.passwordResetForm).then(res => {
+                if(res.status != 200){
+                    return false;
+                }
+                
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'パスワードを変更しました'});
+            });
+        },
+        passworForgotModal(){
+            this.$store.commit('common/setModalTarget', 'forgotPassword');
+
+        },
+        async forgotPassword(){
+            console.log('forgot pass');
+            await axios.post('/api/password/email',this.forgotPasswordForm).then(res => {
+                if(res.status != 200){
+                    return false;
+                }
+                
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'パスワード再設定メールを送信しました'});
+            });
+        }
+
+    },
     computed: {
         apiStatus () {
             return this.$store.state.auth.apiStatus
