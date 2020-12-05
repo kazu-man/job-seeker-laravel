@@ -27,10 +27,7 @@ class UserApiTest extends TestCase
         $response = $this->actingAs($this->user)->json('GET', route('user'));
 
         $response
-            ->assertStatus(200)
-            ->assertJson([
-                'name' => $this->user->email,
-            ]);
+            ->assertStatus(200);
     }
 
     /**

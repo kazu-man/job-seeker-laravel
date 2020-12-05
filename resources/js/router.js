@@ -3,13 +3,13 @@ import VueRouter from 'vue-router'
 
 // ページコンポーネントをインポートする
 import JobList from './components/jobList/jobListMain.vue'
-import Setting from './components/setting/settingMain.vue'
-import SystemError from './System.vue'
+import Setting from './components/setting/SettingMain.vue'
+import SystemError from './system.vue'
 import jobsRegisterComponent from './components/common/JobsRegisterComponent.vue'
 import top from './components/jobList/TopComponent.vue'
 import postsList from './components/jobList/PostsListComponent.vue'
 import profile from './components/jobList/ProfileComponent.vue'
-import applyRecordTable from './components/jobList/ApplyrecordTable.vue'
+import applyRecordTable from './components/jobList/ApplyRecordTable.vue'
 import passwordReset from './components/resetPassword/resetPassword.vue'
 
 
