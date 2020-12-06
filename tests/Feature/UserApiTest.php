@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -16,7 +17,11 @@ class UserApiTest extends TestCase
         parent::setUp();
 
         // テストユーザー作成
-        $this->user = factory(User::class)->create();
+        // $this->user = factory(User::class)->create();
+        Artisan::call('migrate:refresh');
+        Artisan::call('db:seed');
+
+        $this->user = User::find(1);
     }
 
     /**
@@ -36,6 +41,8 @@ class UserApiTest extends TestCase
     public function should_ログインされていない場合は空文字を返却する()
     {
         $response = $this->json('GET', route('user'));
+
+        $this->assertTrue($this->user->user_type == "A");
 
         $response->assertStatus(200);
         $this->assertEquals("", $response->content());

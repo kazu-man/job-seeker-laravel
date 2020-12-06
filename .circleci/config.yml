@@ -3,6 +3,16 @@ jobs:
   build:
     docker:
       - image: circleci/php:7.3-node-browsers
+        environment:
+          - APP_DEBUG: true
+          - APP_ENV: testing
+          - DB_CONNECTION: circle_test
+      - image: circleci/mysql:5.7-ram
+        environment:
+          - MYSQL_ALLOW_EMPTY_PASSWORD: true
+          - MYSQL_ROOT_PASSWORD: root
+          - MYSQL_DATABASE: job_seeker_test_db
+
     steps:
       - checkout
       - run: sudo composer self-update --1
@@ -10,5 +20,42 @@ jobs:
       - run: npm ci
       - run: npm run dev
       - run:
+          name: get ready for mysql
+          command: |
+            sudo apt-get update
+            sudo apt-get install libpq-dev
+            sudo docker-php-ext-install pdo_mysql
+            dockerize -wait tcp://localhost:3306 -timeout 1m
+      # - run: php artisan migrate
+      # - run: php artisan db:seed
+      - run:
           name: php test
           command: vendor/bin/phpunit
+  deploy:
+    docker:
+      - image: circleci/php:7.3-node-browsers
+    steps:
+      - add_ssh_keys
+      - run:
+          name: deploy
+          command: |
+            ssh -o StrictHostKeyChecking=no -t webapp@${HOST_NAME} "cd job-seeker-on-docker/src/job-seeker-laravel && \
+              git pull origin main && \
+              composer install -n --no-dev --prefer-dist && \
+              npm ci && \
+              npm run prod && \
+              php artisan migrate --force && \
+              php artisan config:cache"
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main

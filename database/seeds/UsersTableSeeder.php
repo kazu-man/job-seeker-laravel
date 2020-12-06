@@ -14,18 +14,18 @@ class UsersTableSeeder extends Seeder
     {
         //
 
-        // $table = new User();
-        // $date = Carbon::now();
-        // $table->user_firstname = 'user_firstname';
-        // $table->user_lastname = 'user_lastname';
-        // $table->email = 'user_'.random_int(100, 999).'gmail.com';
-        // $table->user_birthday = $date;
+        $table = new User();
+        $date = Carbon::now();
+        $table->user_firstname = 'admin';
+        $table->user_lastname = 'admin';
+        $table->email = 'admin@gmail.com';
+        $table->user_birthday = $date;
         // $table->user_profile = 'user_profile';
-        // $table->user_status = 'A';
-        // $table->user_type = 'user_type';
-        // $table->password = 'password';
+        $table->user_status = 'A';
+        $table->user_type = 'A';
+        $table->password = Hash::make('password');
         
-        // $table->save();
+        $table->save();
 
 
         factory(App\User::class, 10)->create();
