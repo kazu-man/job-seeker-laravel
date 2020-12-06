@@ -41,7 +41,6 @@ jobs:
           command: |
             ssh -o StrictHostKeyChecking=no -t webapp@${HOST_NAME} "cd job-seeker-on-docker/src/job-seeker-laravel && \
               git pull origin main && \
-              cd ../.. && \
               docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
               docker exec job_seeker_laravel_app npm ci && \
               docker exec job_seeker_laravel_app npm run prod && \
