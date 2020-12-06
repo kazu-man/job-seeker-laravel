@@ -41,12 +41,11 @@ jobs:
           command: |
             ssh -o StrictHostKeyChecking=no -t webapp@${HOST_NAME} "cd job-seeker-on-docker/src/job-seeker-laravel && \
               git pull origin main && \
-              composer install -n --no-dev --prefer-dist && \
-              npm ci && \
-              npm run prod && \
-              php artisan migrate --force && \
-              php artisan config:cache"
-
+              docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
+              docker exec job_seeker_laravel_app npm ci && \
+              docker exec job_seeker_laravel_app npm run prod && \
+              docker exec job_seeker_laravel_app php artisan migrate --force && \
+              docker exec job_seeker_laravel_app php artisan config:cache"
 workflows:
   version: 2
   build_deploy:
