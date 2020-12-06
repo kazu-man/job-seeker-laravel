@@ -21,7 +21,7 @@ class UserApiTest extends TestCase
         Artisan::call('migrate:refresh');
         Artisan::call('db:seed');
 
-        $this->user = User::find(3);
+        $this->user = User::find(1);
     }
 
     /**
@@ -42,7 +42,7 @@ class UserApiTest extends TestCase
     {
         $response = $this->json('GET', route('user'));
 
-        $this->assertTrue($this->user->user_type == "C");
+        $this->assertTrue($this->user->user_type == "A");
 
         $response->assertStatus(200);
         $this->assertEquals("", $response->content());
