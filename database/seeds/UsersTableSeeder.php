@@ -13,19 +13,22 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         //
+        $user = User::where("email",'admin@gmail.com')->first();
+        if($user == null){
 
-        $table = new User();
-        $date = Carbon::now();
-        $table->user_firstname = 'admin';
-        $table->user_lastname = 'admin';
-        $table->email = 'admin@gmail.com';
-        $table->user_birthday = $date;
-        // $table->user_profile = 'user_profile';
-        $table->user_status = 'A';
-        $table->user_type = 'A';
-        $table->password = Hash::make('password');
-        
-        $table->save();
+            $table = new User();
+            $date = Carbon::now();
+            $table->user_firstname = 'admin';
+            $table->user_lastname = 'admin';
+            $table->email = 'admin@gmail.com';
+            $table->user_birthday = $date;
+            // $table->user_profile = 'user_profile';
+            $table->user_status = 'A';
+            $table->user_type = 'A';
+            $table->password = Hash::make('password');
+            
+            $table->save();
+        }
 
 
         factory(App\User::class, 10)->create();
