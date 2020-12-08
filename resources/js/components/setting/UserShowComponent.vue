@@ -88,6 +88,7 @@ export default {
             {
             label: '',
             field: 'delBtn',
+            sortable:false
             },
         ],
         

@@ -1,7 +1,7 @@
 <template> 
 
         <div>
-            <modal name="login" :draggable="false" class="login sm-modal">
+            <modal name="login" :draggable="false" :height="320" class="login sm-modal">
                 <div class="modal-header">
                     <div v-if="alert" class="alert">
                         <p>{{message}}</p>
@@ -20,8 +20,8 @@
                         <label for="password" class="col-4">Password</label>
                         <input type="password" name="password" class="form-control col-8" v-model="loginForm.password">
                     </div>
-                    <div @click="registerFormShow" style="text-align:right;margin-right:90px">登録する</div>
-                    <div @click="passworForgotModal" style="text-align:right;margin-right:90px">パスワード忘れた</div>
+                    <div style="text-align:right;"><span @click="registerFormShow" class="login-switch">登録する</span></div>
+                    <div style="text-align:right;"><span @click="passworForgotModal" class="login-switch">パスワード忘れた</span></div>
 
                     <div class="form-group row">
                         <div class="btn submit" @click="login">Login</div>
@@ -59,11 +59,11 @@
 
                         <div class="form-group row" style="width:50%">
                             <input type="radio" id="asUser" name="userType" class="form-control col-1" v-model="asCompany" :value="false">
-                            <label for="asUser" class="col-10 userType">to find a job</label>
+                            <label for="asUser" class="col-6 userType pointer">to find a job</label>
                         </div>
                         <div class="form-group row" style="width:50%">
                             <input type="radio" id="asCompany" name="userType" class="form-control col-1" v-model="asCompany" :value="true">
-                            <label for="asCompany" class="col-10 userType">to find workers</label>
+                            <label for="asCompany" class="col-6 userType pointer">to find workers</label>
                         </div>
                         <div v-if="asCompany">
 
@@ -72,7 +72,7 @@
                                 <input type="text" name="email" class="form-control col-8" v-model="registerForm.companyName">
                             </div>
                         </div>
-                            <div @click="loginFormShow" style="text-align:right;margin-right:90px">ログインする</div>
+                            <div style="text-align:right;"><span class="login-switch" @click="loginFormShow">ログインする</span></div>
 
                         <div class="form-group row">
                             <button type="submit" class="btn submit">register</button>
@@ -166,7 +166,7 @@
                     <div v-if="alert" class="alert">
                         <p>{{message}}</p>
                     </div>   
-                    <p>Change Password</p>
+                    <p>Password Reset</p>
                     <div v-on:click="modalHide('forgotPassword')" class="close">X</div>
                 </div>
                 <div class="modal-body">
@@ -182,8 +182,8 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="email" class="col-4">Email</label>
-                        <input type="email" name="password" class="form-control col-7" v-model="forgotPasswordForm.email">
+                        <label for="email" class="col-3" style="text-align:right;margin-bottom:0;vertical-align: top;padding-top:7px;">Email</label>
+                        <input type="email" name="password" class="form-control col-8" v-model="forgotPasswordForm.email">
                     </div>
                     <div class="form-group row">
                         <div class="btn submit" style="margin:auto;margin-top:10px;" @click="forgotPassword">Send</div>
@@ -515,13 +515,13 @@
                 </div>  
             </modal> 
 
-            <modal name="deleteUserModal" :draggable="false" class="apply">
+            <modal name="deleteUserModal" :draggable="false" class="deleteUserModal">
                 <div class="modal-header">
                     <p v-if="deleteTargetUser != null && deleteTargetUser.user_status == 'A'">こちらのユーザをログイン不可に変更しますか？</p>
                     <p v-else>こちらのユーザをログイン可能に変更しますか？</p>
                     <div v-on:click="modalHide('deleteUserModal')" class="close">X</div>
                 </div>
-                <div class="modal-body" style="width:75%;">
+                <div class="modal-body" style="width:100%;padding-top:40px;">
 
                     <div  style="text-align:left;margin-left:15%">
                         <div v-if="deleteTargetUser != null">ユーザ名　　：{{deleteTargetUser.user_firstname}} {{deleteTargetUser.user_lastname}}</div>
@@ -529,7 +529,7 @@
                         <div v-if="deleteTargetUser != null">ユーザタイプ：{{deleteTargetUser.user_type}}</div>
                     </div>  
 
-                    <div class="row" style="margin-top:25px;">
+                    <div class="row button-area">
                         <div class="col-6">
                             <button  @click="modalHide('deleteUserModal')" name="deleteUserModal" class="btn btn-block btn-warning btn-md p-2 text-danger">
                                 <span class="icon-heart-o mr-2 text-danger">キャンセル</span>
@@ -1063,7 +1063,14 @@ export default {
 .login .submit,
 .register .submit {
     margin:0px auto 0px auto;
+}
 
+.login-switch{
+    margin-right:90px;
+    font-size:15px;
+}
+.login-switch:hover {
+    cursor: pointer;
 }
 
 input[type=radio] {
@@ -1073,8 +1080,6 @@ label.userType{
     text-align: left;
     padding-top:0 !important;
 }
-
-
 
 .editPost .form-group {
     margin:10px auto;
@@ -1297,15 +1302,28 @@ label.userType{
     height: 55%;
     padding: 15px 3px 0 3px;
 }
+.deleteUserModal .button-area {
+    margin-top: 25px;
+    width: 75%;
+    text-align: center;
+    margin-right: auto;
+    margin-left: auto;
+}
 </style>
 <style>
+.pointer{
+    cursor:pointer;
+}
 .vm--modal {
     border-radius:10px !important;
 }
 @media(max-width:767px){
     .vm--modal{
-        width:100% !important;
-        left:0 !important;
+        width: 90% !important;
+        margin-right: auto !important;
+        margin-left: auto !important;
+        left:auto !important;
+        right:auto !important;
     }
     .postClose .vm--modal{
         height:auto !important;
