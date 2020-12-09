@@ -40,6 +40,7 @@ jobs:
           name: deploy
           command: |
             ssh -o StrictHostKeyChecking=no -t webapp@${HOST_NAME} "cd job-seeker-on-docker/src/job-seeker-laravel && \
+              git checkout . && \
               git pull origin main && \
               docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
               docker exec job_seeker_laravel_app npm ci && \
