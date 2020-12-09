@@ -6405,8 +6405,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.searchInfo = {};
     },
     menuClear: function menuClear() {
-      this.selectedMenu = ""; // this.selectedContentsBg = "";
-
+      this.selectedMenu = "";
+      this.selectedContentsBg = "";
       this.selectedCountry = "";
       this.selectedCategory = "";
     },
@@ -6422,8 +6422,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
 
-      this.menuClear();
-      this.selectedMenu = selectVal; // this.selectedContentsBg = selectVal;
+      this.selectedMenu = selectVal;
+      console.log(this.selectedMenu);
+      console.log("this.selectedMenu"); // this.selectedContentsBg = selectVal;
     },
     scrollTop: function scrollTop() {
       window.scrollTo({
@@ -6484,7 +6485,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(this.selectedMenu == "category" || this.selectedMenu == "country")) {
+                if (!(this.selectedMenu == "category" && this.selectedCategory != "" || this.selectedMenu == "country" && this.selectedCountry != "")) {
                   _context2.next = 3;
                   break;
                 }
@@ -6493,8 +6494,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 return _context2.abrupt("return");
 
               case 3:
-                this.scrollTop();
-                this.searchInfoClear();
+                // this.searchInfoClear();
                 that = this;
 
                 if (!(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList")) {
@@ -6504,68 +6504,144 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
                 this.searchInfo.companyId = this.loginUser.company_id;
                 this.searchInfo.pageType = 'post';
-                this.$router.push("".concat(this.routePath, "/").concat(this.selectedMenu, "/").concat(this.searchInfo.companyId)).then(function () {
+                this.searchInfoClear();
+                _context2.next = 10;
+                return this.$router.push("".concat(this.routePath, "/").concat(this.selectedMenu, "/").concat(this.searchInfo.companyId)).then(function () {
+                  that.scrollTop();
+                  that.menuClear();
                   that.selectedContentsBg = that.selectedMenu;
                 })["catch"](function () {});
-                _context2.next = 22;
+
+              case 10:
+                _context2.next = 52;
                 break;
 
               case 12:
                 if (!(this.selectedMenu == 'top')) {
-                  _context2.next = 16;
+                  _context2.next = 18;
                   break;
                 }
 
-                this.$router.push("".concat(this.routePath, "/top"))["catch"](function () {});
-                _context2.next = 22;
-                break;
-
-              case 16:
-                if (!(this.selectedMenu == 'profile')) {
-                  _context2.next = 21;
-                  break;
-                }
-
-                _context2.next = 19;
-                return this.$router.push("".concat(this.routePath, "/profile/").concat(this.loginUser.id)).then(function () {
+                this.searchInfoClear();
+                _context2.next = 16;
+                return this.$router.push("".concat(this.routePath, "/top")).then(function () {
+                  that.menuClear();
                   that.selectedContentsBg = that.selectedMenu;
                 })["catch"](function () {});
 
-              case 19:
-                _context2.next = 22;
+              case 16:
+                _context2.next = 52;
                 break;
 
-              case 21:
-                if (this.selectedMenu == 'likes') {
-                  this.searchInfo.likes = true;
-                  this.searchInfo.pageType = "likes";
-                  this.$router.push("".concat(this.routePath, "/likes/").concat(this.loginUser.id)).then(function () {
-                    that.selectedContentsBg = that.selectedMenu;
-                  })["catch"](function () {});
-                } else if (this.selectedMenu == 'applies') {
-                  this.searchInfo.applies = true;
-                  this.searchInfo.pageType = "applies";
-                  this.$router.push("".concat(this.routePath, "/applies/").concat(this.loginUser.id)).then(function () {
-                    that.selectedContentsBg = that.selectedMenu;
-                  })["catch"](function () {});
-                } else if (this.selectedMenu == 'setting/country') {
-                  this.$router.push("".concat(this.routePath, "/setting/country")).then(function () {
-                    that.selectedContentsBg = that.selectedMenu;
-                    console.log('joblistkara mount kanryou');
-                  })["catch"](function () {});
-                } else if (this.selectedMenu == 'setting/category') {
-                  this.$router.push("".concat(this.routePath, "/setting/category")).then(function () {
-                    that.selectedContentsBg = that.selectedMenu;
-                    console.log('joblistkara mount kanryou');
-                  })["catch"](function () {});
-                } else if (this.selectedMenu == 'setting/users') {
-                  this.$router.push("".concat(this.routePath, "/setting/users")).then(function () {
-                    that.selectedContentsBg = that.selectedMenu;
-                    console.log('joblistkara mount kanryou');
-                  })["catch"](function () {});
+              case 18:
+                if (!(this.selectedMenu == 'profile')) {
+                  _context2.next = 23;
+                  break;
                 }
 
-              case 22:
+                _context2.next = 21;
+                return this.$router.push("".concat(this.routePath, "/profile/").concat(this.loginUser.id)).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                })["catch"](function () {});
+
+              case 21:
+                _context2.next = 52;
+                break;
+
+              case 23:
+                if (!(this.selectedMenu == 'likes')) {
+                  _context2.next = 31;
+                  break;
+                }
+
+                this.searchInfoClear();
+                this.searchInfo.likes = true;
+                this.searchInfo.pageType = "likes";
+                _context2.next = 29;
+                return this.$router.push("".concat(this.routePath, "/likes/").concat(this.loginUser.id)).then(function () {
+                  that.scrollTop();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                })["catch"](function () {});
+
+              case 29:
+                _context2.next = 52;
+                break;
+
+              case 31:
+                if (!(this.selectedMenu == 'applies')) {
+                  _context2.next = 39;
+                  break;
+                }
+
+                this.searchInfoClear();
+                this.searchInfo.applies = true;
+                this.searchInfo.pageType = "applies";
+                _context2.next = 37;
+                return this.$router.push("".concat(this.routePath, "/applies/").concat(this.loginUser.id)).then(function () {
+                  that.scrollTop();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                })["catch"](function () {});
+
+              case 37:
+                _context2.next = 52;
+                break;
+
+              case 39:
+                if (!(this.selectedMenu == 'setting/country')) {
+                  _context2.next = 44;
+                  break;
+                }
+
+                _context2.next = 42;
+                return this.$router.push("".concat(this.routePath, "/setting/country")).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                })["catch"](function () {});
+
+              case 42:
+                _context2.next = 52;
+                break;
+
+              case 44:
+                if (!(this.selectedMenu == 'setting/category')) {
+                  _context2.next = 49;
+                  break;
+                }
+
+                _context2.next = 47;
+                return this.$router.push("".concat(this.routePath, "/setting/category")).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                })["catch"](function () {});
+
+              case 47:
+                _context2.next = 52;
+                break;
+
+              case 49:
+                if (!(this.selectedMenu == 'setting/users')) {
+                  _context2.next = 52;
+                  break;
+                }
+
+                _context2.next = 52;
+                return this.$router.push("".concat(this.routePath, "/setting/users")).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                })["catch"](function () {});
+
+              case 52:
               case "end":
                 return _context2.stop();
             }
@@ -65813,6 +65889,7 @@ var render = function() {
                                         staticClass: "menu-title",
                                         class: {
                                           selectedBg:
+                                            _vm.countryInMenu &&
                                             _vm.selectedMenu == "country"
                                         },
                                         on: {
@@ -65878,6 +65955,7 @@ var render = function() {
                                         staticClass: "menu-title",
                                         class: {
                                           selectedBg:
+                                            _vm.categoryInMenu &&
                                             _vm.selectedMenu == "category"
                                         },
                                         on: {
