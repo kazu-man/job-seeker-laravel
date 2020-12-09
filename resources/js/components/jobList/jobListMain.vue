@@ -34,7 +34,7 @@
                         :key="'top'" v-bind:class="{selectedBg:selectedMenu == 'top'}">Top</div>
 
                         <div class="menu-title" @click="countryInMenu = !countryInMenu;switchMenu('country')"
-                        :key="'coutnryTitle'" v-bind:class="{selectedBg:selectedMenu == 'country'}">Countries</div>
+                        :key="'coutnryTitle'" v-bind:class="{selectedBg:countryInMenu && selectedMenu == 'country'}">Countries</div>
                         <div class="drawer-menu menu-country" v-if="countryInMenu" :key="'country'">
                             <ul>
                                 <li v-for="country in countries" :key="country.id" 
@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="menu-title" @click="categoryInMenu = !categoryInMenu;switchMenu('category')" 
-                        :key="'categoryTitle'" v-bind:class="{selectedBg:selectedMenu == 'category'}">Categories</div>
+                        :key="'categoryTitle'" v-bind:class="{selectedBg:categoryInMenu && selectedMenu == 'category'}">Categories</div>
                         <div class="drawer-menu menu-category" v-if="categoryInMenu" :key="'category'">
                             <ul>
                                 <li v-for="category in categories" :key="category.id" 
@@ -210,7 +210,7 @@ export default {
         },
         menuClear() {
             this.selectedMenu = "";
-            // this.selectedContentsBg = "";
+            this.selectedContentsBg = "";
             this.selectedCountry="";
             this.selectedCategory="";
         },
@@ -226,8 +226,9 @@ export default {
                 return;             
             }
 
-            this.menuClear();
             this.selectedMenu = selectVal;   
+            console.log(this.selectedMenu)
+            console.log("this.selectedMenu")
             // this.selectedContentsBg = selectVal;
         },
         scrollTop: function(){
@@ -280,72 +281,95 @@ export default {
     watch:{
         selectedMenu:async function(){
 
-            if(this.selectedMenu == "category" || this.selectedMenu == "country"){
+            if(this.selectedMenu == "category" && this.selectedCategory != "" || this.selectedMenu == "country" && this.selectedCountry != ""){
                 this.selectedContentsBg = this.selectedMenu;
                 return;             
             }
-            this.scrollTop();
-            this.searchInfoClear();
+            // this.searchInfoClear();
             var that = this;
             if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
                 this.searchInfo.companyId = this.loginUser.company_id;
                 this.searchInfo.pageType = 'post';
-                this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
+                this.searchInfoClear();
+                await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
                 .then(() => {
+                    that.scrollTop();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'top'){
-                this.$router.push(`${this.routePath}/top`).catch(()=>{});
+                this.searchInfoClear();
+                await this.$router.push(`${this.routePath}/top`)
+                .then(() => {
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                })
+                .catch(()=>{
+                });
             }else if(this.selectedMenu == 'profile'){
                 await this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`)
                 .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
                 })
                 .catch(()=>{});
             }else if(this.selectedMenu == 'likes'){
+                this.searchInfoClear();
                 this.searchInfo.likes = true;
                 this.searchInfo.pageType = "likes";
-                this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
+                await this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
                 .then(() => {
+                    that.scrollTop();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'applies'){
+                this.searchInfoClear();
                 this.searchInfo.applies = true;
                 this.searchInfo.pageType = "applies";
-                this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
+                await this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
                 .then(() => {
+                    that.scrollTop();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'setting/country'){
-                this.$router.push(`${this.routePath}/setting/country`)
+                await this.$router.push(`${this.routePath}/setting/country`)
                 .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
-                                        console.log('joblistkara mount kanryou')
-
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'setting/category'){
-                this.$router.push(`${this.routePath}/setting/category`)
+                await this.$router.push(`${this.routePath}/setting/category`)
                 .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
-                                        console.log('joblistkara mount kanryou')
 
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'setting/users'){
 
-                this.$router.push(`${this.routePath}/setting/users`)
+                await this.$router.push(`${this.routePath}/setting/users`)
                 .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
-                    console.log('joblistkara mount kanryou')
                 })
                 .catch(()=>{});
             }
