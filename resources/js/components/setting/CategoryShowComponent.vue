@@ -1,5 +1,6 @@
 <template>
-    
+    <div>
+        <div class="component-title" :key="'title'" >Category List</div>
         <div  class="category-show-area">
             <categoryRegisterComponent @refresh-list="refresh()"></categoryRegisterComponent>
             <div class="list-count">{{listSize}} registered</div>
@@ -12,12 +13,13 @@
             </transition-group>
                 </ul>
         </div>
+        </div>
 </template>
 
 
 <script>
-var categoryRegisterComponent = Vue.component('categoryRegisterComponent', require('./CategoryRegisterComponent.vue').default);
-
+// var categoryRegisterComponent = Vue.component('categoryRegisterComponent', require('./CategoryRegisterComponent.vue').default);
+import categoryRegisterComponent from './CategoryRegisterComponent.vue'
 
 export default {
     data() {return{
@@ -126,5 +128,11 @@ ul li {
 .list-count{
     text-align: right;
     margin-top: 10px;
+}
+.component-title{
+    color:white;
+    font-size:25px;
+    padding-left:10%;
+    margin-bottom: 15px;
 }
 </style>

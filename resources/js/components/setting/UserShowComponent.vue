@@ -1,4 +1,8 @@
 <template>
+<div>
+        <div class="component-title" :key="'title'" >User List</div>
+        <div v-on:click="adminModalUp()" class="btn btn-success admin-add" :key="'addBtn'">Add New Admin</div>
+
         <div class="user-show-area">
         <div class="user-show-table-style">
             <vue-good-table
@@ -57,6 +61,7 @@
                     </span>
                 </template>
             </vue-good-table>
+        </div>  
         </div>  
         </div>  
  
@@ -138,9 +143,7 @@ export default {
     },
     components: {
         VueGoodTable,
-    }
-
-
+    },
 }
 </script>
 
@@ -175,7 +178,24 @@ export default {
 tr.v-leave-to {
     background:red;
 }
-
+.component-title{
+    color:white;
+    font-size:25px;
+    padding-left:5% !important;
+    margin-bottom: 15px;
+}
+.admin-add {
+    position: absolute;
+    top: 0;
+    right:8%;
+    padding: 10px;
+}
+.component-title{
+    color:white;
+    font-size:25px;
+    padding-left:10%;
+    margin-bottom: 15px;
+}
 </style>
 <style>
 .closed{

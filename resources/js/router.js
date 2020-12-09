@@ -11,9 +11,9 @@ import postsList from './components/jobList/PostsListComponent.vue'
 import profile from './components/jobList/ProfileComponent.vue'
 import applyRecordTable from './components/jobList/ApplyRecordTable.vue'
 import passwordReset from './components/resetPassword/resetPassword.vue'
-
-
-
+import userShow from './components/setting/UserShowComponent.vue'
+import categoryShow from './components/setting/CategoryShowComponent.vue'
+import AdminPlaceShowComponent from './components/setting/AdminPlaceShowComponent.vue'
 
 import store from './store' 
 import { UNAUTHORIZED } from './util'
@@ -148,9 +148,8 @@ const routes = [
           children:[
             {
               path: 'country',
-              component: top,
+              component: AdminPlaceShowComponent,
               async beforeEnter (to, from, next) {
-                var that = this;
                 await store.dispatch('auth/accessAllowCheck').then(value => {
                   console.log("accessAllowed")
                   console.log(value)
@@ -166,7 +165,7 @@ const routes = [
             },    
             {
               path: 'category',
-              component: top,
+              component: categoryShow,
               async beforeEnter (to, from, next) {
                 await store.dispatch('auth/accessAllowCheck').then(value => {
                   console.log("accessAllowed")
@@ -182,7 +181,7 @@ const routes = [
             },    
             {
               path: 'users',
-              component: top,
+              component: userShow,
               async beforeEnter (to, from, next) {
                 await store.dispatch('auth/accessAllowCheck').then(value => {
                   console.log("accessAllowed")
@@ -195,7 +194,6 @@ const routes = [
                     }
                 });
               }
-
             },    
           ],
         },

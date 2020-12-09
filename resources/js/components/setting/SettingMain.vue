@@ -1,6 +1,26 @@
 <template>
             <div>
+
                 <keep-alive>
+                    <div style="position:relative">
+                    <transition-group>
+                        <!-- <div class="component-title" :key="'title'" >Users List</div>
+                        <div v-on:click="adminModalUp()" class="btn btn-success admin-add" :key="'addBtn'">Add New Admin</div> -->
+                        <div class="component" :key="'company'">
+                            <router-view 
+                            :users="users"
+                            @refresh="refreshList"
+                            :categories="categories"
+                            @refresh-category-list="refreshList"
+                            ></router-view>
+                        </div>
+                    </transition-group>
+                    </div>
+                </keep-alive>
+
+
+
+                <!-- <keep-alive>
                     <div style="position:relative">
                     <transition-group v-if="selectPage === routePath + '/setting/users'">
                         <div class="component-title" :key="'title'">Users List</div>
@@ -21,7 +41,8 @@
                             <category-show-component 
                             ref="company-show-com"
                             :categories="categories"
-                            @refresh-category-list="refreshList"></category-show-component>
+                            @refresh-category-list="refreshList"
+                            ></category-show-component>
                         </div>
                     </transition-group>
                 </keep-alive>
@@ -36,9 +57,8 @@
                         <div class="component" :key="'placeList'">
                             <placeShowListComponent ref="placeCom"></placeShowListComponent>
                         </div>
-
                     </transition-group>
-                </keep-alive>
+                </keep-alive> -->
             </div>
 </template>
 
@@ -55,7 +75,6 @@ export default {
         },
         updateData(){
             this.$refs.placeCom.updatePlaceTable();
-
         },
         refreshList(){
            this.init();        
@@ -103,7 +122,6 @@ export default {
 }
 .component div {
     /* padding:50px; */
-    background:white;
     opacity:0.95;
     max-width:800px;
     margin:0 auto 50px auto;
@@ -116,17 +134,6 @@ export default {
 /* 表示アニメーション開始時 ・ 非表示アニメーション後 */
 .v-enter, .v-leave-to {
   opacity: 0;
-}
-.component-title{
-    color:white;
-    font-size:25px;
-    padding-left:10%;
-}
-.admin-add {
-    position: absolute;
-    top: 0;
-    right:8%;
-    padding: 10px;
 }
 
 </style>

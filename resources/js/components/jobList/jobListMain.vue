@@ -210,7 +210,7 @@ export default {
         },
         menuClear() {
             this.selectedMenu = "";
-            this.selectedContentsBg = "";
+            // this.selectedContentsBg = "";
             this.selectedCountry="";
             this.selectedCategory="";
         },
@@ -228,7 +228,7 @@ export default {
 
             this.menuClear();
             this.selectedMenu = selectVal;   
-            this.selectedContentsBg = selectVal;
+            // this.selectedContentsBg = selectVal;
         },
         scrollTop: function(){
             window.scrollTo({
@@ -278,37 +278,77 @@ export default {
         },
     },
     watch:{
-        selectedMenu:function(){
+        selectedMenu:async function(){
 
             if(this.selectedMenu == "category" || this.selectedMenu == "country"){
+                this.selectedContentsBg = this.selectedMenu;
                 return;             
             }
             this.scrollTop();
             this.searchInfoClear();
+            var that = this;
             if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
                 this.searchInfo.companyId = this.loginUser.company_id;
                 this.searchInfo.pageType = 'post';
-                this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`).catch(()=>{});
+                this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                })
+                .catch(()=>{});
+
             }else if(this.selectedMenu == 'top'){
                 this.$router.push(`${this.routePath}/top`).catch(()=>{});
             }else if(this.selectedMenu == 'profile'){
-                this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`).catch(()=>{});
+                await this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                })
+                .catch(()=>{});
             }else if(this.selectedMenu == 'likes'){
                 this.searchInfo.likes = true;
                 this.searchInfo.pageType = "likes";
-                this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`).catch(()=>{});
+                this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                })
+                .catch(()=>{});
+
             }else if(this.selectedMenu == 'applies'){
                 this.searchInfo.applies = true;
                 this.searchInfo.pageType = "applies";
-                this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`).catch(()=>{});
-            }else if(this.selectedMenu == 'setting/country'){
-                this.$router.push(`${this.routePath}/setting/country`).catch(()=>{});
-            }else if(this.selectedMenu == 'setting/category'){
-                this.$router.push(`${this.routePath}/setting/category`).catch(()=>{});
-            }else if(this.selectedMenu == 'setting/users'){
-                this.$router.push(`${this.routePath}/setting/users`).catch(()=>{});
-            }
+                this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                })
+                .catch(()=>{});
 
+            }else if(this.selectedMenu == 'setting/country'){
+                this.$router.push(`${this.routePath}/setting/country`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                                        console.log('joblistkara mount kanryou')
+
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'setting/category'){
+                this.$router.push(`${this.routePath}/setting/category`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                                        console.log('joblistkara mount kanryou')
+
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'setting/users'){
+
+                this.$router.push(`${this.routePath}/setting/users`)
+                .then(() => {
+                    that.selectedContentsBg = that.selectedMenu;
+                    console.log('joblistkara mount kanryou')
+                })
+                .catch(()=>{});
+            }
             
         },
         modalTarget:function(){
