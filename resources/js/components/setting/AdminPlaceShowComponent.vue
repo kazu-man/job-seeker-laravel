@@ -61,7 +61,7 @@ export default {
 .component-title{
     color:white;
     font-size:25px;
-    padding-left:10%;
+    padding-left:5%;
 }
 .admin-add {
     position: absolute;
