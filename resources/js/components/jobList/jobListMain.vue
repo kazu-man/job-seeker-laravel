@@ -10,9 +10,9 @@
                     <transition-group name="inMenu" class="a">
                         <div class="drawer-menu setting" :key="'admin'" >
                             <ul>
-                                <li @click="switchMenu('setting/users')">Users</li>
-                                <li @click="switchMenu('setting/category')">Category</li>
-                                <li @click="switchMenu('setting/country')">Country</li>
+                                <li @click="switchMenu('setting/users')" v-bind:class="{selectedBgInSetting:selectedMenu == 'setting/users'}">Users</li>
+                                <li @click="switchMenu('setting/category')" v-bind:class="{selectedBgInSetting:selectedMenu == 'setting/category'}">Category</li>
+                                <li @click="switchMenu('setting/country')" v-bind:class="{selectedBgInSetting:selectedMenu == 'setting/country'}">Country</li>
                         </ul>
                         </div>
                     </transition-group>
@@ -209,7 +209,7 @@ export default {
             this.searchInfo = {};
         },
         menuClear() {
-            this.selectedMenu = "";
+            // this.selectedMenu = "";
             this.selectedContentsBg = "";
             this.selectedCountry="";
             this.selectedCategory="";
@@ -482,6 +482,7 @@ export default {
 .menu-category li:hover{
     background: rgb(45, 51, 117);
 }
+
 .drawer-menu {
     padding-top:5px !important;
 }
@@ -489,6 +490,9 @@ export default {
     background: rgb(45, 51, 117);
 }
 .drawer-menu.setting li:hover{
+  background-color: rgb(89 168 199);
+}
+.selectedBgInSetting{
   background-color: rgb(89 168 199);
 }
 .menu-title {
