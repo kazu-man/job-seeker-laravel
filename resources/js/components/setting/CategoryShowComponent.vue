@@ -1,8 +1,10 @@
 <template>
-    
+    <div>
+        <div class="component-title" :key="'title'" >Category List</div>
         <div  class="category-show-area">
             <categoryRegisterComponent @refresh-list="refresh()"></categoryRegisterComponent>
-                <ul>
+            <div class="list-count">{{listSize}} registered</div>
+                <ul style="padding-left:0">
             <transition-group class="flex">
                     <li v-for="category in categories" :key="category.id + 'test' + category.created_at" @mouseover="mouseOverAction(category.id)" v-on:mouseleave="mouseLeaveAction(category.id)">
                         <span v-if="hoverFlag && hoverIndex == category.id" @click="deleteCategory(category.id)" class="del-btn btn">X</span>
@@ -11,12 +13,13 @@
             </transition-group>
                 </ul>
         </div>
+        </div>
 </template>
 
 
 <script>
-var categoryRegisterComponent = Vue.component('categoryRegisterComponent', require('./CategoryRegisterComponent.vue').default);
-
+// var categoryRegisterComponent = Vue.component('categoryRegisterComponent', require('./CategoryRegisterComponent.vue').default);
+import categoryRegisterComponent from './CategoryRegisterComponent.vue'
 
 export default {
     data() {return{
@@ -56,6 +59,11 @@ export default {
             });
             this.$emit('refresh-category-list');
         }
+    },
+    computed:{
+        listSize:function(){
+            return this.categories.length;
+        }
     }
 
 }
@@ -88,7 +96,7 @@ ul {
 }
 ul li {
    list-style:none;
-   width:50%;
+   width:45%;
    float:left;
    min-width:300px;
 }
@@ -116,5 +124,15 @@ ul li {
 /* 表示アニメーション開始時 ・ 非表示アニメーション後 */
 .v-enter, .v-leave-to {
   opacity: 0;
+}
+.list-count{
+    text-align: right;
+    margin-top: 10px;
+}
+.component-title{
+    color:white;
+    font-size:25px;
+    padding-left:10%;
+    margin-bottom: 15px;
 }
 </style>
