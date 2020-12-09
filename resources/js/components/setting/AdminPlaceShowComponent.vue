@@ -23,7 +23,6 @@ export default {
         return {
         }
     },
-
     methods: {
         updateData(){
             this.$refs.placeCom.updatePlaceTable();
