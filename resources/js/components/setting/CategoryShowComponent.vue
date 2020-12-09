@@ -132,7 +132,7 @@ ul li {
 .component-title{
     color:white;
     font-size:25px;
-    padding-left:10%;
+    padding-left:5%;
     margin-bottom: 15px;
 }
 </style>
