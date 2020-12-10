@@ -1,5 +1,12 @@
 <template>
     <div>
+        <transition name="initLoader">
+        <div class="modal-mask" v-if="init">
+            <div class="loading">
+            <vue-loading type="spiningDubbles" color="#333" :size="{ width: '50px', height: '50px'}"></vue-loading>
+            </div>
+        </div>
+        </transition>
         <div v-if="loading" class="spinner-background" @click="closeMenu">
             <spinner style="
                 position:absolute;
@@ -124,6 +131,7 @@
 
 <script>
 import modal from '../common/ModalComponent.vue';
+import { VueLoading } from 'vue-loading-template'
 
 export default {
     data() {
@@ -152,7 +160,8 @@ export default {
             countries:null,
             countryBgImage:null,
             selectedMenuType:"",
-            loading:false
+            loading:false,
+            init:true
     }},
     methods: { 
         changeCountry(countryName) {
@@ -260,8 +269,10 @@ export default {
             }
 
         },
-        initData: function(){
-            axios.get('/api/category').then(res => {
+        initData: async function(){
+            var categoryReady = false;
+            var countryReady = false;
+            var categoryReady = await axios.get('/api/category').then(res => {
                 this.categories = res.data;
                 console.log(res.data);
 
@@ -270,8 +281,9 @@ export default {
                         this.changeCategory(this.$route.params.category)
                     };
                 }
+                 return true;
             });
-            axios.get('/api/getCountries').then(res => {
+            var countryReady = await axios.get('/api/getCountries').then(res => {
                 console.log("country探しにいきます");
                 var $countries = res.data;
                 this.countries = $countries;
@@ -282,7 +294,12 @@ export default {
                     this.changeCountry(this.$route.params.country)
                     };
                 }
+                return true;
             });
+            //初期ローダーを非表示
+            if(this.init && categoryReady && countryReady){
+                this.init = false;
+            }
         },
     },
     watch:{
@@ -433,6 +450,7 @@ export default {
                     || this.selectedContentsBg == 'posts' 
                     || this.selectedContentsBg == 'postJob' 
                     || this.selectedContentsBg == '' 
+                    || this.selectedContentsBg == null //初期状態
                     || this.selectedContentsBg == 'profile' 
                     || this.selectedContentsBg == 'likes' 
                     || this.selectedContentsBg == 'applies' 
@@ -458,21 +476,16 @@ export default {
         countryReloadFlg:function(){
             return this.$store.state.common.settingCountryReloadFlg;
 
-        }
+        },
     },
     created : function() {
-
         this.initData();
         this.scrollTop();
-
-        console.log("user");
-        console.log(this.user);
-        console.log(this.isLogin);
-
     },
  
     components: {
         modal,
+        VueLoading
     }
 
 }
@@ -598,6 +611,15 @@ export default {
   opacity:0;
 }
 
+.initLoader-enter-active, .initLoader-leave-active {
+    transition: opacity 1s
+}
+
+.initLoader-enter, .initLoader-leave-to{
+    opacity: 0;
+}
+
+
 .top-menu-option{
     margin-top:65px;
 }
@@ -714,5 +736,18 @@ export default {
 }
 .comeFront{
     z-index: 99999999;
+}
+.modal-mask {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  /* background-color:rgba(0,0,0,0.5); */
+  background:white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index:999999999999
 }
 </style>
