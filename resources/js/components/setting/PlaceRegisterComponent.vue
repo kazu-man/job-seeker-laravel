@@ -75,7 +75,8 @@
 
 
 <script>
-var methodMixIn = Vue.component('common-methods-mix-in', require('../common/CommonMethodsMixIn.vue').default);
+// var methodMixIn = Vue.component('common-methods-mix-in', require('../common/CommonMethodsMixIn.vue').default);
+import methodMixIn from '../common/CommonMethodsMixIn.vue';
 import { UNAUTHORIZED ,OK, UNPROCESSABLE_ENTITY} from '../../util';
 
 export default {

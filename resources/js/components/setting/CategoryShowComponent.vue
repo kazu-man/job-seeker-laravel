@@ -2,8 +2,16 @@
     <div>
         <div class="component-title" :key="'title'" >Category List</div>
         <div  class="category-show-area">
+                <spinner v-if="loading" style="
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                " size="40"
+                line-fg-color="#f00"
+                ></spinner>
+
             <categoryRegisterComponent @refresh-list="refresh()"></categoryRegisterComponent>
-            <div class="list-count">{{listSize}} registered</div>
+            <div v-show="listSize > 0" class="list-count">{{listSize}} registered</div>
                 <ul style="padding-left:0">
             <transition-group class="flex">
                     <li v-for="category in categories" :key="category.id + 'test' + category.created_at" @mouseover="mouseOverAction(category.id)" v-on:mouseleave="mouseLeaveAction(category.id)">
@@ -26,11 +34,12 @@ export default {
         hoverFlag:false,
         hoverIndex:null
     }},
-    props:{
-        categories:{}
-    },
+    props:[
+        "categories",
+        "loading"
+    ],
     components:{
-        categoryRegisterComponent
+        categoryRegisterComponent,
     },
     methods:{
         refresh(){

@@ -1,6 +1,14 @@
 <template>
     <div>
-        <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType">
+        <div v-if="loading" class="spinner-background" @click="closeMenu">
+            <spinner style="
+                position:absolute;
+                top:50%;
+                left:50%;
+            " size="40"></spinner>
+        </div>
+
+        <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType" :class="{comeFront:loading}">
             <span  class="menu-btn hide" @click="changeMenuType('normal')" :key="'toggle1'">Menu</span>
             <span  v-if="loginCheck && loginUser != null &&loginUser.user_type == 'A'" class="menu-btn hide setting" @click="changeMenuType('admin')" :key="'toggle2'">Setting</span>
             <section v-if="slotProps.drawerFlg" 　class="drawer-menu-wrapper" :class="{setting:loginCheck && loginUser != null && loginUser.user_type == 'A' && selectedMenuType == 'admin'}" :key="'toggle'">
@@ -110,7 +118,6 @@
         </transition>
 
         <modal ref="modal"></modal>
-
     </div>
 </template>
 
@@ -119,7 +126,6 @@
 import modal from '../common/ModalComponent.vue';
 
 export default {
-    
     data() {
         return{
             // companies:[],
@@ -145,7 +151,8 @@ export default {
             categories:null,
             countries:null,
             countryBgImage:null,
-            selectedMenuType:""
+            selectedMenuType:"",
+            loading:false
     }},
     methods: { 
         changeCountry(countryName) {
@@ -285,6 +292,8 @@ export default {
                 this.selectedContentsBg = this.selectedMenu;
                 return;             
             }
+            this.loading = true;
+
             // this.searchInfoClear();
             var that = this;
             if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
@@ -296,6 +305,7 @@ export default {
                     that.scrollTop();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{});
 
@@ -305,6 +315,7 @@ export default {
                 .then(() => {
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{
                 });
@@ -315,6 +326,7 @@ export default {
                     that.searchInfoClear();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{});
             }else if(this.selectedMenu == 'likes'){
@@ -326,6 +338,7 @@ export default {
                     that.scrollTop();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{});
 
@@ -338,6 +351,7 @@ export default {
                     that.scrollTop();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{});
 
@@ -348,6 +362,7 @@ export default {
                     that.searchInfoClear();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{});
 
@@ -358,7 +373,7 @@ export default {
                     that.searchInfoClear();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
-
+                    that.loading = false;
                 })
                 .catch(()=>{});
 
@@ -370,8 +385,13 @@ export default {
                     that.searchInfoClear();
                     that.menuClear();
                     that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
                 })
                 .catch(()=>{});
+            }
+
+            if(this.selectedMenu == "category"  || this.selectedMenu == "country" ){
+                this.loading = false;
             }
             
         },
@@ -452,7 +472,7 @@ export default {
     },
  
     components: {
-        modal
+        modal,
     }
 
 }
@@ -496,10 +516,11 @@ export default {
   background-color: rgb(89 168 199);
 }
 .menu-title {
-    padding-top:10px;
-    padding-left:10px;
-    font-weight:bold;
-    cursor:pointer;
+    padding: 5px 0px;
+    padding-left: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 18px;
 }
 .menu-title:hover{
     background: rgb(45, 51, 117);
@@ -609,6 +630,7 @@ export default {
 }
 .drawer-menu li{
     cursor:pointer;
+    font-size:18px;
 }
 .selectedBg {
     background: rgb(45, 51, 117);
@@ -669,4 +691,28 @@ export default {
     background-color: red !important;
 }
 
+.spinner-background{
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+    z-index: 9999999;
+    position: fixed;
+}
+.comeFront{
+    z-index: 99999999;
+}
+</style>
+<style>
+.spinner-background{
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+    z-index: 9999999;
+    position: fixed;
+}
+.comeFront{
+    z-index: 99999999;
+}
 </style>
