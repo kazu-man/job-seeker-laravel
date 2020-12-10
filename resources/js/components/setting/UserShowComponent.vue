@@ -1,6 +1,5 @@
 <template>
 <div>
-
         <div class="component-title" :key="'title'" >User List</div>
         <div v-on:click="adminModalUp()" class="btn btn-success admin-add" :key="'addBtn'">Add New Admin</div>
 

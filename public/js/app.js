@@ -5109,6 +5109,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -5132,6 +5140,7 @@ __webpack_require__.r(__webpack_exports__);
         type: 'message',
         sortable: false
       }],
+      loading: true,
       rows: []
     };
   },
@@ -5139,10 +5148,12 @@ __webpack_require__.r(__webpack_exports__);
     getApplyRecords: function getApplyRecords() {
       var _this = this;
 
+      this.loading = true;
       axios.get('/api/getApplyRecords').then(function (res) {
         _this.rows = res.data;
         console.log('getApplyRecords');
         console.log(res.data);
+        _this.loading = false;
       });
     },
     onCellClick: function onCellClick(props) {
@@ -5566,6 +5577,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -5574,7 +5592,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       userType: "user",
       count: 0,
       pageType: "",
-      hidePost: []
+      hidePost: [],
+      loading: true
     };
   },
   methods: {
@@ -5606,7 +5625,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 console.log("function getPostList");
                 console.log(this.searchInfo);
                 this.posts = {};
-                _context.next = 5;
+                this.loading = true;
+                _context.next = 6;
                 return axios.post('/api/getPosts', this.searchInfo).then(function (res) {
                   _this2.posts = res.data;
 
@@ -5640,9 +5660,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log(res.data);
 
                   _this2.countUp(_this2.posts.length);
+
+                  _this2.loading = false;
                 });
 
-              case 5:
+              case 6:
               case "end":
                 return _context.stop();
             }
@@ -5700,11 +5722,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     anime: animejs__WEBPACK_IMPORTED_MODULE_1__["default"] // animeという名前でコンポーネント登録
 
   },
-  beforeUpdate: function beforeUpdate() {
-    if (this.initPage != null) {
-      this.$emit('switchMenu', this.initPage);
-    }
-  },
+  // beforeUpdate:function(){
+  // if(this.initPage != null){
+  //     this.$emit('switchMenu',this.initPage);
+  // }
+  // },
   created: function created() {
     this.init();
   },
@@ -6429,7 +6451,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     searchInfoClear: function searchInfoClear() {
       // this.menuClear();
-      this.searchInfo = {};
+      this.searchInfo = {
+        pageType: "",
+        searchedBy: "",
+        companyId: "",
+        countryName: "",
+        categoryName: "",
+        categoryId: "",
+        likes: false,
+        applies: false
+      };
     },
     menuClear: function menuClear() {
       // this.selectedMenu = "";
@@ -6438,20 +6469,238 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.selectedCategory = "";
     },
     switchMenu: function switchMenu(selectVal) {
-      console.log(selectVal);
+      var _this2 = this;
 
-      if (selectVal == this.selectedMenu) {
-        return;
-      }
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var tempPageType, tmpSelectedCountry, tmpSelectedCategory, that;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                console.log(selectVal);
 
-      if (selectVal == "category" || selectVal == "country") {
-        this.selectedMenu = selectVal;
-        return;
-      }
+                if (!(selectVal == _this2.selectedMenu)) {
+                  _context2.next = 3;
+                  break;
+                }
 
-      this.selectedMenu = selectVal;
-      console.log(this.selectedMenu);
-      console.log("this.selectedMenu"); // this.selectedContentsBg = selectVal;
+                return _context2.abrupt("return");
+
+              case 3:
+                if (!(selectVal == "category" || selectVal == "country")) {
+                  _context2.next = 6;
+                  break;
+                }
+
+                _this2.selectedMenu = selectVal;
+                return _context2.abrupt("return");
+
+              case 6:
+                _this2.selectedMenu = selectVal;
+                _this2.loading = true;
+
+                if (!(selectVal == 'likes' && !_this2.searchInfo.likes)) {
+                  _context2.next = 22;
+                  break;
+                }
+
+                tempPageType = _this2.searchInfo.pageType;
+                tmpSelectedCountry = _this2.selectedCountry;
+                tmpSelectedCategory = _this2.selectedCategory;
+
+                _this2.searchInfoClear();
+
+                _this2.searchInfo.pageType = tempPageType;
+                _this2.selectedCountry = tmpSelectedCountry;
+                _this2.selectedCategory = tmpSelectedCategory;
+                _this2.searchInfo.likes = true;
+                _this2.loading = true;
+                _context2.next = 20;
+                return _this2.$router.push("".concat(_this2.routePath, "/likes/").concat(_this2.loginUser.id)).then(function () {
+                  _this2.menuClear();
+
+                  _this2.searchInfo.pageType = "likes";
+                  _this2.selectedContentsBg = _this2.selectedMenu;
+                  _this2.loading = false;
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 20:
+                _context2.next = 35;
+                break;
+
+              case 22:
+                if (!(selectVal == 'applies' && !_this2.searchInfo.applies)) {
+                  _context2.next = 35;
+                  break;
+                }
+
+                console.log("selectVal kokomadekitayo applies");
+                tempPageType = _this2.searchInfo.pageType;
+                tmpSelectedCountry = _this2.selectedCountry;
+                tmpSelectedCategory = _this2.selectedCategory;
+
+                _this2.searchInfoClear();
+
+                _this2.searchInfo.pageType = tempPageType;
+                _this2.selectedCountry = tmpSelectedCountry;
+                _this2.selectedCategory = tmpSelectedCategory;
+                _this2.searchInfo.applies = true;
+                _this2.loading = true;
+                _context2.next = 35;
+                return _this2.$router.push("".concat(_this2.routePath, "/applies/").concat(_this2.loginUser.id)).then(function () {
+                  _this2.scrollTop();
+
+                  _this2.menuClear();
+
+                  _this2.searchInfo.pageType = "applies";
+                  _this2.selectedContentsBg = _this2.selectedMenu;
+                  _this2.loading = false;
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 35:
+                if (!(_this2.selectedMenu == "category" && _this2.selectedCategory != "" || _this2.selectedMenu == "country" && _this2.selectedCountry != "")) {
+                  _context2.next = 38;
+                  break;
+                }
+
+                _this2.selectedContentsBg = _this2.selectedMenu;
+                return _context2.abrupt("return");
+
+              case 38:
+                // this.searchInfoClear();
+                that = _this2;
+
+                if (!(_this2.selectedMenu == 'postJob' || _this2.selectedMenu == 'posts' || _this2.selectedMenu == "appliesList")) {
+                  _context2.next = 47;
+                  break;
+                }
+
+                if (_this2.selectedMenu == 'posts') {
+                  _this2.searchInfoClear();
+                }
+
+                _this2.searchInfo.companyId = _this2.loginUser.company_id;
+                _this2.searchInfo.pageType = 'post';
+                _context2.next = 45;
+                return _this2.$router.push("".concat(_this2.routePath, "/").concat(_this2.selectedMenu, "/").concat(_this2.searchInfo.companyId)).then(function () {
+                  that.scrollTop();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                  that.loading = false;
+                })["catch"](function () {});
+
+              case 45:
+                _context2.next = 71;
+                break;
+
+              case 47:
+                if (!(_this2.selectedMenu == 'top')) {
+                  _context2.next = 53;
+                  break;
+                }
+
+                _this2.searchInfoClear();
+
+                _context2.next = 51;
+                return _this2.$router.push("".concat(_this2.routePath, "/top")).then(function () {
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                  that.loading = false;
+                })["catch"](function () {});
+
+              case 51:
+                _context2.next = 71;
+                break;
+
+              case 53:
+                if (!(_this2.selectedMenu == 'profile')) {
+                  _context2.next = 58;
+                  break;
+                }
+
+                _context2.next = 56;
+                return _this2.$router.push("".concat(_this2.routePath, "/profile/").concat(_this2.loginUser.id)).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                  that.loading = false;
+                })["catch"](function () {});
+
+              case 56:
+                _context2.next = 71;
+                break;
+
+              case 58:
+                if (!(_this2.selectedMenu == 'setting/country')) {
+                  _context2.next = 63;
+                  break;
+                }
+
+                _context2.next = 61;
+                return _this2.$router.push("".concat(_this2.routePath, "/setting/country")).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                  that.loading = false;
+                })["catch"](function () {});
+
+              case 61:
+                _context2.next = 71;
+                break;
+
+              case 63:
+                if (!(_this2.selectedMenu == 'setting/category')) {
+                  _context2.next = 68;
+                  break;
+                }
+
+                _context2.next = 66;
+                return _this2.$router.push("".concat(_this2.routePath, "/setting/category")).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                  that.loading = false;
+                })["catch"](function () {});
+
+              case 66:
+                _context2.next = 71;
+                break;
+
+              case 68:
+                if (!(_this2.selectedMenu == 'setting/users')) {
+                  _context2.next = 71;
+                  break;
+                }
+
+                _context2.next = 71;
+                return _this2.$router.push("".concat(_this2.routePath, "/setting/users")).then(function () {
+                  that.scrollTop();
+                  that.searchInfoClear();
+                  that.menuClear();
+                  that.selectedContentsBg = that.selectedMenu;
+                  that.loading = false;
+                })["catch"](function () {});
+
+              case 71:
+                // if(this.selectedMenu == "category"  || this.selectedMenu == "country" ){
+                if (_this2.loading) {
+                  _this2.loading = false;
+                }
+
+              case 72:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
     },
     scrollTop: function scrollTop() {
       window.scrollTo({
@@ -6474,24 +6723,24 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     initData: function () {
-      var _initData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var _this2 = this;
+      var _initData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var _this3 = this;
 
         var categoryReady, countryReady;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 categoryReady = false;
                 countryReady = false;
-                _context2.next = 4;
+                _context3.next = 4;
                 return axios.get('/api/category').then(function (res) {
-                  _this2.categories = res.data;
+                  _this3.categories = res.data;
                   console.log(res.data);
 
-                  if (_this2.$route.params != null) {
-                    if (_this2.$route.params.category != null) {
-                      _this2.changeCategory(_this2.$route.params.category);
+                  if (_this3.$route.params != null) {
+                    if (_this3.$route.params.category != null) {
+                      _this3.changeCategory(_this3.$route.params.category);
                     }
 
                     ;
@@ -6501,17 +6750,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 });
 
               case 4:
-                categoryReady = _context2.sent;
-                _context2.next = 7;
+                categoryReady = _context3.sent;
+                _context3.next = 7;
                 return axios.get('/api/getCountries').then(function (res) {
                   console.log("country探しにいきます");
                   var $countries = res.data;
-                  _this2.countries = $countries;
+                  _this3.countries = $countries;
                   console.log($countries);
 
-                  if (_this2.$route.params != null) {
-                    if (_this2.$route.params.country != null) {
-                      _this2.changeCountry(_this2.$route.params.country);
+                  if (_this3.$route.params != null) {
+                    if (_this3.$route.params.country != null) {
+                      _this3.changeCountry(_this3.$route.params.country);
                     }
 
                     ;
@@ -6521,7 +6770,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 });
 
               case 7:
-                countryReady = _context2.sent;
+                countryReady = _context3.sent;
 
                 //初期ローダーを非表示
                 if (this.init && categoryReady && countryReady) {
@@ -6530,10 +6779,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
               case 9:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       function initData() {
@@ -6544,197 +6793,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     }()
   },
   watch: {
-    selectedMenu: function () {
-      var _selectedMenu = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
-        var that;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                if (!(this.selectedMenu == "category" && this.selectedCategory != "" || this.selectedMenu == "country" && this.selectedCountry != "")) {
-                  _context3.next = 3;
-                  break;
-                }
-
-                this.selectedContentsBg = this.selectedMenu;
-                return _context3.abrupt("return");
-
-              case 3:
-                this.loading = true; // this.searchInfoClear();
-
-                that = this;
-
-                if (!(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList")) {
-                  _context3.next = 13;
-                  break;
-                }
-
-                this.searchInfo.companyId = this.loginUser.company_id;
-                this.searchInfo.pageType = 'post';
-                this.searchInfoClear();
-                _context3.next = 11;
-                return this.$router.push("".concat(this.routePath, "/").concat(this.selectedMenu, "/").concat(this.searchInfo.companyId)).then(function () {
-                  that.scrollTop();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 11:
-                _context3.next = 53;
-                break;
-
-              case 13:
-                if (!(this.selectedMenu == 'top')) {
-                  _context3.next = 19;
-                  break;
-                }
-
-                this.searchInfoClear();
-                _context3.next = 17;
-                return this.$router.push("".concat(this.routePath, "/top")).then(function () {
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 17:
-                _context3.next = 53;
-                break;
-
-              case 19:
-                if (!(this.selectedMenu == 'profile')) {
-                  _context3.next = 24;
-                  break;
-                }
-
-                _context3.next = 22;
-                return this.$router.push("".concat(this.routePath, "/profile/").concat(this.loginUser.id)).then(function () {
-                  that.scrollTop();
-                  that.searchInfoClear();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 22:
-                _context3.next = 53;
-                break;
-
-              case 24:
-                if (!(this.selectedMenu == 'likes')) {
-                  _context3.next = 32;
-                  break;
-                }
-
-                this.searchInfoClear();
-                this.searchInfo.likes = true;
-                this.searchInfo.pageType = "likes";
-                _context3.next = 30;
-                return this.$router.push("".concat(this.routePath, "/likes/").concat(this.loginUser.id)).then(function () {
-                  that.scrollTop();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 30:
-                _context3.next = 53;
-                break;
-
-              case 32:
-                if (!(this.selectedMenu == 'applies')) {
-                  _context3.next = 40;
-                  break;
-                }
-
-                this.searchInfoClear();
-                this.searchInfo.applies = true;
-                this.searchInfo.pageType = "applies";
-                _context3.next = 38;
-                return this.$router.push("".concat(this.routePath, "/applies/").concat(this.loginUser.id)).then(function () {
-                  that.scrollTop();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 38:
-                _context3.next = 53;
-                break;
-
-              case 40:
-                if (!(this.selectedMenu == 'setting/country')) {
-                  _context3.next = 45;
-                  break;
-                }
-
-                _context3.next = 43;
-                return this.$router.push("".concat(this.routePath, "/setting/country")).then(function () {
-                  that.scrollTop();
-                  that.searchInfoClear();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 43:
-                _context3.next = 53;
-                break;
-
-              case 45:
-                if (!(this.selectedMenu == 'setting/category')) {
-                  _context3.next = 50;
-                  break;
-                }
-
-                _context3.next = 48;
-                return this.$router.push("".concat(this.routePath, "/setting/category")).then(function () {
-                  that.scrollTop();
-                  that.searchInfoClear();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 48:
-                _context3.next = 53;
-                break;
-
-              case 50:
-                if (!(this.selectedMenu == 'setting/users')) {
-                  _context3.next = 53;
-                  break;
-                }
-
-                _context3.next = 53;
-                return this.$router.push("".concat(this.routePath, "/setting/users")).then(function () {
-                  that.scrollTop();
-                  that.searchInfoClear();
-                  that.menuClear();
-                  that.selectedContentsBg = that.selectedMenu;
-                  that.loading = false;
-                })["catch"](function () {});
-
-              case 53:
-                if (this.selectedMenu == "category" || this.selectedMenu == "country") {
-                  this.loading = false;
-                }
-
-              case 54:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      function selectedMenu() {
-        return _selectedMenu.apply(this, arguments);
-      }
-
-      return selectedMenu;
-    }(),
     modalTarget: function modalTarget() {
       if (this.modalTarget == null) {
         return;
@@ -6789,6 +6847,18 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   created: function created() {
     this.initData();
     this.scrollTop();
+
+    if (this.$route.path.includes('applies') && this.init) {
+      this.searchInfoClear();
+      this.searchInfo.applies = true;
+      this.searchInfo.pageType = "applies";
+      this.loading = false; // this.switchMenu("applies");
+    } else if (this.$route.path.includes('likes') && this.init) {
+      this.searchInfoClear();
+      this.searchInfo.applies = true;
+      this.selectedMenu = "likes";
+      this.loading = false; // this.switchMenu("likes");
+    }
   },
   components: {
     modal: _common_ModalComponent_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -7738,7 +7808,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_good_table__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-good-table */ "./node_modules/vue-good-table/dist/vue-good-table.esm.js");
-//
 //
 //
 //
@@ -63934,6 +64003,18 @@ var render = function() {
       "div",
       { staticStyle: { "min-width": "500px" } },
       [
+        _vm.loading
+          ? _c("spinner", {
+              staticStyle: {
+                position: "absolute",
+                top: "45%",
+                left: "50%",
+                "z-index": "99999999"
+              },
+              attrs: { size: "40", "line-fg-color": "#f00" }
+            })
+          : _vm._e(),
+        _vm._v(" "),
         _c("vue-good-table", {
           attrs: {
             columns: _vm.columns,
@@ -64618,7 +64699,13 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "section",
-    { staticStyle: { "min-height": "500px", width: "100%" } },
+    {
+      staticStyle: {
+        "min-height": "500px",
+        width: "100%",
+        position: "relative"
+      }
+    },
     [
       _vm.searchInfo.pageType == "post"
         ? _c("div", { staticClass: "title" }, [
@@ -64638,6 +64725,18 @@ var render = function() {
         ? _c("div", { staticClass: "title" }, [
             _vm._v("\n        " + _vm._s(_vm.count) + " Jobs found\n    ")
           ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.loading
+        ? _c("spinner", {
+            staticStyle: {
+              position: "absolute",
+              top: "35%",
+              left: "48%",
+              "z-index": "99999999"
+            },
+            attrs: { size: "40", "line-fg-color": "#f00" }
+          })
         : _vm._e(),
       _vm._v(" "),
       _c(
@@ -89596,16 +89695,10 @@ var routes = [{
     component: _components_resetPassword_resetPassword_vue__WEBPACK_IMPORTED_MODULE_11__["default"]
   }, {
     path: 'country/:country',
-    component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
-    props: {
-      initPage: "country"
-    }
+    component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
   }, {
     path: 'category/:category',
-    component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
-    props: {
-      initPage: "category"
-    }
+    component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
   }, {
     path: 'postJob/:id',
     component: _components_common_JobsRegisterComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"],

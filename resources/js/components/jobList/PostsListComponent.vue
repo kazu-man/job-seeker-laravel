@@ -1,5 +1,5 @@
 <template>
-    <section style="min-height:500px;width:100%">
+    <section style="min-height:500px;width:100%;position:relative">
         <div class="title" v-if="searchInfo.pageType == 'post'">
             Your Post's
         </div>
@@ -13,6 +13,13 @@
         <div class="title" v-if="searchInfo.pageType != 'applies'" v-cloak>
             {{count}} Jobs found
         </div>
+        <spinner v-if="loading" style="
+            position:absolute;
+            top:35%;
+            left:48%;
+            z-index: 99999999;
+        " size="40"
+        line-fg-color="#f00"></spinner>
 
         <transition-group name="post">
             <posts-component 
@@ -45,6 +52,7 @@ export default {
         count:0,
         pageType:"",
         hidePost:[],
+        loading:true
     }},
     methods: { 
         countUp: function(targetNum){
@@ -65,6 +73,7 @@ export default {
             console.log("function getPostList");
             console.log(this.searchInfo);
             this.posts = {};
+            this.loading = true;
             await axios.post('/api/getPosts', this.searchInfo).then(res => {
                 this.posts = res.data;
                 if(this.searchInfo.pageType == 'applies'){
@@ -82,6 +91,7 @@ export default {
                 console.log('getPost');
                 console.log(res.data);
                 this.countUp(this.posts.length);
+                this.loading = false;
             });
         },
         getLikeList:async function(){
@@ -106,11 +116,11 @@ export default {
     components: {
         anime // animeという名前でコンポーネント登録
     },
-    beforeUpdate:function(){
-        if(this.initPage != null){
-            this.$emit('switchMenu',this.initPage);
-        }
-    },
+    // beforeUpdate:function(){
+        // if(this.initPage != null){
+        //     this.$emit('switchMenu',this.initPage);
+        // }
+    // },
     created: function(){
         this.init();
     },

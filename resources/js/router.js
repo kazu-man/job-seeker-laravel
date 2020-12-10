@@ -43,13 +43,11 @@ const routes = [
           {
             path: 'country/:country',
             component: top,
-            props: { initPage: "country" },
   
           },
           {
             path: 'category/:category',
             component: top,
-            props: { initPage: "category" },
   
           },
 
