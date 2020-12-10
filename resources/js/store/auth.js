@@ -10,7 +10,8 @@ const state = {
   applyList:[],
   newMessageExistFlg:false,
   lastDeletedUser:null,
-  routePath:'/jobsList'
+  routePath:'/jobsList',
+  refreshAdminDataFlg:false
 }
 
 const getters = {
@@ -46,6 +47,9 @@ const mutations = {
   },
   setLastDeletedUser(state, user){
     state.lastDeletedUser = user
+  },
+  setRefreshAdminDataFlg(state, flg){
+    state.refreshAdminDataFlg = flg;
   }
 }
 
@@ -229,8 +233,11 @@ const actions = {
     context.commit('setApiStatus', false)
     context.commit('error/setCode', response.status, { root: true })
     return false;
+  },
+  async refreshAdminData(context, flg){
+    context.commit('setRefreshAdminDataFlg', flg);
   }
-}
+  }
 
 export default {
   namespaced: true,

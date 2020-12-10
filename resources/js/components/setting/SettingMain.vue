@@ -64,8 +64,21 @@ export default {
         },
         selectPage:function(){
             return this.$route.path;
-        }
+        },
+        refreshDataFlg:function(){
+            return this.$store.state.auth.refreshAdminDataFlg;
+        },
     },
+    watch:{
+        refreshDataFlg:function(next){
+            console.log(next);
+            console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
+            if(next){
+                this.init();
+                this.$store.dispatch('auth/refreshAdminData', false);
+            }
+        }
+    }
 
 }
 </script>

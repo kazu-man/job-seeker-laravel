@@ -4204,6 +4204,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     this.$modal.hide('postClose');
                     this.$modal.hide('deleteUserModal');
                     this.$modal.hide('register');
+                    this.$modal.hide('registerAdmin');
                     this.$modal.hide('login');
                     this.$modal.hide('bgChangeModal');
                     this.$store.commit('common/setApplyTargetPost', null);
@@ -4300,6 +4301,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     data: _util__WEBPACK_IMPORTED_MODULE_1__["OK"],
                     successMessage: '登録しました。'
                   });
+
+                  _this2.$store.dispatch('auth/refreshAdminData', true);
                 }
 
               case 4:
@@ -7154,6 +7157,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_CommonMethodsMixIn_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../common/CommonMethodsMixIn.vue */ "./resources/js/components/common/CommonMethodsMixIn.vue");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util */ "./resources/js/util.js");
+/* harmony import */ var vue_good_table__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-good-table */ "./node_modules/vue-good-table/dist/vue-good-table.esm.js");
 //
 //
 //
@@ -7230,7 +7234,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-// var methodMixIn = Vue.component('common-methods-mix-in', require('../common/CommonMethodsMixIn.vue').default);
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -7253,7 +7264,8 @@ __webpack_require__.r(__webpack_exports__);
         cityName: "",
         provinceId: "",
         countryId: ""
-      }
+      },
+      loading: false
     };
   },
   methods: {
@@ -7332,6 +7344,8 @@ __webpack_require__.r(__webpack_exports__);
           successMessage: '地域を追加しました。'
         });
 
+        _this2.loading = true;
+
         _this2.setProvince();
 
         console.log(res.data);
@@ -7362,6 +7376,7 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
 
+      var that = this;
       axios.post('/api/registerCity', this.cityForm).then(function (res) {
         _this3.$store.dispatch('common/alertModalUp', {
           data: res.status,
@@ -7369,8 +7384,8 @@ __webpack_require__.r(__webpack_exports__);
         });
 
         console.log(res.data);
+        that.$emit('update_data');
       });
-      this.$emit('update_data');
     },
     getCountries: function getCountries() {
       var _this4 = this;
@@ -7382,9 +7397,11 @@ __webpack_require__.r(__webpack_exports__);
     setProvince: function setProvince() {
       var _this5 = this;
 
+      var that = this;
+      this.loading = true;
       axios.get('/api/getTargetProvinces/' + this.cityForm.countryId).then(function (res) {
-        console.log(res.data);
         _this5.provinces = res.data;
+        that.loading = false;
       });
     }
   },
@@ -7691,6 +7708,20 @@ __webpack_require__.r(__webpack_exports__);
     },
     selectPage: function selectPage() {
       return this.$route.path;
+    },
+    refreshDataFlg: function refreshDataFlg() {
+      return this.$store.state.auth.refreshAdminDataFlg;
+    }
+  },
+  watch: {
+    refreshDataFlg: function refreshDataFlg(next) {
+      console.log(next);
+      console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
+
+      if (next) {
+        this.init();
+        this.$store.dispatch('auth/refreshAdminData', false);
+      }
     }
   }
 });
@@ -66763,7 +66794,24 @@ var render = function() {
           2
         ),
         _vm._v(" "),
-        _c("label", [_vm._v("\n                Region Name: \n            ")]),
+        _c(
+          "label",
+          { staticStyle: { position: "relative" } },
+          [
+            _vm._v("\n                Region Name: \n                "),
+            _vm.loading
+              ? _c("spinner", {
+                  staticStyle: {
+                    position: "absolute",
+                    left: "60%",
+                    top: "10%"
+                  },
+                  attrs: { size: "20", "line-fg-color": "#f00" }
+                })
+              : _vm._e()
+          ],
+          1
+        ),
         _vm._v(" "),
         _c(
           "select",
@@ -89890,7 +89938,8 @@ var state = {
   applyList: [],
   newMessageExistFlg: false,
   lastDeletedUser: null,
-  routePath: '/jobsList'
+  routePath: '/jobsList',
+  refreshAdminDataFlg: false
 };
 var getters = {
   check: function check(state) {
@@ -89930,6 +89979,9 @@ var mutations = {
   },
   setLastDeletedUser: function setLastDeletedUser(state, user) {
     state.lastDeletedUser = user;
+  },
+  setRefreshAdminDataFlg: function setRefreshAdminDataFlg(state, flg) {
+    state.refreshAdminDataFlg = flg;
   }
 };
 var actions = {
@@ -90334,6 +90386,22 @@ var actions = {
           }
         }
       }, _callee9);
+    }))();
+  },
+  refreshAdminData: function refreshAdminData(context, flg) {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee10() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee10$(_context10) {
+        while (1) {
+          switch (_context10.prev = _context10.next) {
+            case 0:
+              context.commit('setRefreshAdminDataFlg', flg);
+
+            case 1:
+            case "end":
+              return _context10.stop();
+          }
+        }
+      }, _callee10);
     }))();
   }
 };

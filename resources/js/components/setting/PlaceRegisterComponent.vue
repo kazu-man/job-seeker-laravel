@@ -52,8 +52,15 @@
                         {{obj.country_name}}
                     </option>
                 </select>
-                <label>
+                <label style="position:relative;">
                     Region Name: 
+                    <spinner v-if="loading" style="
+                        position: absolute;
+                        left: 60%;
+                        top: 10%;
+                    " size="20"
+                    line-fg-color="#f00"></spinner>
+
                 </label>
                 <select class="province form-control" v-model="cityForm.provinceId">
                     <option value='' disabled selected style='display:none;'>選択してください</option>
@@ -75,9 +82,9 @@
 
 
 <script>
-// var methodMixIn = Vue.component('common-methods-mix-in', require('../common/CommonMethodsMixIn.vue').default);
 import methodMixIn from '../common/CommonMethodsMixIn.vue';
 import { UNAUTHORIZED ,OK, UNPROCESSABLE_ENTITY} from '../../util';
+import { VueGoodTable } from 'vue-good-table';
 
 export default {
     data() {
@@ -99,8 +106,8 @@ export default {
                 cityName:"",
                 provinceId:"",
                 countryId:""
-            }
-
+            },
+            loading:false
         }
     },
     methods: {
@@ -148,9 +155,10 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'地域を入力してください'});
                 return;
             }
-
+            
             axios.post('/api/registerProvince', this.provinceForm).then(res => {
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'地域を追加しました。'});
+                this.loading = true;
                 this.setProvince();
                 console.log(res.data);
             });
@@ -169,12 +177,12 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'都市名を入力してください'});
                 return;
             }
-
+            var that = this;
             axios.post('/api/registerCity', this.cityForm).then(res => {
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'都市を追加しました。'});
                 console.log(res.data);
+                that.$emit('update_data');
             });
-            this.$emit('update_data');
         },
         getCountries:function(){
             axios.get('/api/getCountries').then(res => {
@@ -182,9 +190,11 @@ export default {
             });
         },
         setProvince:function(){
+            var that = this;
+            this.loading = true;
             axios.get('/api/getTargetProvinces/' + this.cityForm.countryId).then(res => {
-            console.log(res.data);
                 this.provinces = res.data;
+                that.loading = false;
             });
         }
     },
