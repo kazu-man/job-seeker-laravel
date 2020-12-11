@@ -513,7 +513,7 @@ export default {
 
         }else if((this.$route.path.includes('likes') && this.init)){
             this.searchInfoClear();
-            this.searchInfo.applies = true;
+            this.searchInfo.likes = true;
             this.selectedMenu = "likes";
             this.loading = false;
             // this.switchMenu("likes");

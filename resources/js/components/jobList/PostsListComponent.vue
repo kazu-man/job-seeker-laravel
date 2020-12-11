@@ -32,7 +32,6 @@
             :likePageOrNot="searchInfo.likes"
             :pageType="searchInfo.pageType"
             @hidePost="addHidePost"
-            @refreshLike="getLikeList"
             @minusCount="minusCount"
             style="width:100%"
             ></posts-component>
@@ -94,16 +93,7 @@ export default {
                 this.loading = false;
             });
         },
-        getLikeList:async function(){
-            console.log("function getLikeList");
-            console.log(this.searchInfo);
-            console.log(this.likeList);
-            await this.$store.dispatch('auth/getLikeList')
-        },
         init:function(){
-            if(this.$store.state.auth.loginCheck && this.$store.state.auth.user.user_type == "U"){
-                this.getLikeList();
-            }
             this.getPostList();
         },
         addHidePost:function(id){
