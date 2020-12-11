@@ -1,6 +1,21 @@
 <template>
     <div>
-        <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType">
+        <transition name="initLoader">
+        <div class="modal-mask" v-if="init">
+            <div class="loading">
+            <vue-loading type="spiningDubbles" color="#333" :size="{ width: '50px', height: '50px'}"></vue-loading>
+            </div>
+        </div>
+        </transition>
+        <div v-if="loading" class="spinner-background" @click="closeMenu">
+            <spinner style="
+                position:absolute;
+                top:50%;
+                left:50%;
+            " size="40"></spinner>
+        </div>
+
+        <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType" :class="{comeFront:loading}">
             <span  class="menu-btn hide" @click="changeMenuType('normal')" :key="'toggle1'">Menu</span>
             <span  v-if="loginCheck && loginUser != null &&loginUser.user_type == 'A'" class="menu-btn hide setting" @click="changeMenuType('admin')" :key="'toggle2'">Setting</span>
             <section v-if="slotProps.drawerFlg" 　class="drawer-menu-wrapper" :class="{setting:loginCheck && loginUser != null && loginUser.user_type == 'A' && selectedMenuType == 'admin'}" :key="'toggle'">
@@ -110,16 +125,15 @@
         </transition>
 
         <modal ref="modal"></modal>
-
     </div>
 </template>
 
 
 <script>
 import modal from '../common/ModalComponent.vue';
+import { VueLoading } from 'vue-loading-template'
 
 export default {
-    
     data() {
         return{
             // companies:[],
@@ -145,7 +159,9 @@ export default {
             categories:null,
             countries:null,
             countryBgImage:null,
-            selectedMenuType:""
+            selectedMenuType:"",
+            loading:false,
+            init:true
     }},
     methods: { 
         changeCountry(countryName) {
@@ -206,7 +222,16 @@ export default {
         },
         searchInfoClear:function(){
             // this.menuClear();
-            this.searchInfo = {};
+            this.searchInfo = {
+                pageType:"",
+                searchedBy:"",
+                companyId:"",
+                countryName:"",
+                categoryName:"",
+                categoryId:"",
+                likes:false,
+                applies:false
+            };
         },
         menuClear() {
             // this.selectedMenu = "";
@@ -214,22 +239,145 @@ export default {
             this.selectedCountry="";
             this.selectedCategory="";
         },
-        switchMenu(selectVal) {
+        async switchMenu(selectVal) {
             console.log(selectVal);
 
             if(selectVal == this.selectedMenu){
                 return;
             }
-
             if(selectVal == "category" || selectVal == "country"){
                 this.selectedMenu = selectVal;   
                 return;             
             }
-
             this.selectedMenu = selectVal;   
-            console.log(this.selectedMenu)
-            console.log("this.selectedMenu")
-            // this.selectedContentsBg = selectVal;
+            this.loading = true;
+
+            if(selectVal == 'likes' && !this.searchInfo.likes){
+
+                var tempPageType = this.searchInfo.pageType;
+                var tmpSelectedCountry = this.selectedCountry;
+                var tmpSelectedCategory = this.selectedCategory
+                this.searchInfoClear();
+                this.searchInfo.pageType = tempPageType;
+                this.selectedCountry = tmpSelectedCountry;
+                this.selectedCategory = tmpSelectedCategory;
+                this.searchInfo.likes = true;
+                this.loading = true;
+                await this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
+                .then(() => {
+                    this.menuClear();
+                    this.searchInfo.pageType = "likes";
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
+                })
+                .catch((error)=>{console.log(error)});
+
+            }else if(selectVal == 'applies' && !this.searchInfo.applies){
+            console.log("selectVal kokomadekitayo applies");
+
+                var tempPageType = this.searchInfo.pageType;
+                var tmpSelectedCountry = this.selectedCountry;
+                var tmpSelectedCategory = this.selectedCategory
+                this.searchInfoClear();
+                this.searchInfo.pageType = tempPageType;
+                this.selectedCountry = tmpSelectedCountry;
+                this.selectedCategory = tmpSelectedCategory;
+                this.searchInfo.applies = true;
+                this.loading = true;
+                await this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
+                .then(() => {
+                    this.scrollTop();
+                    this.menuClear();
+                    this.searchInfo.pageType = "applies";
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
+                })
+                .catch((error)=>{console.log(error)});
+
+            }
+
+
+            if(this.selectedMenu == "category" && this.selectedCategory != "" || this.selectedMenu == "country" && this.selectedCountry != ""){
+                this.selectedContentsBg = this.selectedMenu;
+                return;             
+            }
+
+            // this.searchInfoClear();
+            var that = this;
+            if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
+                if(this.selectedMenu == 'posts'){
+                    this.searchInfoClear();
+                }
+                this.searchInfo.companyId = this.loginUser.company_id;
+                this.searchInfo.pageType = 'post';
+                await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
+                .then(() => {
+                    that.scrollTop();
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'top'){
+                this.searchInfoClear();
+                await this.$router.push(`${this.routePath}/top`)
+                .then(() => {
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
+                })
+                .catch(()=>{
+                });
+            }else if(this.selectedMenu == 'profile'){
+                await this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`)
+                .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
+                })
+                .catch(()=>{});
+            }else if(this.selectedMenu == 'setting/country'){
+                await this.$router.push(`${this.routePath}/setting/country`)
+                .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'setting/category'){
+                await this.$router.push(`${this.routePath}/setting/category`)
+                .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'setting/users'){
+
+                await this.$router.push(`${this.routePath}/setting/users`)
+                .then(() => {
+                    that.scrollTop();
+                    that.searchInfoClear();
+                    that.menuClear();
+                    that.selectedContentsBg = that.selectedMenu;
+                    that.loading = false;
+                })
+                .catch(()=>{});
+            }
+
+            // if(this.selectedMenu == "category"  || this.selectedMenu == "country" ){
+            if(this.loading ){
+                this.loading = false;
+            }
         },
         scrollTop: function(){
             window.scrollTo({
@@ -253,8 +401,10 @@ export default {
             }
 
         },
-        initData: function(){
-            axios.get('/api/category').then(res => {
+        initData: async function(){
+            var categoryReady = false;
+            var countryReady = false;
+            var categoryReady = await axios.get('/api/category').then(res => {
                 this.categories = res.data;
                 console.log(res.data);
 
@@ -263,8 +413,9 @@ export default {
                         this.changeCategory(this.$route.params.category)
                     };
                 }
+                 return true;
             });
-            axios.get('/api/getCountries').then(res => {
+            var countryReady = await axios.get('/api/getCountries').then(res => {
                 console.log("country探しにいきます");
                 var $countries = res.data;
                 this.countries = $countries;
@@ -275,106 +426,15 @@ export default {
                     this.changeCountry(this.$route.params.country)
                     };
                 }
+                return true;
             });
+            //初期ローダーを非表示
+            if(this.init && categoryReady && countryReady){
+                this.init = false;
+            }
         },
     },
     watch:{
-        selectedMenu:async function(){
-
-            if(this.selectedMenu == "category" && this.selectedCategory != "" || this.selectedMenu == "country" && this.selectedCountry != ""){
-                this.selectedContentsBg = this.selectedMenu;
-                return;             
-            }
-            // this.searchInfoClear();
-            var that = this;
-            if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
-                this.searchInfo.companyId = this.loginUser.company_id;
-                this.searchInfo.pageType = 'post';
-                this.searchInfoClear();
-                await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
-                .then(() => {
-                    that.scrollTop();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{});
-
-            }else if(this.selectedMenu == 'top'){
-                this.searchInfoClear();
-                await this.$router.push(`${this.routePath}/top`)
-                .then(() => {
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{
-                });
-            }else if(this.selectedMenu == 'profile'){
-                await this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`)
-                .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{});
-            }else if(this.selectedMenu == 'likes'){
-                this.searchInfoClear();
-                this.searchInfo.likes = true;
-                this.searchInfo.pageType = "likes";
-                await this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
-                .then(() => {
-                    that.scrollTop();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{});
-
-            }else if(this.selectedMenu == 'applies'){
-                this.searchInfoClear();
-                this.searchInfo.applies = true;
-                this.searchInfo.pageType = "applies";
-                await this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
-                .then(() => {
-                    that.scrollTop();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{});
-
-            }else if(this.selectedMenu == 'setting/country'){
-                await this.$router.push(`${this.routePath}/setting/country`)
-                .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{});
-
-            }else if(this.selectedMenu == 'setting/category'){
-                await this.$router.push(`${this.routePath}/setting/category`)
-                .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-
-                })
-                .catch(()=>{});
-
-            }else if(this.selectedMenu == 'setting/users'){
-
-                await this.$router.push(`${this.routePath}/setting/users`)
-                .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                })
-                .catch(()=>{});
-            }
-            
-        },
         modalTarget:function(){
             if(this.modalTarget == null){
                 return;
@@ -413,6 +473,7 @@ export default {
                     || this.selectedContentsBg == 'posts' 
                     || this.selectedContentsBg == 'postJob' 
                     || this.selectedContentsBg == '' 
+                    || this.selectedContentsBg == null //初期状態
                     || this.selectedContentsBg == 'profile' 
                     || this.selectedContentsBg == 'likes' 
                     || this.selectedContentsBg == 'applies' 
@@ -438,21 +499,31 @@ export default {
         countryReloadFlg:function(){
             return this.$store.state.common.settingCountryReloadFlg;
 
-        }
+        },
     },
     created : function() {
-
         this.initData();
         this.scrollTop();
+        if(this.$route.path.includes('applies') && this.init){
+            this.searchInfoClear();
+            this.searchInfo.applies = true;
+            this.searchInfo.pageType = "applies";
+            this.loading = false;
+            // this.switchMenu("applies");
 
-        console.log("user");
-        console.log(this.user);
-        console.log(this.isLogin);
+        }else if((this.$route.path.includes('likes') && this.init)){
+            this.searchInfoClear();
+            this.searchInfo.applies = true;
+            this.selectedMenu = "likes";
+            this.loading = false;
+            // this.switchMenu("likes");
 
+        }
     },
  
     components: {
-        modal
+        modal,
+        VueLoading
     }
 
 }
@@ -496,10 +567,11 @@ export default {
   background-color: rgb(89 168 199);
 }
 .menu-title {
-    padding-top:10px;
-    padding-left:10px;
-    font-weight:bold;
-    cursor:pointer;
+    padding: 5px 0px;
+    padding-left: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 18px;
 }
 .menu-title:hover{
     background: rgb(45, 51, 117);
@@ -577,6 +649,15 @@ export default {
   opacity:0;
 }
 
+.initLoader-enter-active, .initLoader-leave-active {
+    transition: opacity 1s
+}
+
+.initLoader-enter, .initLoader-leave-to{
+    opacity: 0;
+}
+
+
 .top-menu-option{
     margin-top:65px;
 }
@@ -609,6 +690,7 @@ export default {
 }
 .drawer-menu li{
     cursor:pointer;
+    font-size:18px;
 }
 .selectedBg {
     background: rgb(45, 51, 117);
@@ -669,4 +751,41 @@ export default {
     background-color: red !important;
 }
 
+.spinner-background{
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+    z-index: 9999999;
+    position: fixed;
+}
+.comeFront{
+    z-index: 99999999;
+}
+</style>
+<style>
+.spinner-background{
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+    z-index: 9999999;
+    position: fixed;
+}
+.comeFront{
+    z-index: 99999999;
+}
+.modal-mask {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  /* background-color:rgba(0,0,0,0.5); */
+  background:white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index:999999999999
+}
 </style>

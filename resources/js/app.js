@@ -23,23 +23,13 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-// Vue.component('example-component', require('./components/jobList/ExampleComponent.vue').default);
-Vue.component('admin-register-component', require('./components/setting/AdminRegisterComponent.vue').default);
-Vue.component('user-show-component', require('./components/setting/UserShowComponent.vue').default);
-Vue.component('category-show-component', require('./components/setting/CategoryShowComponent.vue').default);
-Vue.component('place-register-component', require('./components/setting/PlaceRegisterComponent.vue').default);
-Vue.component('place-show-component', require('./components/setting/PlaceShowComponent.vue').default);
-// Vue.component('job-list-main-component', require('./components/jobList/jobListMain.vue').default);
-// Vue.component('jobs-register-component', require('./components/common/JobsRegisterComponent.vue').default);
-// Vue.component('setting-main-component', require('./components/settingPage/SettingMain.vue').default);
-// Vue.component('modal', require('./components/common/ModalComponent.vue').default);
+// Vue.component('place-show-component', require('./components/setting/PlaceShowComponent.vue').default);
 Vue.component('place-show-component2', require('./components/common/PlaceShowComponent2.vue').default);
 Vue.component('side-header-component', require('./components/common/SideHeaderComponent.vue').default);
 Vue.component('select-box-component', require('./components/common/SelectBox.vue').default);
-
-
-Vue.component('posts-list-component', require('./components/jobList/PostsListComponent.vue').default);
 Vue.component('posts-component', require('./components/jobList/PostComponent.vue').default);
+
+Vue.component('spinner', require('vue-simple-spinner'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -2,6 +2,14 @@
     <div class="job-content apply-table">
         <div class="form-title">Applies</div>
             <div style="min-width:500px;">
+            <spinner v-if="loading" style="
+                position:absolute;
+                top:45%;
+                left:50%;
+                z-index: 99999999;
+            " size="40"
+            line-fg-color="#f00"></spinner>
+
             <vue-good-table
                 :columns="columns"
                 :rows="rows"
@@ -78,15 +86,18 @@ export default {
                 sortable: false,
                 },
             ],
+            loading:true,
             rows: [],
         }
     },
     methods:{
         getApplyRecords(){
+            this.loading = true;
             axios.get('/api/getApplyRecords').then(res => {
                 this.rows = res.data;
                 console.log('getApplyRecords');
                 console.log(res.data);
+                this.loading = false;
             });
         },
         onCellClick(props){

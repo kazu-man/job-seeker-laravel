@@ -1,6 +1,14 @@
 <template> 
         <div class="place-show-area">
             <div style="min-width:500px">
+                <spinner v-if="loading" style="
+                    position:absolute;
+                    top:35%;
+                    left:50%;
+                    z-index: 99999999;
+                " size="40"
+                line-fg-color="#f00"></spinner>
+
             <vue-good-table
                 :columns="columns"
                 :rows="rows"
@@ -75,6 +83,8 @@ export default {
             hoverColumn:null,
             placeData:{},
 
+            loading:false,
+
             columns: [
                 {
                 label: 'country',
@@ -101,12 +111,11 @@ export default {
     },
     methods: {
         getTableData: function() {
-            console.log("placeTable取りに行きます。");
+            this.loading = true;
             axios.get('/api/getPlaceForShowList').then(res => {
                 this.placeData = res.data;
                 this.setTableData(res.data);
-                console.log("placeTableのデータ");
-                console.log(res.data);
+                this.loading = false;
             });
         },
         setTableData: function(placeData){
@@ -195,6 +204,7 @@ export default {
     padding:0px !important;
     width:100%;
     overflow:scroll;
+    position:relative;
 }
 
 .form-title {

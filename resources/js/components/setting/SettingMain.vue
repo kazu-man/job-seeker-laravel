@@ -1,64 +1,20 @@
 <template>
             <div>
-
                 <keep-alive>
                     <div style="position:relative">
                     <transition-group>
-                        <!-- <div class="component-title" :key="'title'" >Users List</div>
-                        <div v-on:click="adminModalUp()" class="btn btn-success admin-add" :key="'addBtn'">Add New Admin</div> -->
                         <div class="component" :key="'company'">
                             <router-view 
                             :users="users"
                             @refresh="refreshList"
                             :categories="categories"
                             @refresh-category-list="refreshList"
+                            :loading="loading"
                             ></router-view>
                         </div>
                     </transition-group>
                     </div>
                 </keep-alive>
-
-
-
-                <!-- <keep-alive>
-                    <div style="position:relative">
-                    <transition-group v-if="selectPage === routePath + '/setting/users'">
-                        <div class="component-title" :key="'title'">Users List</div>
-                        <div v-on:click="adminModalUp()" class="btn btn-success admin-add" :key="'addBtn'">Add New Admin</div>
-                        <div class="component" :key="'company'">
-                            <user-show-component 
-                            :users="users"
-                            @refresh="refreshList"></user-show-component>
-                        </div>
-                    </transition-group>
-                    </div>
-                </keep-alive>
-
-                <keep-alive>
-                    <transition-group v-if="selectPage === routePath + '/setting/category'">
-                        <div class="component-title" :key="'title'">Register Category</div>
-                        <div class="component" :key="'category'">
-                            <category-show-component 
-                            ref="company-show-com"
-                            :categories="categories"
-                            @refresh-category-list="refreshList"
-                            ></category-show-component>
-                        </div>
-                    </transition-group>
-                </keep-alive>
-
-                <keep-alive>
-                    <transition-group v-if="selectPage === routePath + '/setting/country'">
-                        <div class="component-title" :key="'title'">Register Places</div>
-                        <div class="component" :key="'placeRegister'">
-                            <place-register-component  @update_data="updateData"></place-register-component>
-                        </div>
-                        <div class="component-title" :key="'title2'">place List</div>
-                        <div class="component" :key="'placeList'">
-                            <placeShowListComponent ref="placeCom"></placeShowListComponent>
-                        </div>
-                    </transition-group>
-                </keep-alive> -->
             </div>
 </template>
 
@@ -68,6 +24,7 @@ export default {
     data() {return{
             users:[],
             categories:[],
+            loading : false
     }},
     methods: { 
         categoryUpdate(newVal) {
@@ -87,16 +44,15 @@ export default {
             this.$router.push(`${this.routePath}/top`).catch(()=>{});
         },
         init(){
+            this.loading = true;
             axios.get('/api/getSettingData').then(res => {
                 var $userList = res.data.users;
                 var $cateList = res.data.categories;
 
                 this.users = $userList;
                 this.categories = $cateList;
+                this.loading = false;
             });
-        },
-        adminModalUp(){
-            this.$store.commit('common/setModalTarget', "registerAdmin")
         },
     },
     created : function() {
@@ -108,8 +64,21 @@ export default {
         },
         selectPage:function(){
             return this.$route.path;
-        }
+        },
+        refreshDataFlg:function(){
+            return this.$store.state.auth.refreshAdminDataFlg;
+        },
     },
+    watch:{
+        refreshDataFlg:function(next){
+            console.log(next);
+            console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
+            if(next){
+                this.init();
+                this.$store.dispatch('auth/refreshAdminData', false);
+            }
+        }
+    }
 
 }
 </script>

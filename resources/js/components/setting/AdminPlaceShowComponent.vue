@@ -5,7 +5,7 @@
         <keep-alive>
             <transition-group>
                 <div class="component" :key="'placeRegister'">
-                    <place-register-component  @update_data="updateData"></place-register-component>
+                    <placeRegisterComponent  @update_data="updateData"></placeRegisterComponent>
                 </div>
                 <div class="component show" :key="'placeList'">
                     <placeShowListComponent ref="placeCom"></placeShowListComponent>
@@ -18,6 +18,8 @@
 
 
 <script>
+import placeRegisterComponent from './PlaceRegisterComponent.vue';
+import placeShowListComponent from './PlaceShowList.vue';
 export default {
     data() {
         return {
@@ -27,7 +29,12 @@ export default {
         updateData(){
             this.$refs.placeCom.updatePlaceTable();
         }
+    },
+    components:{
+        placeRegisterComponent,
+        placeShowListComponent
     }
+
 }
 </script>
 

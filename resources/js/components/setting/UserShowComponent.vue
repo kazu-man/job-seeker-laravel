@@ -5,6 +5,13 @@
 
         <div class="user-show-area">
         <div class="user-show-table-style">
+            <spinner v-if="loading" style="
+                position:absolute;
+                top:35%;
+                left:50%;
+                z-index: 99999999;
+            " size="40"
+            line-fg-color="#f00"></spinner>
             <vue-good-table
                 :columns="columns"
                 :rows="users"
@@ -99,9 +106,10 @@ export default {
         
 
     }},
-    props: {
-        users:{} 
-    },
+    props: [
+        "users",
+        "loading"
+    ],
     methods: {  
         mouseOverAction(i,hoverColumn){
             this.hoverIndex = i;
@@ -129,17 +137,24 @@ export default {
         rowStyleClassFn(row) {
             return row.user_status == "D" ? 'closed' : '';
         },
+        adminModalUp(){
+            this.$store.commit('common/setModalTarget', "registerAdmin")
+        },
+
     },
     computed:{
         lastDeletedUser:function(){
             return this.$store.state.auth.lastDeletedUser;
-        }
+        },
     },
     watch:{
         lastDeletedUser:function(){ 
             console.log("refresh desu")
             this.$emit('refresh');
-        }
+        },
+        // loading:function(){
+        //     return this.loading;
+        // }
     },
     components: {
         VueGoodTable,

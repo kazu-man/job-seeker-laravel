@@ -654,9 +654,10 @@ export default {
                 this.$modal.hide('apply');
                 this.$modal.hide('postClose');
                 this.$modal.hide('deleteUserModal');
-                    this.$modal.hide('register');
-                    this.$modal.hide('login');
-                    this.$modal.hide('bgChangeModal');
+                this.$modal.hide('register');
+                this.$modal.hide('registerAdmin');
+                this.$modal.hide('login');
+                this.$modal.hide('bgChangeModal');
                 this.$store.commit('common/setApplyTargetPost', null)
                 this.$store.commit('common/setEditPost', null)
                 this.$store.commit('common/setAlertModalMessage', null)
@@ -701,6 +702,7 @@ export default {
             if (this.apiStatus) {
                 this.modalHide('register');
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'登録しました。'});
+                this.$store.dispatch('auth/refreshAdminData', true);
             }
         },
         clearError () {

@@ -49,9 +49,9 @@
         </div>
 
       <transition name="fade" appear>
-        <posts-list-component 
+        <postsListComponent 
           :searchInfo="searchInfo" 
-          ref="postList"></posts-list-component>
+          ref="postList"></postsListComponent>
       </transition>
 
 
@@ -59,12 +59,16 @@
 </template>
 
 <script>
+    import postsListComponent from "./PostsListComponent.vue";
 
     export default {
       data(){
         return {
 
         }
+      },
+      components:{
+        postsListComponent
       },
       props:['searchInfo','countries'],
       methods: {
