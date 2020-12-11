@@ -54,8 +54,9 @@ const routes = [
         {
             path: 'postJob/:id',
             component: jobsRegisterComponent,
-            async beforeEnter (to, from, next) {
-              await store.dispatch('auth/accessAllowCheck').then(value => {
+            beforeEnter (to, from, next) {
+              store.dispatch('auth/accessAllowCheck')
+              .then(value => {
                 const id = to.params.id
                 if (value && id == store.state.auth.user.company_id) {
                     next()
@@ -69,8 +70,8 @@ const routes = [
             path: 'posts/:id',
             component: postsList,
             props: { pageType: "posts",initPage: "posts" },
-            async beforeEnter (to, from, next) {
-              await store.dispatch('auth/accessAllowCheck').then(value => {
+            beforeEnter (to, from, next) {
+              store.dispatch('auth/accessAllowCheck').then(value => {
                 const id = to.params.id
                 if (value && id == store.state.auth.user.company_id) {
                     next()
@@ -84,8 +85,8 @@ const routes = [
           {
             path: 'appliesList/:id',
             component: applyRecordTable,
-            async beforeEnter (to, from, next) {
-              await store.dispatch('auth/accessAllowCheck').then(value => {
+            beforeEnter (to, from, next) {
+              store.dispatch('auth/accessAllowCheck').then(value => {
                 const id = to.params.id
                 if (value && id == store.state.auth.user.company_id) {
                     next()
@@ -99,23 +100,26 @@ const routes = [
           {
             path: 'profile/:id',
             component: profile,
-            async beforeEnter (to, from, next) {
-              await store.dispatch('auth/accessAllowCheck').then(value => {
+            beforeEnter (to, from, next) {
+              var value =  store.dispatch('auth/accessAllowCheck')
+              // .then(value => {
                 const id = to.params.id
                 if (value && id == store.state.auth.user.id) {
+                    console.log('mada')
                     next()
                   } else {
                     window.location.href = store.getters['auth/routePath'];
                   }
-              });
+                  console.log('owattemota')
+              // });
             }
           },  
           {
           path: 'likes/:id',
           component: postsList,
           props: { initPage: "likes" },
-          async beforeEnter (to, from, next) {
-            await store.dispatch('auth/accessAllowCheck').then(value => {
+          beforeEnter (to, from, next) {
+            store.dispatch('auth/accessAllowCheck').then(value => {
               const id = to.params.id
               if (value && id == store.state.auth.user.id) {
                   next()
@@ -129,8 +133,8 @@ const routes = [
           path: 'applies/:id',
           component: postsList,
           props: { initPage: "applies" },
-          async beforeEnter (to, from, next) {
-            await store.dispatch('auth/accessAllowCheck').then(value => {
+          beforeEnter (to, from, next) {
+            store.dispatch('auth/accessAllowCheck').then(value => {
               const id = to.params.id
               if (value && id == store.state.auth.user.id) {
                   next()
@@ -147,8 +151,8 @@ const routes = [
             {
               path: 'country',
               component: AdminPlaceShowComponent,
-              async beforeEnter (to, from, next) {
-                await store.dispatch('auth/accessAllowCheck').then(value => {
+              beforeEnter (to, from, next) {
+                store.dispatch('auth/accessAllowCheck').then(value => {
                   console.log("accessAllowed")
                   console.log(value)
   
@@ -164,8 +168,8 @@ const routes = [
             {
               path: 'category',
               component: categoryShow,
-              async beforeEnter (to, from, next) {
-                await store.dispatch('auth/accessAllowCheck').then(value => {
+              beforeEnter (to, from, next) {
+                store.dispatch('auth/accessAllowCheck').then(value => {
                   console.log("accessAllowed")
                   console.log(value)
   
@@ -180,8 +184,8 @@ const routes = [
             {
               path: 'users',
               component: userShow,
-              async beforeEnter (to, from, next) {
-                await store.dispatch('auth/accessAllowCheck').then(value => {
+              beforeEnter (to, from, next) {
+                store.dispatch('auth/accessAllowCheck').then(value => {
                   console.log("accessAllowed")
                   console.log(value)
   
