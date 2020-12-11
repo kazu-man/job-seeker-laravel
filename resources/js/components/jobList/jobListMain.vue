@@ -15,6 +15,7 @@
             " size="40"></spinner>
         </div>
 
+
         <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType" :class="{comeFront:loading}">
             <span  class="menu-btn hide" @click="changeMenuType('normal')" :key="'toggle1'">Menu</span>
             <span  v-if="loginCheck && loginUser != null &&loginUser.user_type == 'A'" class="menu-btn hide setting" @click="changeMenuType('admin')" :key="'toggle2'">Setting</span>
@@ -106,7 +107,7 @@
         </side-header-component>
 
         <transition name="main" appear appear-active-class="first-enter-active">
-            <section :class="bgClass" class="overlay main-bg " :key="selectedContentsBg + selectedCountry + selectedCategory" :style="bgImage" v-cloak>
+            <section v-cloak :class="bgClass" class="overlay main-bg " :style="bgImage">
                 <div class="container" @click="closeMenu">
                     <keep-alive>
                         <transition name="content" appear>
@@ -161,7 +162,7 @@ export default {
             countryBgImage:null,
             selectedMenuType:"",
             loading:false,
-            init:true
+            init:true,
     }},
     methods: { 
         changeCountry(countryName) {
@@ -221,17 +222,14 @@ export default {
             this.$refs.modal.modalShow(val);
         },
         searchInfoClear:function(){
-            // this.menuClear();
-            this.searchInfo = {
-                pageType:"",
-                searchedBy:"",
-                companyId:"",
-                countryName:"",
-                categoryName:"",
-                categoryId:"",
-                likes:false,
-                applies:false
-            };
+                this.searchInfo.pageType = ""
+                this.searchInfo.searchedBy = ""
+                this.searchInfo.companyId = ""
+                this.searchInfo.countryName = ""
+                this.searchInfo.categoryName = ""
+                this.searchInfo.categoryId = ""
+                this.searchInfo.likes = false
+                this.searchInfo.applies = false
         },
         menuClear() {
             // this.selectedMenu = "";
@@ -254,18 +252,13 @@ export default {
 
             if(selectVal == 'likes' && !this.searchInfo.likes){
 
-                var tempPageType = this.searchInfo.pageType;
-                var tmpSelectedCountry = this.selectedCountry;
-                var tmpSelectedCategory = this.selectedCategory
-                this.searchInfoClear();
-                this.searchInfo.pageType = tempPageType;
-                this.selectedCountry = tmpSelectedCountry;
-                this.selectedCategory = tmpSelectedCategory;
-                this.searchInfo.likes = true;
                 this.loading = true;
                 await this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
                 .then(() => {
+                    this.scrollTop();
+                    this.searchInfoClear();
                     this.menuClear();
+                    this.searchInfo.likes = true;
                     this.searchInfo.pageType = "likes";
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
@@ -273,21 +266,13 @@ export default {
                 .catch((error)=>{console.log(error)});
 
             }else if(selectVal == 'applies' && !this.searchInfo.applies){
-            console.log("selectVal kokomadekitayo applies");
-
-                var tempPageType = this.searchInfo.pageType;
-                var tmpSelectedCountry = this.selectedCountry;
-                var tmpSelectedCategory = this.selectedCategory
-                this.searchInfoClear();
-                this.searchInfo.pageType = tempPageType;
-                this.selectedCountry = tmpSelectedCountry;
-                this.selectedCategory = tmpSelectedCategory;
-                this.searchInfo.applies = true;
                 this.loading = true;
                 await this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
                 .then(() => {
                     this.scrollTop();
+                    this.searchInfoClear();
                     this.menuClear();
+                    this.searchInfo.applies = true;
                     this.searchInfo.pageType = "applies";
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
@@ -303,61 +288,61 @@ export default {
             }
 
             // this.searchInfoClear();
-            var that = this;
             if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
-                if(this.selectedMenu == 'posts'){
-                    this.searchInfoClear();
-                }
-                this.searchInfo.companyId = this.loginUser.company_id;
-                this.searchInfo.pageType = 'post';
                 await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
                 .then(() => {
-                    that.scrollTop();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                    that.loading = false;
+                    if(this.selectedMenu == 'posts'){
+                        this.searchInfoClear();
+                    }
+                    this.searchInfo.companyId = this.loginUser.company_id;
+                    this.searchInfo.pageType = 'post';
+                    this.scrollTop();
+                    this.menuClear();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'top'){
-                this.searchInfoClear();
                 await this.$router.push(`${this.routePath}/top`)
                 .then(() => {
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                    that.loading = false;
+                    this.searchInfoClear();
+                    this.menuClear();
+                    this.scrollTop();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
                 })
                 .catch(()=>{
                 });
             }else if(this.selectedMenu == 'profile'){
                 await this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`)
                 .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                    that.loading = false;
+                    this.searchInfoClear();
+                    this.menuClear();
+                    this.scrollTop();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
                 })
                 .catch(()=>{});
             }else if(this.selectedMenu == 'setting/country'){
                 await this.$router.push(`${this.routePath}/setting/country`)
                 .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                    that.loading = false;
+                    this.scrollTop();
+                    this.searchInfoClear();
+                    this.menuClear();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
                 })
                 .catch(()=>{});
 
             }else if(this.selectedMenu == 'setting/category'){
                 await this.$router.push(`${this.routePath}/setting/category`)
                 .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                    that.loading = false;
+                    this.scrollTop();
+                    this.searchInfoClear();
+                    this.menuClear();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
                 })
                 .catch(()=>{});
 
@@ -365,17 +350,17 @@ export default {
 
                 await this.$router.push(`${this.routePath}/setting/users`)
                 .then(() => {
-                    that.scrollTop();
-                    that.searchInfoClear();
-                    that.menuClear();
-                    that.selectedContentsBg = that.selectedMenu;
-                    that.loading = false;
+                    this.scrollTop();
+                    this.searchInfoClear();
+                    this.menuClear();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
                 })
                 .catch(()=>{});
             }
 
-            // if(this.selectedMenu == "category"  || this.selectedMenu == "country" ){
             if(this.loading ){
+                console.log("loading stop");
                 this.loading = false;
             }
         },
@@ -447,7 +432,7 @@ export default {
             if(newVal != old){
                 this.initData();
             }
-        }
+        },
     },
     computed: {
         routePath:function(){
@@ -467,7 +452,7 @@ export default {
         },
         bgClass: function () {
             return {
-                // searchBg:this.selectedMenu == 'postJob',
+                searchBg:this.selectedMenu == 'postJob',
                 categoryBg:this.selectedContentsBg == 'category' && this.selectedCategory != '',
                 mainBg:this.selectedContentsBg == 'top' 
                     || this.selectedContentsBg == 'posts' 
@@ -485,8 +470,9 @@ export default {
                     || (this.selectedContentsBg == 'category' && this.selectedCategory == ''),
             }
         },
+
         bgImage: function(){
-            if(this.selectedCountry == ""){
+            if(this.countryBgImage == ""){
                 return {
 
                 }
@@ -508,6 +494,7 @@ export default {
             this.searchInfoClear();
             this.searchInfo.applies = true;
             this.searchInfo.pageType = "applies";
+            this.selectedMenu = "applies";
             this.loading = false;
             // this.switchMenu("applies");
 
@@ -515,6 +502,7 @@ export default {
             this.searchInfoClear();
             this.searchInfo.likes = true;
             this.selectedMenu = "likes";
+            this.searchInfo.pageType = "likes";
             this.loading = false;
             // this.switchMenu("likes");
 
@@ -717,13 +705,13 @@ export default {
 }
 
 .mainBg {
-    background-image: url("/images/hero_1.jpg");    
+    background-image: url("/images/hero_1.jpg") !important;    
     min-height:900px;   
     background-position: center;
 }
 
 .categoryBg{
-    background-image: url("/images/sq_img_3.jpg");
+    background-image: url("/images/sq_img_3.jpg") !important;
     min-height:900px;
 }
 
