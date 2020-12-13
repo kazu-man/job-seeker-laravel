@@ -89,7 +89,7 @@
                                 </div>
                             </div> 
 
-                            <div v-else-if="this.pageType=='post'" class="buttons">
+                            <div v-else-if="this.pageType=='posts'" class="buttons">
                                 <div class="row">
                                     <div class="col-6">
                                         <button @click.stop="setEditForm()" name="like" class="btn btn-block btn-success btn-md p-2" >

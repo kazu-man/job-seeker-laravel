@@ -3,54 +3,42 @@
         <div class="row align-items-center justify-content-center">
           <div class="col-md-12">
             <div class="mb-5 text-center">
-              <h1 class="text-white font-weight-bold" v-if="searchInfo.pageType == 'country'">Job's in {{searchInfo.searchedBy}}</h1>
-              <h1 class="text-white font-weight-bold" v-else-if="searchInfo.pageType == 'category'">Job's in {{searchInfo.searchedBy}}</h1>
+              <h1 class="text-white font-weight-bold" v-if="initPage == 'country'">Job's in searchInfo.searchedBy</h1>
+              <h1 class="text-white font-weight-bold" v-else-if="initPage == 'category'">Job's in searchInfo.searchedBy</h1>
               <h1 class="text-white font-weight-bold" v-else>JOB SEEKER</h1>
               <p class="text-white" style="opacity:0.8">Find your dream jobs in our career website.</p>
             </div>
 
 
-<!-- form -->
-              <div class="row mb-5">
-<!-- title -->
+              <div class="row mb-5 search-area">
                 <div class="col-12 mb-4" :class="fullSearchBar">
-                  <input type="text" name="title" class="form-control" placeholder="Job title, keywords..." v-model="searchInfo.keyWord">
+                  <input type="text" name="title" class="form-control" placeholder="Job title, keywords..." v-model="searchKeys.keyWord">
                 </div>
-<!-- title -->
-                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="searchInfo.pageType != 'country'">
-<!-- place country, province-->
-                  <place-show-component2 @changeSelectedPlace="changeSelectedPlace" v-model="searchInfo.city"></place-show-component2>
+                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'country'">
+                  <place-show-component2 @changeSelectedPlace="changeSelectedPlace" v-model="searchKeys.city"></place-show-component2>
                 </div>
-<!-- type -->  
                 <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0">
-                  <select-box-component @changeSelectedVal="changeSelectedType" :target="'jobType'" v-model="searchInfo.jobTypeId"></select-box-component>
+                  <select-box-component @changeSelectedVal="changeSelectedType" :target="'jobType'" v-model="searchKeys.jobTypeId"></select-box-component>
                 </div>
 
-<!-- categeory -->
-                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="searchInfo.pageType != 'category'">
-                  <select-box-component @changeSelectedVal="changeSelectedCategory" :target="'category'"></select-box-component>
+                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'category'">
+                  <select-box-component @changeSelectedVal="changeSelectedCategory" :target="'category'" v-model="searchKeys.jobTypeId"></select-box-component>
                 </div>
-<!-- categeory -->
-
-<!-- submit -->
                 <div class="col-12 col-sm-6 col-md-6 col-lg-6 my-4 mx-auto mb-lg-0">
                   <button @click="refreshList" type="submit" name="search" class="btn btn-primary btn-lg btn-block text-white btn-search"><span class="icon-search icon mr-2"></span>Search Job</button>
                 </div>
-<!-- submit -->
               </div>
-<!-- /form -->
-<!-- /form -->
           <form action="" method="POST" class="text-center search-country-area" >
             <h3 class="text-white">Search by Country ?</h3>
             <a href="#" v-for="country in countries" @click="searchByCountry(country.country_name)" class="m-3 text-white" :key="country.id">{{country.country_name}}</a>
           </form>
-<!-- /form -->
           </div>
         </div>
 
       <transition name="fade" appear>
         <postsListComponent 
-          :searchInfo="searchInfo" 
+          :initFlg="false"
+          :initPage="initPage"
           ref="postList"></postsListComponent>
       </transition>
 
@@ -64,43 +52,62 @@
     export default {
       data(){
         return {
-
+          searchKeys:{
+              cityId:"",
+              countryId:"",
+              provinceId:"",
+              categoryId:"",
+              jobTypeId:"",
+              keyWord:""
+          },
+          mountedOK:false
         }
       },
       components:{
         postsListComponent
       },
-      props:['searchInfo','countries'],
+      props:['countries','initPage'],
       methods: {
         changeSelectedCategory:function(val){
           console.log(val);
-          this.searchInfo.categoryId = val;
+          this.searchKeys.categoryId = val;
         },
         changeSelectedPlace:function(val){
           console.log("val");
           console.log(val);
-          this.searchInfo.cityId = "";
-          this.searchInfo.provinceId = "";
-          this.searchInfo.countryId = "";
+          this.searchKeys.cityId = "";
+          this.searchKeys.provinceId = "";
+          this.searchKeys.countryId = "";
           
           if(val.type == 'city'){
-            this.searchInfo.cityId = val.id;
+            this.searchKeys.cityId = val.id;
           }else if(val.type == 'province'){
-            this.searchInfo.provinceId = val.id;
+            this.searchKeys.provinceId = val.id;
           }else if(val.type == 'country'){
-            this.searchInfo.countryId = val.id;
+            this.searchKeys.countryId = val.id;
           }
         },
         changeSelectedType:function(val){
           console.log(val);
-          this.searchInfo.jobTypeId = val;
+          this.searchKeys.jobTypeId = val;
         },
         refreshList:function(){
+          this.$refs.postList.commitSearchKeys(this.searchKeys);
           this.$refs.postList.getPostList();
         },
         searchByCountry:function(val) {
           this.$emit('changeCountry',val)
         },
+        searchKeysClear:function(){
+          this.searchKeys = {
+              cityId:"",
+              countryId:"",
+              provinceId:"",
+              categoryId:"",
+              jobTypeId:"",
+              keyWord:""
+          }
+        }
 
       },
       computed:{
@@ -111,11 +118,16 @@
           }
         },
         isSearchAreaFull:function(){
-          if(this.searchInfo.pageType != 'category' && this.searchInfo.pageType != 'country'){
+          if(this.initPage != 'category' && this.initPage != 'country'){
             return true;
           }else{
             return false;
           }
+        }
+      },
+      watch:{
+        initPage:function(){
+          this.searchKeysClear();
         }
       }
 
@@ -141,6 +153,11 @@
     .search-country-area {
       word-break:break-all;
       padding:30px 0px 100px 0px;
+    }
+    .search-area{
+      width: 80%;
+    margin: 0 auto;
+
     }
 
 

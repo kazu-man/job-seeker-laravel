@@ -1,6 +1,6 @@
 <template>
     <section style="min-height:500px;width:100%;position:relative">
-        <div class="title" v-if="searchInfo.pageType == 'post'">
+        <div class="title" v-if="searchInfo.pageType == 'posts'">
             Your Post's
         </div>
         <div class="title" v-else-if="searchInfo.pageType == 'likes'">
@@ -51,7 +51,25 @@ export default {
         count:0,
         pageType:"",
         hidePost:[],
-        loading:true
+        loading:true,
+        searchInfo:{
+            pageType:"",
+            searchedBy:"",
+            companyId:"",
+            countryName:"",
+            categoryName:"",
+            categoryId:"",
+            likes:false,
+            applies:false,
+            cityId:"",
+            countryId:"",
+            provinceId:"",
+            categoryId:"",
+            jobTypeId:"",
+            keyWord:"",
+            postInitFlg:false
+        },
+
     }},
     methods: { 
         countUp: function(targetNum){
@@ -71,6 +89,7 @@ export default {
 
             console.log("function getPostList");
             console.log(this.searchInfo);
+            this.count = 0;
             this.posts = {};
             this.loading = true;
             await axios.post('/api/getPosts', this.searchInfo).then(res => {
@@ -102,24 +121,77 @@ export default {
         minusCount:function(){
             this.count -= 1;
         },
+        switchList:function(){
+
+            if(this.initPage == 'likes' ){
+                this.searchInfoClear();
+                this.searchInfo.likes = true;
+                this.searchInfo.pageType = "likes";
+
+            }else if(this.initPage == 'applies'){
+                this.searchInfoClear();
+                this.searchInfo.applies = true;
+                this.searchInfo.pageType = "applies";
+
+            }else if(this.initPage == 'posts'){
+                this.searchInfoClear();
+                this.searchInfo.companyId = this.loginUser.company_id;
+                this.searchInfo.pageType = 'posts';
+
+            }else if(this.initPage == 'top'){
+                this.searchInfoClear();
+            }else if(this.initPage == 'country'){
+                this.searchInfoClear();
+                this.searchInfo.pageType = "country";
+                this.searchInfo.searchedBy = this.$route.params.country;
+                this.searchInfo.countryName = this.$route.params.country;
+            }else if(this.initPage == 'category'){
+                this.searchInfoClear();
+                this.searchInfo.pageType = "category";
+                this.searchInfo.searchedBy = this.$route.params.category;
+                this.searchInfo.categoryName = this.$route.params.category;
+
+            }
+            this.getPostList();
+        },
+        commitSearchKeys:function(searchKeys){
+                this.searchInfo.cityId = searchKeys.cityId
+                this.searchInfo.countryId = searchKeys.countryId
+                this.searchInfo.provinceId = searchKeys.provinceId
+                this.searchInfo.categoryId = searchKeys.categoryId
+                this.searchInfo.jobTypeId = searchKeys.jobTypeId
+                this.searchInfo.keyWord = searchKeys.keyWord
+                this.getPostList();
+        },
+        searchInfoClear:function(){
+                this.searchInfo.pageType = ""
+                this.searchInfo.searchedBy = ""
+                this.searchInfo.companyId = ""
+                this.searchInfo.countryName = ""
+                this.searchInfo.categoryName = ""
+                this.searchInfo.categoryId = ""
+                this.searchInfo.likes = false
+                this.searchInfo.applies = false
+                this.searchInfo.cityId = ""
+                this.searchInfo.countryId = ""
+                this.searchInfo.provinceId = ""
+                this.searchInfo.categoryId = ""
+                this.searchInfo.jobTypeId = ""
+                this.searchInfo.keyWord = ""
+        },
+        
     },
     components: {
         anime // animeという名前でコンポーネント登録
     },
-    // beforeUpdate:function(){
-        // if(this.initPage != null){
-        //     this.$emit('switchMenu',this.initPage);
-        // }
-    // },
-    created: function(){
-        this.init();
+    mounted: function(){
+        this.switchList();
     },
-    props:["searchInfo","initPage"],
+    update:{
+
+    },
+    props:["initPage","initFlg"],
     watch:{
-        searchInfo:function(){
-            this.getPostList();
-            this.pageType = '';
-        },
         updatedPost:function(){
             if(this.updatedPost == null || this.updatedPost == undefined){
                 return;
@@ -145,6 +217,9 @@ export default {
                 }
             }
         },
+        pagePath:function(){
+            this.switchList();
+        }
     },
     computed:{
         likeList:function(){
@@ -155,6 +230,12 @@ export default {
         },
         updatedPost:function(){
             return this.$store.state.common.updatedPost;
+        },
+        pagePath:function(){
+            return this.$route.path;
+        },
+        loginUser:function() {
+            return this.$store.state.auth.user;
         },
     }
 

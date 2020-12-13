@@ -107,17 +107,16 @@
         </side-header-component>
 
         <transition name="main" appear appear-active-class="first-enter-active">
-            <section v-cloak :class="bgClass" class="overlay main-bg " :style="bgImage">
+            <section v-show="changeBgShow" v-cloak :class="bgClass" class="overlay main-bg " :style="countryBgImageStyle">
                 <div class="container" @click="closeMenu">
                     <keep-alive>
                         <transition name="content" appear>
                             <router-view 
-                            :searchInfo="searchInfo" 
                             @changeCategory="changeCategory"
                             @changeCountry="changeCountry"
                             @switchMenu="switchMenu"
-                            @removeApplyLikeFlg="removeApplyLikeFlg"
                             :countries="countries"
+                            :initFlg="true"
                             ></router-view>
                         </transition>
                     </keep-alive>
@@ -144,16 +143,6 @@ export default {
             categoryInMenu:false,
             jobsInMenu:false,
             selectedMenu:"",
-            searchInfo:{
-                pageType:"",
-                searchedBy:"",
-                companyId:"",
-                countryName:"",
-                categoryName:"",
-                categoryId:"",
-                likes:false,
-                applies:false
-            },
             logoutInMenu:false,
             selectedBg:"",
             selectedContentsBg:"",
@@ -163,6 +152,7 @@ export default {
             selectedMenuType:"",
             loading:false,
             init:true,
+            changeBgShow:true
     }},
     methods: { 
         changeCountry(countryName) {
@@ -178,15 +168,10 @@ export default {
                 return;
             }
 
-            this.searchInfoClear();
             this.menuClear();
             this.selectedCountry = countryName;
             this.selectedMenu = "country";
             this.selectedContentsBg = "country";
-
-            this.searchInfo.pageType = "country";
-            this.searchInfo.searchedBy = countryName;
-            this.searchInfo.countryName = countryName;
             this.$router.push(`${this.routePath}/country/${this.selectedCountry}`).catch(()=>{});
         },
         changeCategory(categoryName) {
@@ -195,16 +180,10 @@ export default {
             if(categoryName == this.selectedCategory){
                 return;
             }
-
-            this.searchInfoClear();
             this.menuClear();
             this.selectedCategory = categoryName;
             this.selectedMenu = "category";
             this.selectedContentsBg = "category";
-
-            this.searchInfo.pageType = "category";
-            this.searchInfo.searchedBy = categoryName;
-            this.searchInfo.categoryName = categoryName;
             this.$router.push(`${this.routePath}/category/${this.selectedCategory}`).catch(()=>{});
         },
         closeMenu() {
@@ -221,19 +200,8 @@ export default {
         modalShow(val){
             this.$refs.modal.modalShow(val);
         },
-        searchInfoClear:function(){
-                this.searchInfo.pageType = ""
-                this.searchInfo.searchedBy = ""
-                this.searchInfo.companyId = ""
-                this.searchInfo.countryName = ""
-                this.searchInfo.categoryName = ""
-                this.searchInfo.categoryId = ""
-                this.searchInfo.likes = false
-                this.searchInfo.applies = false
-        },
         menuClear() {
-            // this.selectedMenu = "";
-            this.selectedContentsBg = "";
+            // this.selectedContentsBg = "";
             this.selectedCountry="";
             this.selectedCategory="";
         },
@@ -250,30 +218,24 @@ export default {
             this.selectedMenu = selectVal;   
             this.loading = true;
 
-            if(selectVal == 'likes' && !this.searchInfo.likes){
+            if(selectVal == 'likes' ){
 
                 this.loading = true;
                 await this.$router.push(`${this.routePath}/likes/${this.loginUser.id}`)
                 .then(() => {
-                    this.scrollTop();
-                    this.searchInfoClear();
                     this.menuClear();
-                    this.searchInfo.likes = true;
-                    this.searchInfo.pageType = "likes";
+                    this.scrollTop();
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
                 })
                 .catch((error)=>{console.log(error)});
 
-            }else if(selectVal == 'applies' && !this.searchInfo.applies){
+            }else if(selectVal == 'applies'){
                 this.loading = true;
                 await this.$router.push(`${this.routePath}/applies/${this.loginUser.id}`)
                 .then(() => {
-                    this.scrollTop();
-                    this.searchInfoClear();
                     this.menuClear();
-                    this.searchInfo.applies = true;
-                    this.searchInfo.pageType = "applies";
+                    this.scrollTop();
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
                 })
@@ -287,18 +249,14 @@ export default {
                 return;             
             }
 
-            // this.searchInfoClear();
             if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
-                await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.searchInfo.companyId}`)
+                await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.loginUser.company_id}`)
                 .then(() => {
-                    if(this.selectedMenu == 'posts'){
-                        this.searchInfoClear();
-                    }
-                    this.searchInfo.companyId = this.loginUser.company_id;
-                    this.searchInfo.pageType = 'post';
                     this.scrollTop();
                     this.menuClear();
-                    this.selectedContentsBg = this.selectedMenu;
+                    if(this.selectedMenu == 'postJob'){
+                        this.selectedContentsBg = 'postJob';
+                    }
                     this.loading = false;
                 })
                 .catch(()=>{});
@@ -306,7 +264,6 @@ export default {
             }else if(this.selectedMenu == 'top'){
                 await this.$router.push(`${this.routePath}/top`)
                 .then(() => {
-                    this.searchInfoClear();
                     this.menuClear();
                     this.scrollTop();
                     this.selectedContentsBg = this.selectedMenu;
@@ -317,7 +274,6 @@ export default {
             }else if(this.selectedMenu == 'profile'){
                 await this.$router.push(`${this.routePath}/profile/${this.loginUser.id}`)
                 .then(() => {
-                    this.searchInfoClear();
                     this.menuClear();
                     this.scrollTop();
                     this.selectedContentsBg = this.selectedMenu;
@@ -328,7 +284,6 @@ export default {
                 await this.$router.push(`${this.routePath}/setting/country`)
                 .then(() => {
                     this.scrollTop();
-                    this.searchInfoClear();
                     this.menuClear();
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
@@ -339,7 +294,6 @@ export default {
                 await this.$router.push(`${this.routePath}/setting/category`)
                 .then(() => {
                     this.scrollTop();
-                    this.searchInfoClear();
                     this.menuClear();
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
@@ -351,7 +305,6 @@ export default {
                 await this.$router.push(`${this.routePath}/setting/users`)
                 .then(() => {
                     this.scrollTop();
-                    this.searchInfoClear();
                     this.menuClear();
                     this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
@@ -368,10 +321,6 @@ export default {
             window.scrollTo({
                 top: 0,
             });
-        },
-        removeApplyLikeFlg: function(){
-            this.searchInfo.applies = false;
-            this.searchInfo.likes = false;
         },
         changeMenuType:function(val) {
             
@@ -391,33 +340,37 @@ export default {
             var countryReady = false;
             var categoryReady = await axios.get('/api/category').then(res => {
                 this.categories = res.data;
-                console.log(res.data);
-
-                if(this.$route.params != null){
-                    if (this.$route.params.category != null){ 
-                        this.changeCategory(this.$route.params.category)
-                    };
-                }
                  return true;
             });
             var countryReady = await axios.get('/api/getCountries').then(res => {
                 console.log("country探しにいきます");
-                var $countries = res.data;
-                this.countries = $countries;
-                console.log($countries);
-
-                if(this.$route.params != null){
-                    if (this.$route.params.country != null){ 
-                    this.changeCountry(this.$route.params.country)
-                    };
-                }
+                this.countries = res.data;
                 return true;
             });
+            //初期の背景を設定
+            if(this.$route.params.country != null){
+                for(let country of this.countries){
+                    if(country.country_name == this.$route.params.country){
+                        this.countryBgImage = country.country_image;
+                        break;
+                    }
+                }
+                this.selectedContentsBg = "country"
+                this.selectedCountry = this.$route.params.country
+            }else if(this.$route.params.category != null){
+                console.log('category init')
+                this.selectedContentsBg = "category"
+                this.selectedCategory = this.$route.params.category
+            }
+            
             //初期ローダーを非表示
             if(this.init && categoryReady && countryReady){
                 this.init = false;
             }
         },
+        changeBg:function(){
+            this.changeBgShow = !this.changeBgShow;
+        }
     },
     watch:{
         modalTarget:function(){
@@ -433,6 +386,19 @@ export default {
                 this.initData();
             }
         },
+        bgClass:{
+            handler: function (val, old) {
+                this.changeBg();
+                if(!this.changeBgFlg){
+                    var that = this;
+                    setTimeout(function(){
+                        that.changeBg();
+                    }, 10);
+                }
+            },
+            deep:true
+        }
+        
     },
     computed: {
         routePath:function(){
@@ -452,7 +418,7 @@ export default {
         },
         bgClass: function () {
             return {
-                searchBg:this.selectedMenu == 'postJob',
+                searchBg:this.selectedContentsBg == 'postJob',
                 categoryBg:this.selectedContentsBg == 'category' && this.selectedCategory != '',
                 mainBg:this.selectedContentsBg == 'top' 
                     || this.selectedContentsBg == 'posts' 
@@ -465,21 +431,17 @@ export default {
                     || this.selectedContentsBg == 'appliesList' 
                     || this.selectedContentsBg == 'setting/country'
                     || this.selectedContentsBg == 'setting/category'
-                    || this.selectedContentsBg == 'setting/users'
-                    || (this.selectedContentsBg == 'country' && this.selectedCountry == '') 
-                    || (this.selectedContentsBg == 'category' && this.selectedCategory == ''),
+                    || this.selectedContentsBg == 'setting/users',
+                countryBg:(this.selectedContentsBg == 'country' && this.selectedCountry != '' )
             }
         },
 
-        bgImage: function(){
-            if(this.countryBgImage == ""){
-                return {
-
-                }
-            }else{
+        countryBgImageStyle: function(){
+            if(this.bgClass.countryBg){
                 return {
                     backgroundImage:  "url('" + this.countryBgImage + "')", 
                 }
+
             }
         },
         countryReloadFlg:function(){
@@ -490,23 +452,15 @@ export default {
     created : function() {
         this.initData();
         this.scrollTop();
-        if(this.$route.path.includes('applies') && this.init){
-            this.searchInfoClear();
-            this.searchInfo.applies = true;
-            this.searchInfo.pageType = "applies";
-            this.selectedMenu = "applies";
-            this.loading = false;
-            // this.switchMenu("applies");
-
-        }else if((this.$route.path.includes('likes') && this.init)){
-            this.searchInfoClear();
-            this.searchInfo.likes = true;
-            this.selectedMenu = "likes";
-            this.searchInfo.pageType = "likes";
-            this.loading = false;
-            // this.switchMenu("likes");
-
-        }
+        //     console.log("this.$route.params")
+        //     console.log(this.$route.params)
+        // if(this.$route.params.country != null){
+        //     console.log('country init')
+        //     this.selectedContentsBg = "country"
+        // }else if(this.$route.params.category != null){
+        //     console.log('category init')
+        //     this.selectedContentsBg = "category"
+        // }
     },
  
     components: {
