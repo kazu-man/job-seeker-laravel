@@ -116,6 +116,9 @@
                             @changeCountry="changeCountry"
                             @switchMenu="switchMenu"
                             :countries="countries"
+                            :placeData="placeData"
+                            :categories="categories"
+                            :jobTypes="jobTypes"
                             :initFlg="true"
                             ></router-view>
                         </transition>
@@ -124,7 +127,7 @@
             </section>
         </transition>
 
-        <modal ref="modal"></modal>
+        <modal ref="modal" :placeData="placeData" :category="categories" :jobTypes="jobTypes"></modal>
     </div>
 </template>
 
@@ -152,7 +155,9 @@ export default {
             selectedMenuType:"",
             loading:false,
             init:true,
-            changeBgShow:true
+            changeBgShow:true,
+            placeData:"",
+            jobTypes:""
     }},
     methods: { 
         changeCountry(countryName) {
@@ -254,9 +259,7 @@ export default {
                 .then(() => {
                     this.scrollTop();
                     this.menuClear();
-                    if(this.selectedMenu == 'postJob'){
-                        this.selectedContentsBg = 'postJob';
-                    }
+                    this.selectedContentsBg = this.selectedMenu;
                     this.loading = false;
                 })
                 .catch(()=>{});
@@ -347,6 +350,15 @@ export default {
                 this.countries = res.data;
                 return true;
             });
+            await axios.get('/api/getPlaceData').then(res => {
+                this.placeData = res.data;
+                console.log("placeTableのデータ");
+                console.log(res.data);
+            });
+            await axios.get('/api/getJobType').then(res => {
+                this.jobTypes = res.data;
+            });
+
             //初期の背景を設定
             if(this.$route.params.country != null){
                 for(let country of this.countries){

@@ -3445,10 +3445,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3499,7 +3495,8 @@ __webpack_require__.r(__webpack_exports__);
     selectCity: function selectCity(val) {
       this.city = val;
     }
-  }
+  },
+  props: ["categories", "jobTypes"]
 });
 
 /***/ }),
@@ -4862,6 +4859,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
+  props: ["jobTypes", "category"],
   mixins: [_CommonMethodsMixIn_vue__WEBPACK_IMPORTED_MODULE_2__["default"]]
 });
 
@@ -4890,27 +4888,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      placeData: {},
       selectedPlace: "",
       cleanedData: {}
     };
   },
-  created: function created() {
-    this.getTableData();
+  props: ["placeData"],
+  mounted: function mounted() {
+    if (this.placeData != "") {
+      this.computedPlace();
+    }
   },
   methods: {
-    getTableData: function getTableData() {
-      var _this = this;
-
-      console.log("placeTable取りに行きます。");
-      axios.get('/api/getPlaceData').then(function (res) {
-        _this.placeData = res.data;
-        console.log("placeTableのデータ");
-        console.log(res.data);
-
-        _this.computedPlace();
-      });
-    },
     selectPlace: function selectPlace() {
       this.$emit('changeSelectedPlace', this.selectedPlace);
     },
@@ -4949,6 +4937,23 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.cleanedData = result;
     }
+  },
+  computed: {
+    route: function route() {
+      return this.$route.params;
+    }
+  },
+  watch: {
+    route: function route() {
+      this.selectedPlace = "";
+      this.selectPlace();
+    },
+    placeData: {
+      handler: function handler(val, old) {
+        this.computedPlace();
+      },
+      deep: true
+    }
   }
 });
 
@@ -4982,34 +4987,34 @@ __webpack_require__.r(__webpack_exports__);
       selectedVal: ""
     };
   },
-  props: ['target', 'initVal', 'targetVal'],
+  props: ['target', 'initVal', 'baseData'],
   created: function created() {
     this.getTableData();
   },
   methods: {
     getTableData: function getTableData() {
-      var _this = this;
+      // var url = this.target == "category" ? "category" : "getJobType";
+      var tc = this; // axios.get('/api/' + url).then(res => {
+      //     this.data = res.data;
 
-      var url = this.target == "category" ? "category" : "getJobType";
-      var tc = this;
-      axios.get('/api/' + url).then(function (res) {
-        _this.data = res.data;
+      if (tc.initVal != undefined && tc.initVal != "") {
+        tc.selectedVal = tc.initVal;
+      } // });
 
-        if (tc.initVal != undefined && tc.initVal != "") {
-          tc.selectedVal = tc.initVal;
-        }
-      });
     },
     selectVal: function selectVal() {
       this.$emit('changeSelectedVal', this.selectedVal);
     }
   },
+  computed: {
+    route: function route() {
+      return this.$route.params;
+    }
+  },
   watch: {
-    targetVal: function targetVal() {
-      if (this.targetVal == "") {
-        console.log('kokokokokokokokokokokokokokokokokokokokokoko');
-        this.selectedVal = "";
-      }
+    route: function route() {
+      this.selectedVal = "";
+      this.selectVal();
     }
   }
 });
@@ -5947,11 +5952,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
- // Vue.mixin(require('./asset'));
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -6167,7 +6167,7 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     postsListComponent: _PostsListComponent_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['countries', 'initPage'],
+  props: ['countries', 'initPage', 'placeData', 'categories', 'jobTypes'],
   methods: {
     changeSelectedCategory: function changeSelectedCategory(val) {
       console.log(val);
@@ -6223,10 +6223,16 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         return false;
       }
+    },
+    route: function route() {
+      return this.$route.params;
     }
   },
   watch: {
     initPage: function initPage() {
+      this.searchKeysClear();
+    },
+    route: function route() {
       this.searchKeysClear();
     }
   }
@@ -6391,6 +6397,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -6412,7 +6421,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selectedMenuType: "",
       loading: false,
       init: true,
-      changeBgShow: true
+      changeBgShow: true,
+      placeData: "",
+      jobTypes: ""
     };
   },
   methods: {
@@ -6593,10 +6604,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
                   _this2.menuClear();
 
-                  if (_this2.selectedMenu == 'postJob') {
-                    _this2.selectedContentsBg = 'postJob';
-                  }
-
+                  _this2.selectedContentsBg = _this2.selectedMenu;
                   _this2.loading = false;
                 })["catch"](function () {});
 
@@ -6759,79 +6767,92 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
               case 7:
                 countryReady = _context3.sent;
+                _context3.next = 10;
+                return axios.get('/api/getPlaceData').then(function (res) {
+                  _this3.placeData = res.data;
+                  console.log("placeTableのデータ");
+                  console.log(res.data);
+                });
 
+              case 10:
+                _context3.next = 12;
+                return axios.get('/api/getJobType').then(function (res) {
+                  _this3.jobTypes = res.data;
+                });
+
+              case 12:
                 if (!(this.$route.params.country != null)) {
-                  _context3.next = 31;
+                  _context3.next = 35;
                   break;
                 }
 
                 _iterator2 = _createForOfIteratorHelper(this.countries);
-                _context3.prev = 10;
+                _context3.prev = 14;
 
                 _iterator2.s();
 
-              case 12:
+              case 16:
                 if ((_step2 = _iterator2.n()).done) {
-                  _context3.next = 19;
+                  _context3.next = 23;
                   break;
                 }
 
                 country = _step2.value;
 
                 if (!(country.country_name == this.$route.params.country)) {
-                  _context3.next = 17;
+                  _context3.next = 21;
                   break;
                 }
 
                 this.countryBgImage = country.country_image;
-                return _context3.abrupt("break", 19);
-
-              case 17:
-                _context3.next = 12;
-                break;
-
-              case 19:
-                _context3.next = 24;
-                break;
+                return _context3.abrupt("break", 23);
 
               case 21:
-                _context3.prev = 21;
-                _context3.t0 = _context3["catch"](10);
+                _context3.next = 16;
+                break;
+
+              case 23:
+                _context3.next = 28;
+                break;
+
+              case 25:
+                _context3.prev = 25;
+                _context3.t0 = _context3["catch"](14);
 
                 _iterator2.e(_context3.t0);
 
-              case 24:
-                _context3.prev = 24;
+              case 28:
+                _context3.prev = 28;
 
                 _iterator2.f();
 
-                return _context3.finish(24);
-
-              case 27:
-                this.selectedContentsBg = "country";
-                this.selectedCountry = this.$route.params.country;
-                _context3.next = 32;
-                break;
+                return _context3.finish(28);
 
               case 31:
+                this.selectedContentsBg = "country";
+                this.selectedCountry = this.$route.params.country;
+                _context3.next = 36;
+                break;
+
+              case 35:
                 if (this.$route.params.category != null) {
                   console.log('category init');
                   this.selectedContentsBg = "category";
                   this.selectedCategory = this.$route.params.category;
                 }
 
-              case 32:
+              case 36:
                 //初期ローダーを非表示
                 if (this.init && categoryReady && countryReady) {
                   this.init = false;
                 }
 
-              case 33:
+              case 37:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[10, 21, 24, 27]]);
+        }, _callee3, this, [[14, 25, 28, 31]]);
       }));
 
       function initData() {
@@ -8005,9 +8026,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     refreshDataFlg: function refreshDataFlg(next) {
-      console.log(next);
-      console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
-
       if (next) {
         this.init();
         this.$store.dispatch('auth/refreshAdminData', false);
@@ -61634,7 +61652,7 @@ var render = function() {
           _c("label", [_vm._v("\n                Job type\n            ")]),
           _vm._v(" "),
           _c("select-box-component", {
-            attrs: { target: "type" },
+            attrs: { baseData: _vm.jobTypes },
             on: { changeSelectedVal: _vm.selectType }
           })
         ],
@@ -61648,7 +61666,7 @@ var render = function() {
           _c("label", [_vm._v("\n                Category\n            ")]),
           _vm._v(" "),
           _c("select-box-component", {
-            attrs: { target: "category" },
+            attrs: { baseData: _vm.categories },
             on: { changeSelectedVal: _vm.selectCategory }
           })
         ],
@@ -62827,7 +62845,10 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("select-box-component", {
-                    attrs: { target: "type", initVal: _vm.editPostForm.type },
+                    attrs: {
+                      baseData: _vm.jobTypes,
+                      initVal: _vm.editPostForm.type
+                    },
                     on: { changeSelectedVal: _vm.selectType }
                   })
                 ],
@@ -62846,7 +62867,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("select-box-component", {
                     attrs: {
-                      target: "category",
+                      baseData: _vm.category,
                       initVal: _vm.editPostForm.category
                     },
                     on: { changeSelectedVal: _vm.selectCategory }
@@ -64187,7 +64208,7 @@ var render = function() {
       _vm._v(" "),
       _c("option", { attrs: { value: "" } }),
       _vm._v(" "),
-      _vm._l(_vm.data, function(obj) {
+      _vm._l(_vm.baseData, function(obj) {
         return _c("option", { key: obj.id, domProps: { value: obj.id } }, [
           _vm._v(
             "\n        " +
@@ -65616,11 +65637,11 @@ var render = function() {
             _c("div", { staticClass: "mb-5 text-center" }, [
               _vm.initPage == "country"
                 ? _c("h1", { staticClass: "text-white font-weight-bold" }, [
-                    _vm._v("Job's in searchInfo.searchedBy")
+                    _vm._v("Job's in " + _vm._s(this.$route.params.country))
                   ])
                 : _vm.initPage == "category"
                 ? _c("h1", { staticClass: "text-white font-weight-bold" }, [
-                    _vm._v("Job's in searchInfo.searchedBy")
+                    _vm._v("Job's in " + _vm._s(this.$route.params.category))
                   ])
                 : _c("h1", { staticClass: "text-white font-weight-bold" }, [
                     _vm._v("JOB SEEKER")
@@ -65672,6 +65693,7 @@ var render = function() {
                     { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                     [
                       _c("place-show-component2", {
+                        attrs: { placeData: _vm.placeData },
                         on: { changeSelectedPlace: _vm.changeSelectedPlace },
                         model: {
                           value: _vm.searchKeys.city,
@@ -65691,7 +65713,7 @@ var render = function() {
                 { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                 [
                   _c("select-box-component", {
-                    attrs: { target: "jobType" },
+                    attrs: { target: "jobType", baseData: _vm.jobTypes },
                     on: { changeSelectedVal: _vm.changeSelectedType },
                     model: {
                       value: _vm.searchKeys.jobTypeId,
@@ -65711,7 +65733,7 @@ var render = function() {
                     { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                     [
                       _c("select-box-component", {
-                        attrs: { target: "category" },
+                        attrs: { target: "category", baseData: _vm.categories },
                         on: { changeSelectedVal: _vm.changeSelectedCategory },
                         model: {
                           value: _vm.searchKeys.jobTypeId,
@@ -66490,7 +66512,13 @@ var render = function() {
                         { attrs: { name: "content", appear: "" } },
                         [
                           _c("router-view", {
-                            attrs: { countries: _vm.countries, initFlg: true },
+                            attrs: {
+                              countries: _vm.countries,
+                              placeData: _vm.placeData,
+                              categories: _vm.categories,
+                              jobTypes: _vm.jobTypes,
+                              initFlg: true
+                            },
                             on: {
                               changeCategory: _vm.changeCategory,
                               changeCountry: _vm.changeCountry,
@@ -66511,7 +66539,14 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _c("modal", { ref: "modal" })
+      _c("modal", {
+        ref: "modal",
+        attrs: {
+          placeData: _vm.placeData,
+          category: _vm.categories,
+          jobTypes: _vm.jobTypes
+        }
+      })
     ],
     1
   )

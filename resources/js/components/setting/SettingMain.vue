@@ -71,8 +71,6 @@ export default {
     },
     watch:{
         refreshDataFlg:function(next){
-            console.log(next);
-            console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
             if(next){
                 this.init();
                 this.$store.dispatch('auth/refreshAdminData', false);

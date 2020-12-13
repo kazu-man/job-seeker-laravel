@@ -14,24 +14,17 @@
 export default {
     data() {
         return{
-        placeData:{},
         selectedPlace:"",
         cleanedData:{},
 
     }},
-    created: function() {
-        this.getTableData();
+    props:["placeData"],
+    mounted:function(){
+        if(this.placeData != ""){
+            this.computedPlace();
+        }
     },
     methods: {
-            getTableData: function() {
-            console.log("placeTable取りに行きます。");
-            axios.get('/api/getPlaceData').then(res => {
-                this.placeData = res.data;
-                console.log("placeTableのデータ");
-                console.log(res.data);
-                this.computedPlace();
-            });
-        },
         selectPlace(){
             this.$emit('changeSelectedPlace',this.selectedPlace);
         },
@@ -66,6 +59,24 @@ export default {
             this.cleanedData = result;
         }
     }, 
+    computed:{
+        route:function(){
+          return this.$route.params;
+        }
+    },
+    watch:{
+        route:function(){
+          this.selectedPlace = "";
+          this.selectPlace();
+        },
+        placeData:{
+            handler: function (val, old) {
+                this.computedPlace();
+            },
+            deep:true
+        }
+    }
+
 
     
 

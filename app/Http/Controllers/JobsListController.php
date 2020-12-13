@@ -429,7 +429,8 @@ class JobsListController extends Controller
         }
         
         try{
-            $pathToFile = Storage::path($replacedPath);            
+            $pathToFile = Storage::path($replacedPath);  
+            \Log::info($pathToFile);          
             $mimeType = Storage::mimeType($replacedPath);            
             $headers = [['Content-Type' => $mimeType]];
             return Storage::download($replacedPath,$fileName,$headers);
