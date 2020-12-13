@@ -34,6 +34,7 @@ const routes = [
           },
           {
             path: 'top',
+            props: { pageType: "top",initPage: "top" },
             component: top
           },    
           {
@@ -42,11 +43,13 @@ const routes = [
             },          
           {
             path: 'country/:country',
+            props: { pageType: "country",initPage: "country" },
             component: top,
   
           },
           {
             path: 'category/:category',
+            props: { pageType: "category",initPage: "category" },
             component: top,
   
           },
@@ -58,7 +61,7 @@ const routes = [
               store.dispatch('auth/accessAllowCheck')
               .then(value => {
                 const id = to.params.id
-                if (value && id == store.state.auth.user.company_id) {
+                if (store.state.auth.user != null && value && id == store.state.auth.user.company_id) {
                     next()
                   } else {
                     window.location.href = store.getters['auth/routePath'];
@@ -73,7 +76,7 @@ const routes = [
             beforeEnter (to, from, next) {
               store.dispatch('auth/accessAllowCheck').then(value => {
                 const id = to.params.id
-                if (value && id == store.state.auth.user.company_id) {
+                if (store.state.auth.user != null && value && id == store.state.auth.user.company_id) {
                     next()
                   } else {
                     window.location.href = store.getters['auth/routePath'];
@@ -88,7 +91,7 @@ const routes = [
             beforeEnter (to, from, next) {
               store.dispatch('auth/accessAllowCheck').then(value => {
                 const id = to.params.id
-                if (value && id == store.state.auth.user.company_id) {
+                if (store.state.auth.user != null && value && id == store.state.auth.user.company_id) {
                     next()
                   } else {
                     window.location.href = store.getters['auth/routePath'];
@@ -104,7 +107,7 @@ const routes = [
               var value =  store.dispatch('auth/accessAllowCheck')
               // .then(value => {
                 const id = to.params.id
-                if (value && id == store.state.auth.user.id) {
+                if (store.state.auth.user != null && value && id == store.state.auth.user.id) {
                     console.log('mada')
                     next()
                   } else {
@@ -121,7 +124,7 @@ const routes = [
           beforeEnter (to, from, next) {
             store.dispatch('auth/accessAllowCheck').then(value => {
               const id = to.params.id
-              if (value && id == store.state.auth.user.id) {
+              if (store.state.auth.user != null && value && id == store.state.auth.user.id) {
                   next()
                 } else {
                   window.location.href = store.getters['auth/routePath'];
@@ -136,7 +139,7 @@ const routes = [
           beforeEnter (to, from, next) {
             store.dispatch('auth/accessAllowCheck').then(value => {
               const id = to.params.id
-              if (value && id == store.state.auth.user.id) {
+              if (store.state.auth.user != null && value && id == store.state.auth.user.id) {
                   next()
                 } else {
                   window.location.href = store.getters['auth/routePath'];
@@ -156,7 +159,7 @@ const routes = [
                   console.log("accessAllowed")
                   console.log(value)
   
-                  if (value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
+                  if (store.state.auth.user != null && value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
                       next()
                   } else {
                     window.location.href = store.getters['auth/routePath'];
@@ -173,7 +176,7 @@ const routes = [
                   console.log("accessAllowed")
                   console.log(value)
   
-                  if (value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
+                  if (store.state.auth.user != null && value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
                       next()
                   } else {
                     window.location.href = store.getters['auth/routePath'];
@@ -189,7 +192,7 @@ const routes = [
                   console.log("accessAllowed")
                   console.log(value)
   
-                  if (value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
+                  if (store.state.auth.user != null && value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
                       next()
                   } else {
                       window.location.href = store.getters['auth/routePath'];

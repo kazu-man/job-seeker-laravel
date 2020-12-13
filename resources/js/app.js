@@ -23,7 +23,7 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-// Vue.component('place-show-component', require('./components/setting/PlaceShowComponent.vue').default);
+Vue.component('place-show-component', require('./components/setting/PlaceShowComponent.vue').default);
 Vue.component('place-show-component2', require('./components/common/PlaceShowComponent2.vue').default);
 Vue.component('side-header-component', require('./components/common/SideHeaderComponent.vue').default);
 Vue.component('select-box-component', require('./components/common/SelectBox.vue').default);

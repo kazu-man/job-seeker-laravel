@@ -4982,7 +4982,7 @@ __webpack_require__.r(__webpack_exports__);
       selectedVal: ""
     };
   },
-  props: ['target', 'initVal'],
+  props: ['target', 'initVal', 'targetVal'],
   created: function created() {
     this.getTableData();
   },
@@ -5002,6 +5002,14 @@ __webpack_require__.r(__webpack_exports__);
     },
     selectVal: function selectVal() {
       this.$emit('changeSelectedVal', this.selectedVal);
+    }
+  },
+  watch: {
+    targetVal: function targetVal() {
+      if (this.targetVal == "") {
+        console.log('kokokokokokokokokokokokokokokokokokokokokoko');
+        this.selectedVal = "";
+      }
     }
   }
 });
@@ -5540,6 +5548,8 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -5586,13 +5596,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
+    var _searchInfo;
+
     return {
       posts: {},
       userType: "user",
       count: 0,
       pageType: "",
       hidePost: [],
-      loading: true
+      loading: true,
+      searchInfo: (_searchInfo = {
+        pageType: "",
+        searchedBy: "",
+        companyId: "",
+        countryName: "",
+        categoryName: "",
+        categoryId: "",
+        likes: false,
+        applies: false,
+        cityId: "",
+        countryId: "",
+        provinceId: ""
+      }, _defineProperty(_searchInfo, "categoryId", ""), _defineProperty(_searchInfo, "jobTypeId", ""), _defineProperty(_searchInfo, "keyWord", ""), _defineProperty(_searchInfo, "postInitFlg", false), _searchInfo)
     };
   },
   methods: {
@@ -5623,9 +5648,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 console.log("function getPostList");
                 console.log(this.searchInfo);
+                this.count = 0;
                 this.posts = {};
                 this.loading = true;
-                _context.next = 6;
+                _context.next = 7;
                 return axios.post('/api/getPosts', this.searchInfo).then(function (res) {
                   _this2.posts = res.data;
 
@@ -5663,7 +5689,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   _this2.loading = false;
                 });
 
-              case 6:
+              case 7:
               case "end":
                 return _context.stop();
             }
@@ -5685,26 +5711,72 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     minusCount: function minusCount() {
       this.count -= 1;
+    },
+    switchList: function switchList() {
+      if (this.initPage == 'likes') {
+        this.searchInfoClear();
+        this.searchInfo.likes = true;
+        this.searchInfo.pageType = "likes";
+      } else if (this.initPage == 'applies') {
+        this.searchInfoClear();
+        this.searchInfo.applies = true;
+        this.searchInfo.pageType = "applies";
+      } else if (this.initPage == 'posts') {
+        this.searchInfoClear();
+        this.searchInfo.companyId = this.loginUser.company_id;
+        this.searchInfo.pageType = 'posts';
+      } else if (this.initPage == 'top') {
+        this.searchInfoClear();
+      } else if (this.initPage == 'country') {
+        this.searchInfoClear();
+        this.searchInfo.pageType = "country";
+        this.searchInfo.searchedBy = this.$route.params.country;
+        this.searchInfo.countryName = this.$route.params.country;
+      } else if (this.initPage == 'category') {
+        this.searchInfoClear();
+        this.searchInfo.pageType = "category";
+        this.searchInfo.searchedBy = this.$route.params.category;
+        this.searchInfo.categoryName = this.$route.params.category;
+      }
+
+      this.getPostList();
+    },
+    commitSearchKeys: function commitSearchKeys(searchKeys) {
+      this.searchInfo.cityId = searchKeys.cityId;
+      this.searchInfo.countryId = searchKeys.countryId;
+      this.searchInfo.provinceId = searchKeys.provinceId;
+      this.searchInfo.categoryId = searchKeys.categoryId;
+      this.searchInfo.jobTypeId = searchKeys.jobTypeId;
+      this.searchInfo.keyWord = searchKeys.keyWord;
+      this.getPostList();
+    },
+    searchInfoClear: function searchInfoClear() {
+      this.searchInfo.pageType = "";
+      this.searchInfo.searchedBy = "";
+      this.searchInfo.companyId = "";
+      this.searchInfo.countryName = "";
+      this.searchInfo.categoryName = "";
+      this.searchInfo.categoryId = "";
+      this.searchInfo.likes = false;
+      this.searchInfo.applies = false;
+      this.searchInfo.cityId = "";
+      this.searchInfo.countryId = "";
+      this.searchInfo.provinceId = "";
+      this.searchInfo.categoryId = "";
+      this.searchInfo.jobTypeId = "";
+      this.searchInfo.keyWord = "";
     }
   },
   components: {
     anime: animejs__WEBPACK_IMPORTED_MODULE_1__["default"] // animeという名前でコンポーネント登録
 
   },
-  // beforeUpdate:function(){
-  // if(this.initPage != null){
-  //     this.$emit('switchMenu',this.initPage);
-  // }
-  // },
-  created: function created() {
-    this.init();
+  mounted: function mounted() {
+    this.switchList();
   },
-  props: ["searchInfo", "initPage"],
+  update: {},
+  props: ["initPage", "initFlg"],
   watch: {
-    searchInfo: function searchInfo() {
-      this.getPostList();
-      this.pageType = '';
-    },
     updatedPost: function updatedPost() {
       if (this.updatedPost == null || this.updatedPost == undefined) {
         return;
@@ -5737,6 +5809,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       } finally {
         _iterator2.f();
       }
+    },
+    pagePath: function pagePath() {
+      this.switchList();
     }
   },
   computed: {
@@ -5748,6 +5823,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     updatedPost: function updatedPost() {
       return this.$store.state.common.updatedPost;
+    },
+    pagePath: function pagePath() {
+      return this.$route.path;
+    },
+    loginUser: function loginUser() {
+      return this.$store.state.auth.user;
     }
   }
 });
@@ -6068,56 +6149,65 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    return {};
+    return {
+      searchKeys: {
+        cityId: "",
+        countryId: "",
+        provinceId: "",
+        categoryId: "",
+        jobTypeId: "",
+        keyWord: ""
+      },
+      mountedOK: false
+    };
   },
   components: {
     postsListComponent: _PostsListComponent_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['searchInfo', 'countries'],
+  props: ['countries', 'initPage'],
   methods: {
     changeSelectedCategory: function changeSelectedCategory(val) {
       console.log(val);
-      this.searchInfo.categoryId = val;
+      this.searchKeys.categoryId = val;
     },
     changeSelectedPlace: function changeSelectedPlace(val) {
       console.log("val");
       console.log(val);
-      this.searchInfo.cityId = "";
-      this.searchInfo.provinceId = "";
-      this.searchInfo.countryId = "";
+      this.searchKeys.cityId = "";
+      this.searchKeys.provinceId = "";
+      this.searchKeys.countryId = "";
 
       if (val.type == 'city') {
-        this.searchInfo.cityId = val.id;
+        this.searchKeys.cityId = val.id;
       } else if (val.type == 'province') {
-        this.searchInfo.provinceId = val.id;
+        this.searchKeys.provinceId = val.id;
       } else if (val.type == 'country') {
-        this.searchInfo.countryId = val.id;
+        this.searchKeys.countryId = val.id;
       }
     },
     changeSelectedType: function changeSelectedType(val) {
       console.log(val);
-      this.searchInfo.jobTypeId = val;
+      this.searchKeys.jobTypeId = val;
     },
     refreshList: function refreshList() {
+      this.$refs.postList.commitSearchKeys(this.searchKeys);
       this.$refs.postList.getPostList();
     },
     searchByCountry: function searchByCountry(val) {
       this.$emit('changeCountry', val);
+    },
+    searchKeysClear: function searchKeysClear() {
+      this.searchKeys = {
+        cityId: "",
+        countryId: "",
+        provinceId: "",
+        categoryId: "",
+        jobTypeId: "",
+        keyWord: ""
+      };
     }
   },
   computed: {
@@ -6128,11 +6218,16 @@ __webpack_require__.r(__webpack_exports__);
       };
     },
     isSearchAreaFull: function isSearchAreaFull() {
-      if (this.searchInfo.pageType != 'category' && this.searchInfo.pageType != 'country') {
+      if (this.initPage != 'category' && this.initPage != 'country') {
         return true;
       } else {
         return false;
       }
+    }
+  },
+  watch: {
+    initPage: function initPage() {
+      this.searchKeysClear();
     }
   }
 });
@@ -6296,7 +6391,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -6309,16 +6403,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       categoryInMenu: false,
       jobsInMenu: false,
       selectedMenu: "",
-      searchInfo: {
-        pageType: "",
-        searchedBy: "",
-        companyId: "",
-        countryName: "",
-        categoryName: "",
-        categoryId: "",
-        likes: false,
-        applies: false
-      },
       logoutInMenu: false,
       selectedBg: "",
       selectedContentsBg: "",
@@ -6327,7 +6411,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       countryBgImage: null,
       selectedMenuType: "",
       loading: false,
-      init: true
+      init: true,
+      changeBgShow: true
     };
   },
   methods: {
@@ -6356,14 +6441,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
 
-      this.searchInfoClear();
       this.menuClear();
       this.selectedCountry = countryName;
       this.selectedMenu = "country";
       this.selectedContentsBg = "country";
-      this.searchInfo.pageType = "country";
-      this.searchInfo.searchedBy = countryName;
-      this.searchInfo.countryName = countryName;
       this.$router.push("".concat(this.routePath, "/country/").concat(this.selectedCountry))["catch"](function () {});
     },
     changeCategory: function changeCategory(categoryName) {
@@ -6373,14 +6454,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return;
       }
 
-      this.searchInfoClear();
       this.menuClear();
       this.selectedCategory = categoryName;
       this.selectedMenu = "category";
       this.selectedContentsBg = "category";
-      this.searchInfo.pageType = "category";
-      this.searchInfo.searchedBy = categoryName;
-      this.searchInfo.categoryName = categoryName;
       this.$router.push("".concat(this.routePath, "/category/").concat(this.selectedCategory))["catch"](function () {});
     },
     closeMenu: function closeMenu() {
@@ -6419,19 +6496,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     modalShow: function modalShow(val) {
       this.$refs.modal.modalShow(val);
     },
-    searchInfoClear: function searchInfoClear() {
-      this.searchInfo.pageType = "";
-      this.searchInfo.searchedBy = "";
-      this.searchInfo.companyId = "";
-      this.searchInfo.countryName = "";
-      this.searchInfo.categoryName = "";
-      this.searchInfo.categoryId = "";
-      this.searchInfo.likes = false;
-      this.searchInfo.applies = false;
-    },
     menuClear: function menuClear() {
-      // this.selectedMenu = "";
-      this.selectedContentsBg = "";
+      // this.selectedContentsBg = "";
       this.selectedCountry = "";
       this.selectedCategory = "";
     },
@@ -6465,7 +6531,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _this2.selectedMenu = selectVal;
                 _this2.loading = true;
 
-                if (!(selectVal == 'likes' && !_this2.searchInfo.likes)) {
+                if (!(selectVal == 'likes')) {
                   _context2.next = 14;
                   break;
                 }
@@ -6473,14 +6539,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _this2.loading = true;
                 _context2.next = 12;
                 return _this2.$router.push("".concat(_this2.routePath, "/likes/").concat(_this2.loginUser.id)).then(function () {
-                  _this2.scrollTop();
-
-                  _this2.searchInfoClear();
-
                   _this2.menuClear();
 
-                  _this2.searchInfo.likes = true;
-                  _this2.searchInfo.pageType = "likes";
+                  _this2.scrollTop();
+
                   _this2.selectedContentsBg = _this2.selectedMenu;
                   _this2.loading = false;
                 })["catch"](function (error) {
@@ -6492,7 +6554,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 break;
 
               case 14:
-                if (!(selectVal == 'applies' && !_this2.searchInfo.applies)) {
+                if (!(selectVal == 'applies')) {
                   _context2.next = 18;
                   break;
                 }
@@ -6500,14 +6562,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _this2.loading = true;
                 _context2.next = 18;
                 return _this2.$router.push("".concat(_this2.routePath, "/applies/").concat(_this2.loginUser.id)).then(function () {
-                  _this2.scrollTop();
-
-                  _this2.searchInfoClear();
-
                   _this2.menuClear();
 
-                  _this2.searchInfo.applies = true;
-                  _this2.searchInfo.pageType = "applies";
+                  _this2.scrollTop();
+
                   _this2.selectedContentsBg = _this2.selectedMenu;
                   _this2.loading = false;
                 })["catch"](function (error) {
@@ -6530,19 +6588,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 }
 
                 _context2.next = 24;
-                return _this2.$router.push("".concat(_this2.routePath, "/").concat(_this2.selectedMenu, "/").concat(_this2.searchInfo.companyId)).then(function () {
-                  if (_this2.selectedMenu == 'posts') {
-                    _this2.searchInfoClear();
-                  }
-
-                  _this2.searchInfo.companyId = _this2.loginUser.company_id;
-                  _this2.searchInfo.pageType = 'post';
-
+                return _this2.$router.push("".concat(_this2.routePath, "/").concat(_this2.selectedMenu, "/").concat(_this2.loginUser.company_id)).then(function () {
                   _this2.scrollTop();
 
                   _this2.menuClear();
 
-                  _this2.selectedContentsBg = _this2.selectedMenu;
+                  if (_this2.selectedMenu == 'postJob') {
+                    _this2.selectedContentsBg = 'postJob';
+                  }
+
                   _this2.loading = false;
                 })["catch"](function () {});
 
@@ -6558,8 +6612,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
                 _context2.next = 29;
                 return _this2.$router.push("".concat(_this2.routePath, "/top")).then(function () {
-                  _this2.searchInfoClear();
-
                   _this2.menuClear();
 
                   _this2.scrollTop();
@@ -6580,8 +6632,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
                 _context2.next = 34;
                 return _this2.$router.push("".concat(_this2.routePath, "/profile/").concat(_this2.loginUser.id)).then(function () {
-                  _this2.searchInfoClear();
-
                   _this2.menuClear();
 
                   _this2.scrollTop();
@@ -6604,8 +6654,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 return _this2.$router.push("".concat(_this2.routePath, "/setting/country")).then(function () {
                   _this2.scrollTop();
 
-                  _this2.searchInfoClear();
-
                   _this2.menuClear();
 
                   _this2.selectedContentsBg = _this2.selectedMenu;
@@ -6626,8 +6674,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 return _this2.$router.push("".concat(_this2.routePath, "/setting/category")).then(function () {
                   _this2.scrollTop();
 
-                  _this2.searchInfoClear();
-
                   _this2.menuClear();
 
                   _this2.selectedContentsBg = _this2.selectedMenu;
@@ -6647,8 +6693,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _context2.next = 49;
                 return _this2.$router.push("".concat(_this2.routePath, "/setting/users")).then(function () {
                   _this2.scrollTop();
-
-                  _this2.searchInfoClear();
 
                   _this2.menuClear();
 
@@ -6675,10 +6719,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         top: 0
       });
     },
-    removeApplyLikeFlg: function removeApplyLikeFlg() {
-      this.searchInfo.applies = false;
-      this.searchInfo.likes = false;
-    },
     changeMenuType: function changeMenuType(val) {
       if (this.selectedMenuType == "") {
         this.$refs.header.openDrawerMenu(val);
@@ -6694,7 +6734,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var _initData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
         var _this3 = this;
 
-        var categoryReady, countryReady;
+        var categoryReady, countryReady, _iterator2, _step2, country;
+
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -6704,16 +6745,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _context3.next = 4;
                 return axios.get('/api/category').then(function (res) {
                   _this3.categories = res.data;
-                  console.log(res.data);
-
-                  if (_this3.$route.params != null) {
-                    if (_this3.$route.params.category != null) {
-                      _this3.changeCategory(_this3.$route.params.category);
-                    }
-
-                    ;
-                  }
-
                   return true;
                 });
 
@@ -6722,35 +6753,85 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _context3.next = 7;
                 return axios.get('/api/getCountries').then(function (res) {
                   console.log("country探しにいきます");
-                  var $countries = res.data;
-                  _this3.countries = $countries;
-                  console.log($countries);
-
-                  if (_this3.$route.params != null) {
-                    if (_this3.$route.params.country != null) {
-                      _this3.changeCountry(_this3.$route.params.country);
-                    }
-
-                    ;
-                  }
-
+                  _this3.countries = res.data;
                   return true;
                 });
 
               case 7:
                 countryReady = _context3.sent;
 
+                if (!(this.$route.params.country != null)) {
+                  _context3.next = 31;
+                  break;
+                }
+
+                _iterator2 = _createForOfIteratorHelper(this.countries);
+                _context3.prev = 10;
+
+                _iterator2.s();
+
+              case 12:
+                if ((_step2 = _iterator2.n()).done) {
+                  _context3.next = 19;
+                  break;
+                }
+
+                country = _step2.value;
+
+                if (!(country.country_name == this.$route.params.country)) {
+                  _context3.next = 17;
+                  break;
+                }
+
+                this.countryBgImage = country.country_image;
+                return _context3.abrupt("break", 19);
+
+              case 17:
+                _context3.next = 12;
+                break;
+
+              case 19:
+                _context3.next = 24;
+                break;
+
+              case 21:
+                _context3.prev = 21;
+                _context3.t0 = _context3["catch"](10);
+
+                _iterator2.e(_context3.t0);
+
+              case 24:
+                _context3.prev = 24;
+
+                _iterator2.f();
+
+                return _context3.finish(24);
+
+              case 27:
+                this.selectedContentsBg = "country";
+                this.selectedCountry = this.$route.params.country;
+                _context3.next = 32;
+                break;
+
+              case 31:
+                if (this.$route.params.category != null) {
+                  console.log('category init');
+                  this.selectedContentsBg = "category";
+                  this.selectedCategory = this.$route.params.category;
+                }
+
+              case 32:
                 //初期ローダーを非表示
                 if (this.init && categoryReady && countryReady) {
                   this.init = false;
                 }
 
-              case 9:
+              case 33:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee3, this, [[10, 21, 24, 27]]);
       }));
 
       function initData() {
@@ -6758,7 +6839,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
 
       return initData;
-    }()
+    }(),
+    changeBg: function changeBg() {
+      this.changeBgShow = !this.changeBgShow;
+    }
   },
   watch: {
     modalTarget: function modalTarget() {
@@ -6773,6 +6857,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (newVal != old) {
         this.initData();
       }
+    },
+    bgClass: {
+      handler: function handler(val, old) {
+        this.changeBg();
+
+        if (!this.changeBgFlg) {
+          var that = this;
+          setTimeout(function () {
+            that.changeBg();
+          }, 10);
+        }
+      },
+      deep: true
     }
   },
   computed: {
@@ -6793,16 +6890,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     bgClass: function bgClass() {
       return {
-        searchBg: this.selectedMenu == 'postJob',
+        searchBg: this.selectedContentsBg == 'postJob',
         categoryBg: this.selectedContentsBg == 'category' && this.selectedCategory != '',
         mainBg: this.selectedContentsBg == 'top' || this.selectedContentsBg == 'posts' || this.selectedContentsBg == 'postJob' || this.selectedContentsBg == '' || this.selectedContentsBg == null //初期状態
-        || this.selectedContentsBg == 'profile' || this.selectedContentsBg == 'likes' || this.selectedContentsBg == 'applies' || this.selectedContentsBg == 'appliesList' || this.selectedContentsBg == 'setting/country' || this.selectedContentsBg == 'setting/category' || this.selectedContentsBg == 'setting/users' || this.selectedContentsBg == 'country' && this.selectedCountry == '' || this.selectedContentsBg == 'category' && this.selectedCategory == ''
+        || this.selectedContentsBg == 'profile' || this.selectedContentsBg == 'likes' || this.selectedContentsBg == 'applies' || this.selectedContentsBg == 'appliesList' || this.selectedContentsBg == 'setting/country' || this.selectedContentsBg == 'setting/category' || this.selectedContentsBg == 'setting/users',
+        countryBg: this.selectedContentsBg == 'country' && this.selectedCountry != ''
       };
     },
-    bgImage: function bgImage() {
-      if (this.countryBgImage == "") {
-        return {};
-      } else {
+    countryBgImageStyle: function countryBgImageStyle() {
+      if (this.bgClass.countryBg) {
         return {
           backgroundImage: "url('" + this.countryBgImage + "')"
         };
@@ -6814,21 +6910,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   created: function created() {
     this.initData();
-    this.scrollTop();
-
-    if (this.$route.path.includes('applies') && this.init) {
-      this.searchInfoClear();
-      this.searchInfo.applies = true;
-      this.searchInfo.pageType = "applies";
-      this.selectedMenu = "applies";
-      this.loading = false; // this.switchMenu("applies");
-    } else if (this.$route.path.includes('likes') && this.init) {
-      this.searchInfoClear();
-      this.searchInfo.likes = true;
-      this.selectedMenu = "likes";
-      this.searchInfo.pageType = "likes";
-      this.loading = false; // this.switchMenu("likes");
-    }
+    this.scrollTop(); //     console.log("this.$route.params")
+    //     console.log(this.$route.params)
+    // if(this.$route.params.country != null){
+    //     console.log('country init')
+    //     this.selectedContentsBg = "country"
+    // }else if(this.$route.params.category != null){
+    //     console.log('category init')
+    //     this.selectedContentsBg = "category"
+    // }
   },
   components: {
     modal: _common_ModalComponent_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -7449,6 +7539,166 @@ __webpack_require__.r(__webpack_exports__);
     this.getCountries();
   },
   mixins: [_common_CommonMethodsMixIn_vue__WEBPACK_IMPORTED_MODULE_0__["default"]]
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var placeShowListComponent = Vue.component('placeShowListComponent', __webpack_require__(/*! ./PlaceShowList.vue */ "./resources/js/components/setting/PlaceShowList.vue")["default"]);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      countries: {},
+      provinces: {},
+      cities: {},
+      checkedCountry: "",
+      checkedProvince: "",
+      checkedCity: "",
+      placeData: {},
+      countryInShow: "",
+      provinceInShow: ""
+    };
+  },
+  components: {
+    placeShowListComponent: placeShowListComponent
+  },
+  created: function created() {
+    this.updateCountry();
+    this.getTableData();
+  },
+  methods: {
+    updateCountry: function updateCountry() {
+      var _this = this;
+
+      axios.get('/api/getCountries').then(function (res) {
+        console.log("country探しにいきます");
+        var $countries = res.data;
+        _this.countries = $countries;
+        console.log($countries);
+
+        if (_this.initVal != undefined && _this.initVal.province != undefined && _this.initVal.province != "") {
+          console.log("country 初期値あり");
+          _this.checkedCountry = _this.initVal.province.country_id;
+        }
+      });
+    },
+    updateProvince: function updateProvince($id) {
+      var _this2 = this;
+
+      if ($id == "") {
+        return;
+      }
+
+      console.log("province探しにいきます" + $id);
+      console.log("checkedCountry = " + this.checkedCountry);
+      axios.post('/api/getProvinces', {
+        "id": $id
+      }).then(function (res) {
+        var $provinces = res.data;
+        _this2.provinces = $provinces;
+        _this2.checkedCity = "";
+        console.log(res);
+
+        if (_this2.initVal != undefined && _this2.initVal.province != undefined && _this2.initVal.province != "") {
+          _this2.checkedProvince = _this2.initVal.province.id;
+        }
+      });
+    },
+    updateCity: function updateCity($id) {
+      var _this3 = this;
+
+      if ($id == "") {
+        return;
+      }
+
+      console.log("city探しにいきます" + $id);
+      axios.post('/api/getCities', {
+        "id": $id
+      }).then(function (res) {
+        var $cities = res.data;
+        _this3.cities = $cities;
+        console.log(res);
+
+        if (_this3.initVal != undefined && _this3.initVal.province != undefined && _this3.initVal.province != "") {
+          _this3.checkedCity = _this3.initVal.id;
+        }
+      });
+    },
+    updateAll: function updateAll() {
+      this.updateCountry();
+      this.updateProvince(this.checkedCountry);
+      this.updateCity(this.checkedProvince);
+    },
+    getTableData: function getTableData() {
+      var _this4 = this;
+
+      console.log("placeTable取りに行きます。");
+      axios.get('/api/getPlaceData').then(function (res) {
+        _this4.placeData = res.data;
+        console.log("placeTableのデータ");
+        console.log(res.data);
+      });
+    }
+  },
+  watch: {
+    checkedCountry: function checkedCountry($id) {
+      this.updateProvince($id);
+    },
+    checkedProvince: function checkedProvince($id) {
+      this.updateCity($id);
+    },
+    countryInShow: function countryInShow($id) {
+      console.log('country = ' + $id);
+    },
+    provinceInShow: function provinceInShow($id) {
+      console.log('province = ' + $id);
+    },
+    checkedCity: function checkedCity(val) {
+      console.log('province = ' + val);
+      this.$emit('select-city', val);
+    }
+  },
+  props: ['initVal']
 });
 
 /***/ }),
@@ -12612,7 +12862,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.container[data-v-602fe5a7] {\n    padding-top:100px;\n    z-index:100;\n}\n.fade-enter-active[data-v-602fe5a7],\n.fade-leave-active[data-v-602fe5a7] {\n  transition: opacity 200ms;\n}\n.fade-enter[data-v-602fe5a7],\n.fade-leave-to[data-v-602fe5a7] {\n  opacity: 0\n}\n.search-country-area[data-v-602fe5a7] {\n  word-break:break-all;\n  padding:30px 0px 100px 0px;\n}\n\n\n", ""]);
+exports.push([module.i, "\n.container[data-v-602fe5a7] {\n    padding-top:100px;\n    z-index:100;\n}\n.fade-enter-active[data-v-602fe5a7],\n.fade-leave-active[data-v-602fe5a7] {\n  transition: opacity 200ms;\n}\n.fade-enter[data-v-602fe5a7],\n.fade-leave-to[data-v-602fe5a7] {\n  opacity: 0\n}\n.search-country-area[data-v-602fe5a7] {\n  word-break:break-all;\n  padding:30px 0px 100px 0px;\n}\n.search-area[data-v-602fe5a7]{\n  width: 80%;\nmargin: 0 auto;\n}\n\n\n", ""]);
 
 // exports
 
@@ -12746,6 +12996,25 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 // module
 exports.push([module.i, "\n.form-control[data-v-3ca17bc6] {\n    width:50%;\n    display:inline-block;\n    min-width: 200px;\n}\n.register-btn[data-v-3ca17bc6] {\n    width:100px;\n    padding:10px 5px;\n    margin:20px 0;\n}\n.place-register-area[data-v-3ca17bc6] {\n    border:solid 2px lightgray;\n    border-radius:10px;\n    padding:20px;\n    width:100%;\n    padding:20px !important;\n}\n.form-title[data-v-3ca17bc6] {\n    font-size:24px;\n}\n.form-group[data-v-3ca17bc6] {\n    margin:10px auto;\n    text-align:center;\n    border: lightgray 2px solid;\n    border-radius: 10px;\n    margin-bottom:50px;\n}\n.country-bg-image[data-v-3ca17bc6] {\n    width:200px;\n    height:200px;\n}\nlabel[data-v-3ca17bc6]{\n    width:100%;\n    margin-top:15px;\n}\n.single-form-title[data-v-3ca17bc6]{\n    text-align:center;\n    font-size:20px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--5-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.place-form[data-v-ac77b4fa] {\n    width: 100%;\n    display: inline-block;\n    margin: 0 1%;\n}\n.form-control[data-v-ac77b4fa] {\n    width:100%;\n    display:inline-block;\n}\n.register-btn[data-v-ac77b4fa] {\n    width:100px;\n    padding:10px 5px;\n    margin-left:20px;\n}\n.place-show-area[data-v-ac77b4fa] {\n    border:solid 2px lightgray;\n    border-radius:10px;\n    padding:20px;\n    width:100%;\n}\n.form-title[data-v-ac77b4fa] {\n    font-size:24px;\n}\n.form-group[data-v-ac77b4fa] {\n    margin:10px auto;\n    text-align:center;\n}\n.countryRow[data-v-ac77b4fa] {\n    color:red;\n}\n.provinceRow[data-v-ac77b4fa] {\n    color:blue;\n}\n.form-controll[data-v-ac77b4fa]{\n    min-width: 200px;\n}\n\n", ""]);
 
 // exports
 
@@ -45346,6 +45615,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--5-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--5-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader??ref--5-1!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--5-2!../../../../node_modules/vue-loader/lib??vue-loader-options!./PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowList.vue?vue&type=style&index=0&id=13243b08&scoped=true&lang=css&":
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--5-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--5-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/setting/PlaceShowList.vue?vue&type=style&index=0&id=13243b08&scoped=true&lang=css& ***!
@@ -64413,7 +64712,7 @@ var render = function() {
                                 ])
                               ])
                             ])
-                          : this.pageType == "post"
+                          : this.pageType == "posts"
                           ? _c("div", { staticClass: "buttons" }, [
                               _c("div", { staticClass: "row" }, [
                                 _c("div", { staticClass: "col-6" }, [
@@ -64677,7 +64976,7 @@ var render = function() {
       }
     },
     [
-      _vm.searchInfo.pageType == "post"
+      _vm.searchInfo.pageType == "posts"
         ? _c("div", { staticClass: "title" }, [
             _vm._v("\n        Your Post's\n    ")
           ])
@@ -65315,13 +65614,13 @@ var render = function() {
         [
           _c("div", { staticClass: "col-md-12" }, [
             _c("div", { staticClass: "mb-5 text-center" }, [
-              _vm.searchInfo.pageType == "country"
+              _vm.initPage == "country"
                 ? _c("h1", { staticClass: "text-white font-weight-bold" }, [
-                    _vm._v("Job's in " + _vm._s(_vm.searchInfo.searchedBy))
+                    _vm._v("Job's in searchInfo.searchedBy")
                   ])
-                : _vm.searchInfo.pageType == "category"
+                : _vm.initPage == "category"
                 ? _c("h1", { staticClass: "text-white font-weight-bold" }, [
-                    _vm._v("Job's in " + _vm._s(_vm.searchInfo.searchedBy))
+                    _vm._v("Job's in searchInfo.searchedBy")
                   ])
                 : _c("h1", { staticClass: "text-white font-weight-bold" }, [
                     _vm._v("JOB SEEKER")
@@ -65334,7 +65633,7 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "row mb-5" }, [
+            _c("div", { staticClass: "row mb-5 search-area" }, [
               _c(
                 "div",
                 { staticClass: "col-12 mb-4", class: _vm.fullSearchBar },
@@ -65344,8 +65643,8 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.searchInfo.keyWord,
-                        expression: "searchInfo.keyWord"
+                        value: _vm.searchKeys.keyWord,
+                        expression: "searchKeys.keyWord"
                       }
                     ],
                     staticClass: "form-control",
@@ -65354,20 +65653,20 @@ var render = function() {
                       name: "title",
                       placeholder: "Job title, keywords..."
                     },
-                    domProps: { value: _vm.searchInfo.keyWord },
+                    domProps: { value: _vm.searchKeys.keyWord },
                     on: {
                       input: function($event) {
                         if ($event.target.composing) {
                           return
                         }
-                        _vm.$set(_vm.searchInfo, "keyWord", $event.target.value)
+                        _vm.$set(_vm.searchKeys, "keyWord", $event.target.value)
                       }
                     }
                   })
                 ]
               ),
               _vm._v(" "),
-              _vm.searchInfo.pageType != "country"
+              _vm.initPage != "country"
                 ? _c(
                     "div",
                     { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
@@ -65375,11 +65674,11 @@ var render = function() {
                       _c("place-show-component2", {
                         on: { changeSelectedPlace: _vm.changeSelectedPlace },
                         model: {
-                          value: _vm.searchInfo.city,
+                          value: _vm.searchKeys.city,
                           callback: function($$v) {
-                            _vm.$set(_vm.searchInfo, "city", $$v)
+                            _vm.$set(_vm.searchKeys, "city", $$v)
                           },
-                          expression: "searchInfo.city"
+                          expression: "searchKeys.city"
                         }
                       })
                     ],
@@ -65395,25 +65694,32 @@ var render = function() {
                     attrs: { target: "jobType" },
                     on: { changeSelectedVal: _vm.changeSelectedType },
                     model: {
-                      value: _vm.searchInfo.jobTypeId,
+                      value: _vm.searchKeys.jobTypeId,
                       callback: function($$v) {
-                        _vm.$set(_vm.searchInfo, "jobTypeId", $$v)
+                        _vm.$set(_vm.searchKeys, "jobTypeId", $$v)
                       },
-                      expression: "searchInfo.jobTypeId"
+                      expression: "searchKeys.jobTypeId"
                     }
                   })
                 ],
                 1
               ),
               _vm._v(" "),
-              _vm.searchInfo.pageType != "category"
+              _vm.initPage != "category"
                 ? _c(
                     "div",
                     { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                     [
                       _c("select-box-component", {
                         attrs: { target: "category" },
-                        on: { changeSelectedVal: _vm.changeSelectedCategory }
+                        on: { changeSelectedVal: _vm.changeSelectedCategory },
+                        model: {
+                          value: _vm.searchKeys.jobTypeId,
+                          callback: function($$v) {
+                            _vm.$set(_vm.searchKeys, "jobTypeId", $$v)
+                          },
+                          expression: "searchKeys.jobTypeId"
+                        }
                       })
                     ],
                     1
@@ -65484,7 +65790,7 @@ var render = function() {
         [
           _c("postsListComponent", {
             ref: "postList",
-            attrs: { searchInfo: _vm.searchInfo }
+            attrs: { initFlg: false, initPage: _vm.initPage }
           })
         ],
         1
@@ -66159,9 +66465,17 @@ var render = function() {
           _c(
             "section",
             {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.changeBgShow,
+                  expression: "changeBgShow"
+                }
+              ],
               staticClass: "overlay main-bg ",
               class: _vm.bgClass,
-              style: _vm.bgImage
+              style: _vm.countryBgImageStyle
             },
             [
               _c(
@@ -66176,15 +66490,11 @@ var render = function() {
                         { attrs: { name: "content", appear: "" } },
                         [
                           _c("router-view", {
-                            attrs: {
-                              searchInfo: _vm.searchInfo,
-                              countries: _vm.countries
-                            },
+                            attrs: { countries: _vm.countries, initFlg: true },
                             on: {
                               changeCategory: _vm.changeCategory,
                               changeCountry: _vm.changeCountry,
-                              switchMenu: _vm.switchMenu,
-                              removeApplyLikeFlg: _vm.removeApplyLikeFlg
+                              switchMenu: _vm.switchMenu
                             }
                           })
                         ],
@@ -66987,6 +67297,150 @@ var staticRenderFns = [
     )
   }
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "place-show-area" }, [
+    _c("div", { staticClass: "place-form" }, [
+      _c("label", [_vm._v("\n                Country:\n            ")]),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.checkedCountry,
+              expression: "checkedCountry"
+            }
+          ],
+          staticClass: "country form-control",
+          on: {
+            change: function($event) {
+              var $$selectedVal = Array.prototype.filter
+                .call($event.target.options, function(o) {
+                  return o.selected
+                })
+                .map(function(o) {
+                  var val = "_value" in o ? o._value : o.value
+                  return val
+                })
+              _vm.checkedCountry = $event.target.multiple
+                ? $$selectedVal
+                : $$selectedVal[0]
+            }
+          }
+        },
+        _vm._l(_vm.countries, function(country, key) {
+          return _c("option", { key: key, domProps: { value: country.id } }, [
+            _vm._v(_vm._s(country.country_name))
+          ])
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "place-form" }, [
+      _c("label", [_vm._v("\n                Region:\n            ")]),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.checkedProvince,
+              expression: "checkedProvince"
+            }
+          ],
+          staticClass: "province form-control",
+          on: {
+            change: function($event) {
+              var $$selectedVal = Array.prototype.filter
+                .call($event.target.options, function(o) {
+                  return o.selected
+                })
+                .map(function(o) {
+                  var val = "_value" in o ? o._value : o.value
+                  return val
+                })
+              _vm.checkedProvince = $event.target.multiple
+                ? $$selectedVal
+                : $$selectedVal[0]
+            }
+          }
+        },
+        _vm._l(_vm.provinces, function(province, key) {
+          return _c("option", { key: key, domProps: { value: province.id } }, [
+            _vm._v(_vm._s(province.province_name))
+          ])
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "place-form" }, [
+      _c("label", [_vm._v("\n                City:\n            ")]),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.checkedCity,
+              expression: "checkedCity"
+            }
+          ],
+          staticClass: "city form-control",
+          on: {
+            change: function($event) {
+              var $$selectedVal = Array.prototype.filter
+                .call($event.target.options, function(o) {
+                  return o.selected
+                })
+                .map(function(o) {
+                  var val = "_value" in o ? o._value : o.value
+                  return val
+                })
+              _vm.checkedCity = $event.target.multiple
+                ? $$selectedVal
+                : $$selectedVal[0]
+            }
+          }
+        },
+        _vm._l(_vm.cities, function(city, key) {
+          return _c("option", { key: key, domProps: { value: city.id } }, [
+            _vm._v(_vm._s(city.city_name))
+          ])
+        }),
+        0
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -87658,8 +88112,8 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  */
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
-// Vue.component('place-show-component', require('./components/setting/PlaceShowComponent.vue').default);
 
+vue__WEBPACK_IMPORTED_MODULE_2___default.a.component('place-show-component', __webpack_require__(/*! ./components/setting/PlaceShowComponent.vue */ "./resources/js/components/setting/PlaceShowComponent.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_2___default.a.component('place-show-component2', __webpack_require__(/*! ./components/common/PlaceShowComponent2.vue */ "./resources/js/components/common/PlaceShowComponent2.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_2___default.a.component('side-header-component', __webpack_require__(/*! ./components/common/SideHeaderComponent.vue */ "./resources/js/components/common/SideHeaderComponent.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_2___default.a.component('select-box-component', __webpack_require__(/*! ./components/common/SelectBox.vue */ "./resources/js/components/common/SelectBox.vue")["default"]);
@@ -89309,6 +89763,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/setting/PlaceShowComponent.vue":
+/*!****************************************************************!*\
+  !*** ./resources/js/components/setting/PlaceShowComponent.vue ***!
+  \****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _PlaceShowComponent_vue_vue_type_template_id_ac77b4fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true& */ "./resources/js/components/setting/PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true&");
+/* harmony import */ var _PlaceShowComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PlaceShowComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/setting/PlaceShowComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css& */ "./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _PlaceShowComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _PlaceShowComponent_vue_vue_type_template_id_ac77b4fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _PlaceShowComponent_vue_vue_type_template_id_ac77b4fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "ac77b4fa",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/setting/PlaceShowComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/setting/PlaceShowComponent.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************!*\
+  !*** ./resources/js/components/setting/PlaceShowComponent.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./PlaceShowComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css&":
+/*!*************************************************************************************************************************!*\
+  !*** ./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css& ***!
+  \*************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_5_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_5_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader!../../../../node_modules/css-loader??ref--5-1!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--5-2!../../../../node_modules/vue-loader/lib??vue-loader-options!./PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=style&index=0&id=ac77b4fa&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_5_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_5_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_5_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_5_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_5_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_5_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_5_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_5_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_5_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_5_2_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_style_index_0_id_ac77b4fa_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/setting/PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true&":
+/*!***********************************************************************************************************!*\
+  !*** ./resources/js/components/setting/PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true& ***!
+  \***********************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_template_id_ac77b4fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/setting/PlaceShowComponent.vue?vue&type=template&id=ac77b4fa&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_template_id_ac77b4fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlaceShowComponent_vue_vue_type_template_id_ac77b4fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/setting/PlaceShowList.vue":
 /*!***********************************************************!*\
   !*** ./resources/js/components/setting/PlaceShowList.vue ***!
@@ -89643,15 +90184,27 @@ var routes = [{
     component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   }, {
     path: 'top',
+    props: {
+      pageType: "top",
+      initPage: "top"
+    },
     component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   }, {
     path: 'password/reset/:token',
     component: _components_resetPassword_resetPassword_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
   }, {
     path: 'country/:country',
+    props: {
+      pageType: "country",
+      initPage: "country"
+    },
     component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   }, {
     path: 'category/:category',
+    props: {
+      pageType: "category",
+      initPage: "category"
+    },
     component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   }, {
     path: 'postJob/:id',
@@ -89660,7 +90213,7 @@ var routes = [{
       _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck').then(function (value) {
         var id = to.params.id;
 
-        if (value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
+        if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
           next();
         } else {
           window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89678,7 +90231,7 @@ var routes = [{
       _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck').then(function (value) {
         var id = to.params.id;
 
-        if (value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
+        if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
           next();
         } else {
           window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89692,7 +90245,7 @@ var routes = [{
       _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck').then(function (value) {
         var id = to.params.id;
 
-        if (value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
+        if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
           next();
         } else {
           window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89707,7 +90260,7 @@ var routes = [{
 
       var id = to.params.id;
 
-      if (value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
+      if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
         console.log('mada');
         next();
       } else {
@@ -89726,7 +90279,7 @@ var routes = [{
       _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck').then(function (value) {
         var id = to.params.id;
 
-        if (value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
+        if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
           next();
         } else {
           window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89743,7 +90296,7 @@ var routes = [{
       _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck').then(function (value) {
         var id = to.params.id;
 
-        if (value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
+        if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
           next();
         } else {
           window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89761,7 +90314,7 @@ var routes = [{
           console.log("accessAllowed");
           console.log(value);
 
-          if (value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
+          if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
             next();
           } else {
             window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89776,7 +90329,7 @@ var routes = [{
           console.log("accessAllowed");
           console.log(value);
 
-          if (value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
+          if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
             next();
           } else {
             window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
@@ -89791,7 +90344,7 @@ var routes = [{
           console.log("accessAllowed");
           console.log(value);
 
-          if (value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
+          if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
             next();
           } else {
             window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
