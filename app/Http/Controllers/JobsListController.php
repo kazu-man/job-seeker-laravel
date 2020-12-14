@@ -442,14 +442,14 @@ class JobsListController extends Controller
         $user = Auth::User();
         $id = strstr($path, '/storage/images/resume/'); 
 
-        // if(config('app.file_system') == "s3"){
+        if(config('app.file_system') == "s3"){
         $replacedPath = "/storage/images/resume/" . $user->id . "/" . $fileName;
 
-        // }else if(config('app.file_system') == "local"){
+        }else if(config('app.file_system') == "local"){
 
-        //     $replacedPath = str_replace('/storage/',"/public/",$path);
+            $replacedPath = str_replace('/storage/',"/public/",$path);
             
-        // }
+        }
         
         $id = str_replace('/' . $fileName,"",str_replace('/storage/images/resume/',"", $id));
 
