@@ -152,9 +152,6 @@ export default {
             console.log("refresh desu")
             this.$emit('refresh');
         },
-        // loading:function(){
-        //     return this.loading;
-        // }
     },
     components: {
         VueGoodTable,
@@ -179,6 +176,9 @@ export default {
 .delete-btn {
     width:67px;
     padding:10px;
+}
+.btn:hover{
+    cursor:pointer;
 }
 /* 表示・非表示アニメーション中 */
 .v-enter-active, .v-leave-active {

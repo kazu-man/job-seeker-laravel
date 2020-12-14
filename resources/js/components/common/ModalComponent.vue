@@ -845,6 +845,7 @@ export default {
                 message = "ユーザをログイン不可に変更しました。"
             }
             this.$store.dispatch('common/alertModalUp', {data:status, successMessage:message});
+            this.$store.dispatch('auth/getUsers')
         },
         resumeDownLoad(){
             var data = {

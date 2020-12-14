@@ -149,15 +149,15 @@ export default {
             logoutInMenu:false,
             selectedBg:"",
             selectedContentsBg:"",
-            categories:null,
-            countries:null,
             countryBgImage:null,
             selectedMenuType:"",
             loading:false,
             init:true,
             changeBgShow:true,
-            placeData:"",
-            jobTypes:""
+            // categories:null,
+            // countries:null,
+            // placeData:"",
+            // jobTypes:""
     }},
     methods: { 
         changeCountry(countryName) {
@@ -339,25 +339,7 @@ export default {
 
         },
         initData: async function(){
-            var categoryReady = false;
-            var countryReady = false;
-            var categoryReady = await axios.get('/api/category').then(res => {
-                this.categories = res.data;
-                 return true;
-            });
-            var countryReady = await axios.get('/api/getCountries').then(res => {
-                console.log("country探しにいきます");
-                this.countries = res.data;
-                return true;
-            });
-            await axios.get('/api/getPlaceData').then(res => {
-                this.placeData = res.data;
-                console.log("placeTableのデータ");
-                console.log(res.data);
-            });
-            await axios.get('/api/getJobType').then(res => {
-                this.jobTypes = res.data;
-            });
+            var ready = await this.$store.dispatch('auth/initData')
 
             //初期の背景を設定
             if(this.$route.params.country != null){
@@ -376,7 +358,7 @@ export default {
             }
             
             //初期ローダーを非表示
-            if(this.init && categoryReady && countryReady){
+            if(this.init && ready){
                 this.init = false;
             }
         },
@@ -447,7 +429,6 @@ export default {
                 countryBg:(this.selectedContentsBg == 'country' && this.selectedCountry != '' )
             }
         },
-
         countryBgImageStyle: function(){
             if(this.bgClass.countryBg){
                 return {
@@ -460,19 +441,22 @@ export default {
             return this.$store.state.common.settingCountryReloadFlg;
 
         },
+        countries:function(){
+            return this.$store.getters['auth/countries'];
+        },
+        categories:function(){
+            return this.$store.getters['auth/categories'];
+        },
+        jobTypes:function(){
+            return this.$store.getters['auth/jobTypes'];
+        },
+        placeData:function(){
+            return this.$store.getters['auth/placeData'];
+        }
     },
     created : function() {
         this.initData();
         this.scrollTop();
-        //     console.log("this.$route.params")
-        //     console.log(this.$route.params)
-        // if(this.$route.params.country != null){
-        //     console.log('country init')
-        //     this.selectedContentsBg = "country"
-        // }else if(this.$route.params.category != null){
-        //     console.log('category init')
-        //     this.selectedContentsBg = "category"
-        // }
     },
  
     components: {

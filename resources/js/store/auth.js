@@ -11,13 +11,26 @@ const state = {
   newMessageExistFlg:false,
   lastDeletedUser:null,
   routePath:'/jobsList',
-  refreshAdminDataFlg:false
+  refreshAdminDataFlg:false,
+
+  categories:"",
+  countries:"",
+  placeData:"",
+  jobTypes:"",
+
+  users:""
+
 }
 
 const getters = {
   check: state => !! state.user,
   loginUser: state => state.user ? state.user : '',
-  routePath: state => state.routePath
+  routePath: state => state.routePath,
+  categories: state => state.categories ,
+  countries: state => state.countries ,
+  placeData: state => state.placeData ,
+  jobTypes: state => state.jobTypes, 
+  users: state => state.users 
 }
 
 const mutations = {
@@ -50,7 +63,25 @@ const mutations = {
   },
   setRefreshAdminDataFlg(state, flg){
     state.refreshAdminDataFlg = flg;
-  }
+  },
+
+  setCountries(state, data){
+    state.countries = data;
+  },
+  setCategories(state, data){
+    state.categories = data;
+  },
+  setPlaceData(state, data){
+    state.placeData = data;
+  },
+  setJobTypes(state, data){
+    state.jobTypes = data;
+  },
+  setUsers(state, data){
+    state.users = data;
+  },
+
+
 }
 
 const actions = {
@@ -235,9 +266,44 @@ const actions = {
     return false;
   },
   async refreshAdminData(context, flg){
-    context.commit('setRefreshAdminDataFlg', flg);
-  }
-  }
+      context.commit('setRefreshAdminDataFlg', flg);
+    },
+    
+    async initData(context){
+      await axios.get('/api/getInitData').then(res => {
+        context.commit('setCategories', res.data.categories);
+        context.commit('setCountries', res.data.countries);
+        context.commit('setPlaceData', res.data.placeData);
+        context.commit('setJobTypes', res.data.jobTypes);
+      });
+      // await axios.get('/api/getCountries').then(res => {
+      // });
+      // await axios.get('/api/getPlaceData').then(res => {
+      // });
+      // await axios.get('/api/getJobType').then(res => {
+      // });
+      return true;
+    },
+    
+    refreshCategories(context){
+      axios.get('/api/category').then(res => {
+        context.commit('setCategories', res.data);
+      });
+    },
+    refreshCountries(context){
+      axios.get('/api/getCountries').then(res => {
+        context.commit('setCountries', res.data);
+      });
+    },
+    async getUsers(context){
+      await axios.get('/api/getSettingData').then(res => {
+        context.commit('setUsers', res.data.users);
+      });
+      return true
+    }
+
+
+    }
 
 export default {
   namespaced: true,

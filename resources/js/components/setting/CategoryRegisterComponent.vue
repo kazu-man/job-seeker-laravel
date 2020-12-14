@@ -23,10 +23,11 @@ export default {
                 return false;
             }
             var data = {"category": this.category};
+            this.$emit('loading',true);
             axios.post('/api/category', data).then(res => {
                 // テストのため返り値をコンソールに表示
                 console.log(res.data);
-                this.$emit('refresh-list');
+                this.$store.dispatch('auth/refreshCategories');
             });
         }
     }

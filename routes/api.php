@@ -36,6 +36,7 @@ Route::post('/getProvinces','SettingController@getProvinces');
 Route::post('/getCities','SettingController@getCities');
 Route::get('/getPlaceData', 'SettingController@getPlaceData');
 Route::get('/getJobType', 'SettingController@getJobType');
+Route::get('/getInitData', 'SettingController@getInitData');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/deleteCity/{id}', 'SettingController@deleteCity');
