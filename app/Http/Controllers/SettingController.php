@@ -13,6 +13,7 @@ use App\Model\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -32,8 +33,7 @@ class SettingController extends Controller
 
         try {
             $users = User::all();
-            $categories = Category::all()->where('category_status','!=','D');
-            $data = ["users" => $users, "categories" => $categories];
+            $data = ["users" => $users];
         } catch(Exception $e) {
             $data = "error";
         }
@@ -140,9 +140,24 @@ class SettingController extends Controller
         if($request->countryImage){
             $countryBgImage = $request->countryImage->getClientOriginalName();
             \Log::info($countryBgImage);
-            request()->countryImage->storeAs('/public/images/countryBgImages/',$countryBgImage);        
-
+            
             $targetCountry->country_image = $countryBgImage != "" ? '/storage/images/countryBgImages/' . $countryBgImage : "/images/search.jpg";
+            if(config('app.file_system') == "s3"){
+                
+                Storage::putFileAs('/storage/images/countryBgImages/', request()->countryImage, $countryBgImage);
+                $targetCountry->country_image = Storage::cloud()->url($targetCountry->country_image);
+
+            }else if(config('app.file_system') == "local"){
+
+                request()->countryImage->storeAs('/public/images/countryBgImages/',$countryBgImage);        
+                
+            }
+
+            \Log::info("--- ------------------");
+            \Log::info(config('app.file_system'));
+            \Log::info("--- ------------------");
+
+
         }
 
         $targetCountry->save();
@@ -251,5 +266,19 @@ class SettingController extends Controller
         
         $auth->fill($form)->save();
     }
-    
+
+    public function getInitData(){
+        $categories = $this->getCategories();
+        $countries = $this->getCountries();
+        $placeData = $this->getPlaceData();
+        $jobTypes = $this->getJobType();
+
+        return [
+            "categories" => $categories,
+            "countries" => $countries,
+            "placeData" => $placeData,
+            "jobTypes" => $jobTypes
+        ];
+
+    }    
 }

@@ -3,8 +3,8 @@
         <div class="row align-items-center justify-content-center">
           <div class="col-md-12">
             <div class="mb-5 text-center">
-              <h1 class="text-white font-weight-bold" v-if="initPage == 'country'">Job's in searchInfo.searchedBy</h1>
-              <h1 class="text-white font-weight-bold" v-else-if="initPage == 'category'">Job's in searchInfo.searchedBy</h1>
+              <h1 class="text-white font-weight-bold" v-if="initPage == 'country'">Job's in {{this.$route.params.country}}</h1>
+              <h1 class="text-white font-weight-bold" v-else-if="initPage == 'category'">Job's in {{this.$route.params.category}}</h1>
               <h1 class="text-white font-weight-bold" v-else>JOB SEEKER</h1>
               <p class="text-white" style="opacity:0.8">Find your dream jobs in our career website.</p>
             </div>
@@ -15,14 +15,14 @@
                   <input type="text" name="title" class="form-control" placeholder="Job title, keywords..." v-model="searchKeys.keyWord">
                 </div>
                 <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'country'">
-                  <place-show-component2 @changeSelectedPlace="changeSelectedPlace" v-model="searchKeys.city"></place-show-component2>
+                  <place-show-component2 @changeSelectedPlace="changeSelectedPlace" v-model="searchKeys.city" :placeData="placeData"></place-show-component2>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0">
-                  <select-box-component @changeSelectedVal="changeSelectedType" :target="'jobType'" v-model="searchKeys.jobTypeId"></select-box-component>
+                  <select-box-component @changeSelectedVal="changeSelectedType" :target="'jobType'" v-model="searchKeys.jobTypeId" :baseData="jobTypes"></select-box-component>
                 </div>
 
                 <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'category'">
-                  <select-box-component @changeSelectedVal="changeSelectedCategory" :target="'category'" v-model="searchKeys.jobTypeId"></select-box-component>
+                  <select-box-component @changeSelectedVal="changeSelectedCategory" :target="'category'" v-model="searchKeys.jobTypeId" :baseData="categories"></select-box-component>
                 </div>
                 <div class="col-12 col-sm-6 col-md-6 col-lg-6 my-4 mx-auto mb-lg-0">
                   <button @click="refreshList" type="submit" name="search" class="btn btn-primary btn-lg btn-block text-white btn-search"><span class="icon-search icon mr-2"></span>Search Job</button>
@@ -66,7 +66,7 @@
       components:{
         postsListComponent
       },
-      props:['countries','initPage'],
+      props:['countries','initPage','placeData','categories','jobTypes'],
       methods: {
         changeSelectedCategory:function(val){
           console.log(val);
@@ -123,10 +123,16 @@
           }else{
             return false;
           }
+        },
+        route:function(){
+          return this.$route.params;
         }
       },
       watch:{
         initPage:function(){
+          this.searchKeysClear();
+        },
+        route:function(){
           this.searchKeysClear();
         }
       }

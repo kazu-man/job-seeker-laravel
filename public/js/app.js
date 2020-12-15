@@ -3445,10 +3445,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3499,7 +3495,8 @@ __webpack_require__.r(__webpack_exports__);
     selectCity: function selectCity(val) {
       this.city = val;
     }
-  }
+  },
+  props: ["categories", "jobTypes"]
 });
 
 /***/ }),
@@ -4549,8 +4546,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   data: status,
                   successMessage: message
                 });
+                this.$store.dispatch('auth/getUsers');
 
-              case 5:
+              case 6:
               case "end":
                 return _context5.stop();
             }
@@ -4862,6 +4860,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
+  props: ["jobTypes", "category"],
   mixins: [_CommonMethodsMixIn_vue__WEBPACK_IMPORTED_MODULE_2__["default"]]
 });
 
@@ -4890,27 +4889,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      placeData: {},
       selectedPlace: "",
       cleanedData: {}
     };
   },
-  created: function created() {
-    this.getTableData();
+  props: ["placeData"],
+  mounted: function mounted() {
+    if (this.placeData != "") {
+      this.computedPlace();
+    }
   },
   methods: {
-    getTableData: function getTableData() {
-      var _this = this;
-
-      console.log("placeTable取りに行きます。");
-      axios.get('/api/getPlaceData').then(function (res) {
-        _this.placeData = res.data;
-        console.log("placeTableのデータ");
-        console.log(res.data);
-
-        _this.computedPlace();
-      });
-    },
     selectPlace: function selectPlace() {
       this.$emit('changeSelectedPlace', this.selectedPlace);
     },
@@ -4949,6 +4938,23 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.cleanedData = result;
     }
+  },
+  computed: {
+    route: function route() {
+      return this.$route.params;
+    }
+  },
+  watch: {
+    route: function route() {
+      this.selectedPlace = "";
+      this.selectPlace();
+    },
+    placeData: {
+      handler: function handler(val, old) {
+        this.computedPlace();
+      },
+      deep: true
+    }
   }
 });
 
@@ -4982,34 +4988,34 @@ __webpack_require__.r(__webpack_exports__);
       selectedVal: ""
     };
   },
-  props: ['target', 'initVal', 'targetVal'],
+  props: ['target', 'initVal', 'baseData'],
   created: function created() {
     this.getTableData();
   },
   methods: {
     getTableData: function getTableData() {
-      var _this = this;
+      // var url = this.target == "category" ? "category" : "getJobType";
+      var tc = this; // axios.get('/api/' + url).then(res => {
+      //     this.data = res.data;
 
-      var url = this.target == "category" ? "category" : "getJobType";
-      var tc = this;
-      axios.get('/api/' + url).then(function (res) {
-        _this.data = res.data;
+      if (tc.initVal != undefined && tc.initVal != "") {
+        tc.selectedVal = tc.initVal;
+      } // });
 
-        if (tc.initVal != undefined && tc.initVal != "") {
-          tc.selectedVal = tc.initVal;
-        }
-      });
     },
     selectVal: function selectVal() {
       this.$emit('changeSelectedVal', this.selectedVal);
     }
   },
+  computed: {
+    route: function route() {
+      return this.$route.params;
+    }
+  },
   watch: {
-    targetVal: function targetVal() {
-      if (this.targetVal == "") {
-        console.log('kokokokokokokokokokokokokokokokokokokokokoko');
-        this.selectedVal = "";
-      }
+    route: function route() {
+      this.selectedVal = "";
+      this.selectVal();
     }
   }
 });
@@ -5947,11 +5953,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
- // Vue.mixin(require('./asset'));
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -6167,7 +6168,7 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     postsListComponent: _PostsListComponent_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  props: ['countries', 'initPage'],
+  props: ['countries', 'initPage', 'placeData', 'categories', 'jobTypes'],
   methods: {
     changeSelectedCategory: function changeSelectedCategory(val) {
       console.log(val);
@@ -6223,10 +6224,16 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         return false;
       }
+    },
+    route: function route() {
+      return this.$route.params;
     }
   },
   watch: {
     initPage: function initPage() {
+      this.searchKeysClear();
+    },
+    route: function route() {
       this.searchKeysClear();
     }
   }
@@ -6391,6 +6398,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -6406,13 +6416,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       logoutInMenu: false,
       selectedBg: "",
       selectedContentsBg: "",
-      categories: null,
-      countries: null,
       countryBgImage: null,
       selectedMenuType: "",
       loading: false,
       init: true,
-      changeBgShow: true
+      changeBgShow: true // categories:null,
+      // countries:null,
+      // placeData:"",
+      // jobTypes:""
+
     };
   },
   methods: {
@@ -6593,10 +6605,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
                   _this2.menuClear();
 
-                  if (_this2.selectedMenu == 'postJob') {
-                    _this2.selectedContentsBg = 'postJob';
-                  }
-
+                  _this2.selectedContentsBg = _this2.selectedMenu;
                   _this2.loading = false;
                 })["catch"](function () {});
 
@@ -6732,106 +6741,90 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     initData: function () {
       var _initData = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
-        var _this3 = this;
-
-        var categoryReady, countryReady, _iterator2, _step2, country;
+        var ready, _iterator2, _step2, country;
 
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                categoryReady = false;
-                countryReady = false;
-                _context3.next = 4;
-                return axios.get('/api/category').then(function (res) {
-                  _this3.categories = res.data;
-                  return true;
-                });
+                _context3.next = 2;
+                return this.$store.dispatch('auth/initData');
 
-              case 4:
-                categoryReady = _context3.sent;
-                _context3.next = 7;
-                return axios.get('/api/getCountries').then(function (res) {
-                  console.log("country探しにいきます");
-                  _this3.countries = res.data;
-                  return true;
-                });
-
-              case 7:
-                countryReady = _context3.sent;
+              case 2:
+                ready = _context3.sent;
 
                 if (!(this.$route.params.country != null)) {
-                  _context3.next = 31;
+                  _context3.next = 26;
                   break;
                 }
 
                 _iterator2 = _createForOfIteratorHelper(this.countries);
-                _context3.prev = 10;
+                _context3.prev = 5;
 
                 _iterator2.s();
 
-              case 12:
+              case 7:
                 if ((_step2 = _iterator2.n()).done) {
-                  _context3.next = 19;
+                  _context3.next = 14;
                   break;
                 }
 
                 country = _step2.value;
 
                 if (!(country.country_name == this.$route.params.country)) {
-                  _context3.next = 17;
+                  _context3.next = 12;
                   break;
                 }
 
                 this.countryBgImage = country.country_image;
-                return _context3.abrupt("break", 19);
+                return _context3.abrupt("break", 14);
 
-              case 17:
-                _context3.next = 12;
+              case 12:
+                _context3.next = 7;
                 break;
 
-              case 19:
-                _context3.next = 24;
+              case 14:
+                _context3.next = 19;
                 break;
 
-              case 21:
-                _context3.prev = 21;
-                _context3.t0 = _context3["catch"](10);
+              case 16:
+                _context3.prev = 16;
+                _context3.t0 = _context3["catch"](5);
 
                 _iterator2.e(_context3.t0);
 
-              case 24:
-                _context3.prev = 24;
+              case 19:
+                _context3.prev = 19;
 
                 _iterator2.f();
 
-                return _context3.finish(24);
+                return _context3.finish(19);
 
-              case 27:
+              case 22:
                 this.selectedContentsBg = "country";
                 this.selectedCountry = this.$route.params.country;
-                _context3.next = 32;
+                _context3.next = 27;
                 break;
 
-              case 31:
+              case 26:
                 if (this.$route.params.category != null) {
                   console.log('category init');
                   this.selectedContentsBg = "category";
                   this.selectedCategory = this.$route.params.category;
                 }
 
-              case 32:
+              case 27:
                 //初期ローダーを非表示
-                if (this.init && categoryReady && countryReady) {
+                if (this.init && ready) {
                   this.init = false;
                 }
 
-              case 33:
+              case 28:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[10, 21, 24, 27]]);
+        }, _callee3, this, [[5, 16, 19, 22]]);
       }));
 
       function initData() {
@@ -6906,19 +6899,23 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     },
     countryReloadFlg: function countryReloadFlg() {
       return this.$store.state.common.settingCountryReloadFlg;
+    },
+    countries: function countries() {
+      return this.$store.getters['auth/countries'];
+    },
+    categories: function categories() {
+      return this.$store.getters['auth/categories'];
+    },
+    jobTypes: function jobTypes() {
+      return this.$store.getters['auth/jobTypes'];
+    },
+    placeData: function placeData() {
+      return this.$store.getters['auth/placeData'];
     }
   },
   created: function created() {
     this.initData();
-    this.scrollTop(); //     console.log("this.$route.params")
-    //     console.log(this.$route.params)
-    // if(this.$route.params.country != null){
-    //     console.log('country init')
-    //     this.selectedContentsBg = "country"
-    // }else if(this.$route.params.category != null){
-    //     console.log('category init')
-    //     this.selectedContentsBg = "category"
-    // }
+    this.scrollTop();
   },
   components: {
     modal: _common_ModalComponent_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -7164,11 +7161,12 @@ __webpack_require__.r(__webpack_exports__);
       var data = {
         "category": this.category
       };
+      this.$emit('loading', true);
       axios.post('/api/category', data).then(function (res) {
         // テストのため返り値をコンソールに表示
         console.log(res.data);
 
-        _this.$emit('refresh-list');
+        _this.$store.dispatch('auth/refreshCategories');
       });
     }
   }
@@ -7219,18 +7217,15 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       hoverFlag: false,
-      hoverIndex: null
+      hoverIndex: null,
+      loading: false
     };
   },
-  props: ["categories", "loading"],
+  props: ["categories"],
   components: {
     categoryRegisterComponent: _CategoryRegisterComponent_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   methods: {
-    refresh: function refresh() {
-      console.log('refresh');
-      this.$emit('refresh-category-list');
-    },
     mouseOverAction: function mouseOverAction(i) {
       this.hoverIndex = i;
       this.hoverFlag = true;
@@ -7245,6 +7240,7 @@ __webpack_require__.r(__webpack_exports__);
       var data = {
         "id": id
       };
+      this.loading = true;
       axios.post('/api/category/delete', data).then(function (res) {
         if (res.status == 503) {
           _this.$store.dispatch('common/alertModalUp', {
@@ -7262,14 +7258,24 @@ __webpack_require__.r(__webpack_exports__);
 
         console.log(res.data);
 
-        _this.$emit('refresh-list');
+        _this.$store.dispatch('auth/refreshCategories');
       });
-      this.$emit('refresh-category-list');
+    },
+    loadingChange: function loadingChange(state) {
+      this.loading = state;
     }
   },
   computed: {
     listSize: function listSize() {
       return this.categories.length;
+    }
+  },
+  watch: {
+    categories: {
+      handler: function handler(val, old) {
+        this.loading = false;
+      },
+      deep: true
     }
   }
 });
@@ -7515,6 +7521,8 @@ __webpack_require__.r(__webpack_exports__);
 
         console.log(res.data);
         that.$emit('update_data');
+
+        _this3.$store.dispatch('auth/refreshCountries');
       });
     },
     getCountries: function getCountries() {
@@ -7536,7 +7544,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    this.getCountries();
+    this.countries = this.$store.getters['auth/countries'];
   },
   mixins: [_common_CommonMethodsMixIn_vue__WEBPACK_IMPORTED_MODULE_0__["default"]]
 });
@@ -7930,7 +7938,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -7954,20 +7969,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      users: [],
-      categories: [],
       loading: false
     };
   },
+  props: ["categories"],
   methods: {
-    categoryUpdate: function categoryUpdate(newVal) {
-      this.categories = newVal;
-    },
     updateData: function updateData() {
       this.$refs.placeCom.updatePlaceTable();
     },
     refreshList: function refreshList() {
-      this.init();
+      this.$store.dispatch('auth/initData');
     },
     changeComponent: function changeComponent(target) {
       console.log("component change");
@@ -7979,14 +7990,25 @@ __webpack_require__.r(__webpack_exports__);
     init: function init() {
       var _this = this;
 
-      this.loading = true;
-      axios.get('/api/getSettingData').then(function (res) {
-        var $userList = res.data.users;
-        var $cateList = res.data.categories;
-        _this.users = $userList;
-        _this.categories = $cateList;
-        _this.loading = false;
-      });
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _this.loading = true;
+                _context.next = 3;
+                return _this.$store.dispatch('auth/getUsers');
+
+              case 3:
+                _this.loading = false;
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     }
   },
   created: function created() {
@@ -8001,13 +8023,16 @@ __webpack_require__.r(__webpack_exports__);
     },
     refreshDataFlg: function refreshDataFlg() {
       return this.$store.state.auth.refreshAdminDataFlg;
+    },
+    countries: function countries() {
+      return this.$store.getters['auth/countries'];
+    },
+    users: function users() {
+      return this.$store.getters['auth/users'] != undefined ? this.$store.getters['auth/users'] : [];
     }
   },
   watch: {
     refreshDataFlg: function refreshDataFlg(next) {
-      console.log(next);
-      console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
-
       if (next) {
         this.init();
         this.$store.dispatch('auth/refreshAdminData', false);
@@ -8171,10 +8196,7 @@ __webpack_require__.r(__webpack_exports__);
     lastDeletedUser: function lastDeletedUser() {
       console.log("refresh desu");
       this.$emit('refresh');
-    } // loading:function(){
-    //     return this.loading;
-    // }
-
+    }
   },
   components: {
     VueGoodTable: vue_good_table__WEBPACK_IMPORTED_MODULE_0__["VueGoodTable"]
@@ -13071,7 +13093,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.table-title[data-v-5f98b79b] {\n    font-size:24px;\n}\n.user-show-area[data-v-5f98b79b] {\n    border:solid 2px lightgray;\n    border-radius:10px;\n    width:100%;\n    position:relative;\n    overflow-x:scroll;\n}\n.delete-btn[data-v-5f98b79b] {\n    width:67px;\n    padding:10px;\n}\n/* 表示・非表示アニメーション中 */\n.v-enter-active[data-v-5f98b79b], .v-leave-active[data-v-5f98b79b] {\n  transition: all 500ms;\n}\n\n/* 表示アニメーション開始時 ・ 非表示アニメーション後 */\n.v-enter[data-v-5f98b79b], .v-leave-to[data-v-5f98b79b] {\n  opacity: 0;\n  background:lightgray;\n}\ntr.v-leave-to[data-v-5f98b79b] {\n    background:red;\n}\n.component-title[data-v-5f98b79b]{\n    color:white;\n    font-size:25px;\n    padding-left:5% !important;\n    margin-bottom: 15px;\n}\n.admin-add[data-v-5f98b79b] {\n    position: absolute;\n    top: 0;\n    right:8%;\n    padding: 10px;\n}\n.component-title[data-v-5f98b79b]{\n    color:white;\n    font-size:25px;\n    padding-left:10%;\n    margin-bottom: 15px;\n}\n", ""]);
+exports.push([module.i, "\n.table-title[data-v-5f98b79b] {\n    font-size:24px;\n}\n.user-show-area[data-v-5f98b79b] {\n    border:solid 2px lightgray;\n    border-radius:10px;\n    width:100%;\n    position:relative;\n    overflow-x:scroll;\n}\n.delete-btn[data-v-5f98b79b] {\n    width:67px;\n    padding:10px;\n}\n.btn[data-v-5f98b79b]:hover{\n    cursor:pointer;\n}\n/* 表示・非表示アニメーション中 */\n.v-enter-active[data-v-5f98b79b], .v-leave-active[data-v-5f98b79b] {\n  transition: all 500ms;\n}\n\n/* 表示アニメーション開始時 ・ 非表示アニメーション後 */\n.v-enter[data-v-5f98b79b], .v-leave-to[data-v-5f98b79b] {\n  opacity: 0;\n  background:lightgray;\n}\ntr.v-leave-to[data-v-5f98b79b] {\n    background:red;\n}\n.component-title[data-v-5f98b79b]{\n    color:white;\n    font-size:25px;\n    padding-left:5% !important;\n    margin-bottom: 15px;\n}\n.admin-add[data-v-5f98b79b] {\n    position: absolute;\n    top: 0;\n    right:8%;\n    padding: 10px;\n}\n.component-title[data-v-5f98b79b]{\n    color:white;\n    font-size:25px;\n    padding-left:10%;\n    margin-bottom: 15px;\n}\n", ""]);
 
 // exports
 
@@ -61634,7 +61656,7 @@ var render = function() {
           _c("label", [_vm._v("\n                Job type\n            ")]),
           _vm._v(" "),
           _c("select-box-component", {
-            attrs: { target: "type" },
+            attrs: { baseData: _vm.jobTypes },
             on: { changeSelectedVal: _vm.selectType }
           })
         ],
@@ -61648,7 +61670,7 @@ var render = function() {
           _c("label", [_vm._v("\n                Category\n            ")]),
           _vm._v(" "),
           _c("select-box-component", {
-            attrs: { target: "category" },
+            attrs: { baseData: _vm.categories },
             on: { changeSelectedVal: _vm.selectCategory }
           })
         ],
@@ -62827,7 +62849,10 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("select-box-component", {
-                    attrs: { target: "type", initVal: _vm.editPostForm.type },
+                    attrs: {
+                      baseData: _vm.jobTypes,
+                      initVal: _vm.editPostForm.type
+                    },
                     on: { changeSelectedVal: _vm.selectType }
                   })
                 ],
@@ -62846,7 +62871,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("select-box-component", {
                     attrs: {
-                      target: "category",
+                      baseData: _vm.category,
                       initVal: _vm.editPostForm.category
                     },
                     on: { changeSelectedVal: _vm.selectCategory }
@@ -64187,7 +64212,7 @@ var render = function() {
       _vm._v(" "),
       _c("option", { attrs: { value: "" } }),
       _vm._v(" "),
-      _vm._l(_vm.data, function(obj) {
+      _vm._l(_vm.baseData, function(obj) {
         return _c("option", { key: obj.id, domProps: { value: obj.id } }, [
           _vm._v(
             "\n        " +
@@ -65616,11 +65641,11 @@ var render = function() {
             _c("div", { staticClass: "mb-5 text-center" }, [
               _vm.initPage == "country"
                 ? _c("h1", { staticClass: "text-white font-weight-bold" }, [
-                    _vm._v("Job's in searchInfo.searchedBy")
+                    _vm._v("Job's in " + _vm._s(this.$route.params.country))
                   ])
                 : _vm.initPage == "category"
                 ? _c("h1", { staticClass: "text-white font-weight-bold" }, [
-                    _vm._v("Job's in searchInfo.searchedBy")
+                    _vm._v("Job's in " + _vm._s(this.$route.params.category))
                   ])
                 : _c("h1", { staticClass: "text-white font-weight-bold" }, [
                     _vm._v("JOB SEEKER")
@@ -65672,6 +65697,7 @@ var render = function() {
                     { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                     [
                       _c("place-show-component2", {
+                        attrs: { placeData: _vm.placeData },
                         on: { changeSelectedPlace: _vm.changeSelectedPlace },
                         model: {
                           value: _vm.searchKeys.city,
@@ -65691,7 +65717,7 @@ var render = function() {
                 { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                 [
                   _c("select-box-component", {
-                    attrs: { target: "jobType" },
+                    attrs: { target: "jobType", baseData: _vm.jobTypes },
                     on: { changeSelectedVal: _vm.changeSelectedType },
                     model: {
                       value: _vm.searchKeys.jobTypeId,
@@ -65711,7 +65737,7 @@ var render = function() {
                     { staticClass: "col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" },
                     [
                       _c("select-box-component", {
-                        attrs: { target: "category" },
+                        attrs: { target: "category", baseData: _vm.categories },
                         on: { changeSelectedVal: _vm.changeSelectedCategory },
                         model: {
                           value: _vm.searchKeys.jobTypeId,
@@ -66490,7 +66516,13 @@ var render = function() {
                         { attrs: { name: "content", appear: "" } },
                         [
                           _c("router-view", {
-                            attrs: { countries: _vm.countries, initFlg: true },
+                            attrs: {
+                              countries: _vm.countries,
+                              placeData: _vm.placeData,
+                              categories: _vm.categories,
+                              jobTypes: _vm.jobTypes,
+                              initFlg: true
+                            },
                             on: {
                               changeCategory: _vm.changeCategory,
                               changeCountry: _vm.changeCountry,
@@ -66511,7 +66543,14 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _c("modal", { ref: "modal" })
+      _c("modal", {
+        ref: "modal",
+        attrs: {
+          placeData: _vm.placeData,
+          category: _vm.categories,
+          jobTypes: _vm.jobTypes
+        }
+      })
     ],
     1
   )
@@ -66823,13 +66862,7 @@ var render = function() {
             })
           : _vm._e(),
         _vm._v(" "),
-        _c("categoryRegisterComponent", {
-          on: {
-            "refresh-list": function($event) {
-              return _vm.refresh()
-            }
-          }
-        }),
+        _c("categoryRegisterComponent", { on: { loading: _vm.loadingChange } }),
         _vm._v(" "),
         _c(
           "div",
@@ -67640,10 +67673,7 @@ var render = function() {
                       categories: _vm.categories,
                       loading: _vm.loading
                     },
-                    on: {
-                      refresh: _vm.refreshList,
-                      "refresh-category-list": _vm.refreshList
-                    }
+                    on: { refresh: _vm.refreshList }
                   })
                 ],
                 1
@@ -90416,7 +90446,12 @@ var state = {
   newMessageExistFlg: false,
   lastDeletedUser: null,
   routePath: '/jobsList',
-  refreshAdminDataFlg: false
+  refreshAdminDataFlg: false,
+  categories: "",
+  countries: "",
+  placeData: "",
+  jobTypes: "",
+  users: ""
 };
 var getters = {
   check: function check(state) {
@@ -90427,6 +90462,21 @@ var getters = {
   },
   routePath: function routePath(state) {
     return state.routePath;
+  },
+  categories: function categories(state) {
+    return state.categories;
+  },
+  countries: function countries(state) {
+    return state.countries;
+  },
+  placeData: function placeData(state) {
+    return state.placeData;
+  },
+  jobTypes: function jobTypes(state) {
+    return state.jobTypes;
+  },
+  users: function users(state) {
+    return state.users;
   }
 };
 var mutations = {
@@ -90459,6 +90509,21 @@ var mutations = {
   },
   setRefreshAdminDataFlg: function setRefreshAdminDataFlg(state, flg) {
     state.refreshAdminDataFlg = flg;
+  },
+  setCountries: function setCountries(state, data) {
+    state.countries = data;
+  },
+  setCategories: function setCategories(state, data) {
+    state.categories = data;
+  },
+  setPlaceData: function setPlaceData(state, data) {
+    state.placeData = data;
+  },
+  setJobTypes: function setJobTypes(state, data) {
+    state.jobTypes = data;
+  },
+  setUsers: function setUsers(state, data) {
+    state.users = data;
   }
 };
 var actions = {
@@ -90879,6 +90944,63 @@ var actions = {
           }
         }
       }, _callee10);
+    }))();
+  },
+  initData: function initData(context) {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee11() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee11$(_context11) {
+        while (1) {
+          switch (_context11.prev = _context11.next) {
+            case 0:
+              _context11.next = 2;
+              return axios.get('/api/getInitData').then(function (res) {
+                context.commit('setCategories', res.data.categories);
+                context.commit('setCountries', res.data.countries);
+                context.commit('setPlaceData', res.data.placeData);
+                context.commit('setJobTypes', res.data.jobTypes);
+              });
+
+            case 2:
+              return _context11.abrupt("return", true);
+
+            case 3:
+            case "end":
+              return _context11.stop();
+          }
+        }
+      }, _callee11);
+    }))();
+  },
+  refreshCategories: function refreshCategories(context) {
+    axios.get('/api/category').then(function (res) {
+      context.commit('setCategories', res.data);
+    });
+  },
+  refreshCountries: function refreshCountries(context) {
+    axios.get('/api/getCountries').then(function (res) {
+      context.commit('setCountries', res.data);
+    });
+  },
+  getUsers: function getUsers(context) {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee12() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee12$(_context12) {
+        while (1) {
+          switch (_context12.prev = _context12.next) {
+            case 0:
+              _context12.next = 2;
+              return axios.get('/api/getSettingData').then(function (res) {
+                context.commit('setUsers', res.data.users);
+              });
+
+            case 2:
+              return _context12.abrupt("return", true);
+
+            case 3:
+            case "end":
+              return _context12.stop();
+          }
+        }
+      }, _callee12);
     }))();
   }
 };

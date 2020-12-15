@@ -182,6 +182,7 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'都市を追加しました。'});
                 console.log(res.data);
                 that.$emit('update_data');
+                this.$store.dispatch('auth/refreshCountries');
             });
         },
         getCountries:function(){
@@ -199,7 +200,7 @@ export default {
         }
     },
     mounted:function(){
-        this.getCountries();
+        this.countries = this.$store.getters['auth/countries']
     },
     mixins: [methodMixIn],
 

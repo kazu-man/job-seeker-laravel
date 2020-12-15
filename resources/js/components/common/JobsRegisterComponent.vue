@@ -27,14 +27,14 @@
             <label>
                 Job type
             </label>
-            <select-box-component :target="'type'" @changeSelectedVal="selectType"></select-box-component>
+            <select-box-component :baseData="jobTypes" @changeSelectedVal="selectType"></select-box-component>
         </div>
 
         <div class="form-group category-form">
             <label>
                 Category
             </label>
-            <select-box-component :target="'category'" @changeSelectedVal="selectCategory"></select-box-component>
+            <select-box-component :baseData="categories" @changeSelectedVal="selectCategory"></select-box-component>
         </div>
 
         <div class="form-group description-form">
@@ -75,10 +75,6 @@
 </div>
 
 </template>
-
-
-
-
 
 <script>
 export default {
@@ -130,7 +126,8 @@ export default {
         selectCity: function(val) {
             this.city = val;
         }
-    }
+    },
+    props:["categories","jobTypes"]
 }
 </script>
 

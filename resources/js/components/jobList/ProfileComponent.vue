@@ -99,13 +99,8 @@
 
 </template>
 
-
-
-
-
 <script>
 import methodMixIn from '../common/CommonMethodsMixIn.vue';
-// Vue.mixin(require('./asset'));
 import { OK} from '../../util';
 
 export default {
@@ -122,7 +117,6 @@ export default {
                 education:"",
                 resume:"",
                 email:"",
-
                 companyName:"",
                 companyLogo:"",
             },

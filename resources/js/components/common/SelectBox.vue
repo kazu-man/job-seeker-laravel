@@ -3,7 +3,7 @@
             <option value='' v-if="target == 'category'" selected style='display:none;'>カテゴリーで検索</option>
             <option value='' else selected style='display:none;'>種別で検索</option>
             <option value=''></option>
-            <option v-for="(obj) in data" :key="obj.id" :value="obj.id" >
+            <option v-for="(obj) in baseData" :key="obj.id" :value="obj.id" >
                 {{obj.category_name}}
                 {{obj.job_type}}
             </option>
@@ -18,26 +18,37 @@ export default {
         data:{},
         selectedVal:""
     }},
-    props:['target','initVal'],
+    props:['target','initVal','baseData'],
     created: function() {
         this.getTableData();
     },
     methods: {
         getTableData: function() {
-            var url = this.target == "category" ? "category" : "getJobType";
+            // var url = this.target == "category" ? "category" : "getJobType";
             var tc = this;
-            axios.get('/api/' + url).then(res => {
-                this.data = res.data;
+            // axios.get('/api/' + url).then(res => {
+            //     this.data = res.data;
 
                 if(tc.initVal != undefined && tc.initVal != ""){
                     tc.selectedVal = tc.initVal;
                 }
-            });
+            // });
         },
         selectVal:function() {
             this.$emit('changeSelectedVal',this.selectedVal);
         }
     },
+    computed:{
+        route:function(){
+          return this.$route.params;
+        }
+    },
+    watch:{
+        route:function(){
+          this.selectedVal = "";
+          this.selectVal();
+        }
+    }
 }
 </script>
 

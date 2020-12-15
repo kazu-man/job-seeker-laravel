@@ -10,7 +10,7 @@
                 line-fg-color="#f00"
                 ></spinner>
 
-            <categoryRegisterComponent @refresh-list="refresh()"></categoryRegisterComponent>
+            <categoryRegisterComponent @loading="loadingChange"></categoryRegisterComponent>
             <div v-show="listSize > 0" class="list-count">{{listSize}} registered</div>
                 <ul style="padding-left:0">
             <transition-group class="flex">
@@ -32,20 +32,16 @@ import categoryRegisterComponent from './CategoryRegisterComponent.vue'
 export default {
     data() {return{
         hoverFlag:false,
-        hoverIndex:null
+        hoverIndex:null,
+        loading:false
     }},
     props:[
         "categories",
-        "loading"
     ],
     components:{
         categoryRegisterComponent,
     },
     methods:{
-        refresh(){
-            console.log('refresh');
-            this.$emit('refresh-category-list');
-        },
         mouseOverAction(i){
             this.hoverIndex = i;
             this.hoverFlag = true;
@@ -56,7 +52,7 @@ export default {
         },
         deleteCategory(id) {
             var data = {"id": id};
-
+            this.loading = true
             axios.post('/api/category/delete', data).then(res => {
                 if(res.status == 503){
                     this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:res.data.message});
@@ -64,14 +60,24 @@ export default {
                 }
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'削除しました。'});
                 console.log(res.data);
-                this.$emit('refresh-list');
+                this.$store.dispatch('auth/refreshCategories');
             });
-            this.$emit('refresh-category-list');
+        },
+        loadingChange:function(state){
+            this.loading = state
         }
     },
     computed:{
         listSize:function(){
             return this.categories.length;
+        }
+    },
+    watch:{
+        categories:{
+            handler: function (val, old) {
+                this.loading = false;
+            },
+            deep:true
         }
     }
 

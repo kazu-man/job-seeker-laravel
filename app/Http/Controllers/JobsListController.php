@@ -130,9 +130,20 @@ class JobsListController extends Controller
                 \Log::info("resume stored");
 
                 $resumeFile = $request->resume->getClientOriginalName();
-                request()->resume->storeAs('/public/images/resume/' . $user->id . '/',$resumeFile);        
 
                 $profile->resume = $resumeFile != "" ? '/storage/images/resume/' . $user->id . '/' . $resumeFile : $profile->resume;
+
+                if(config('app.file_system') == "s3"){
+                    
+                    Storage::putFileAs('/storage/images/resume/'.$user->id, request()->resume, $resumeFile);
+                    $profile->resume = Storage::cloud()->url($profile->resume);
+    
+                }else if(config('app.file_system') == "local"){
+    
+                    request()->resume->storeAs('/public/images/resume/' . $user->id . '/',$resumeFile);        
+                    
+                }
+                
                 \Log::info("resume stored");
             }
 
@@ -150,10 +161,20 @@ class JobsListController extends Controller
             
             if($request->companyLogo){
                 $companyLogoFile = $request->companyLogo->getClientOriginalName();
-                request()->companyLogo->storeAs('/public/images/companyLogos/' . $user->id . '/',$companyLogoFile);        
 
                 $profile->company_image = $companyLogoFile != "" ? '/storage/images/companyLogos/' . $user->id . '/' . $companyLogoFile : $profile->company_image;
                 \Log::info("company logo stored");
+
+                if(config('app.file_system') == "s3"){
+                    
+                    Storage::putFileAs('/storage/images/companyLogos/'. $user->id, request()->companyLogo, $companyLogoFile);
+                    $profile->company_image = Storage::cloud()->url($profile->company_image);
+    
+                }else if(config('app.file_system') == "local"){
+    
+                    request()->companyLogo->storeAs('/public/images/companyLogos/' . $user->id . '/',$companyLogoFile);        
+
+                }                
             }
 
             $profile->save();
@@ -418,18 +439,27 @@ class JobsListController extends Controller
         \Log::info($request->all());
         $path = $request->input('resumeFilePath');
         $fileName = $request->input('resumeFile');
-        $replacedPath = str_replace('/storage/',"/public/",$path);
-        $id = str_replace('/' . $fileName,"",str_replace('/storage/images/resume/',"",$path));
-        \Log::info("id");
-        \Log::info($id);
         $user = Auth::User();
+        $id = strstr($path, '/storage/images/resume/'); 
+
+        // if(config('app.file_system') == "s3"){
+        $replacedPath = "/storage/images/resume/" . $user->id . "/" . $fileName;
+
+        // }else if(config('app.file_system') == "local"){
+
+        //     $replacedPath = str_replace('/storage/',"/public/",$path);
+            
+        // }
+        
+        $id = str_replace('/' . $fileName,"",str_replace('/storage/images/resume/',"", $id));
 
         if($user->user_type == "U" && $user->id != $id){
             return response()->json([], 401);
         }
-        
+
         try{
-            $pathToFile = Storage::path($replacedPath);            
+            $pathToFile = Storage::path($replacedPath);  
+            \Log::info($pathToFile);          
             $mimeType = Storage::mimeType($replacedPath);            
             $headers = [['Content-Type' => $mimeType]];
             return Storage::download($replacedPath,$fileName,$headers);

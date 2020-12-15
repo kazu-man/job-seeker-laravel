@@ -228,4 +228,7 @@ return [
 
     ],
 
+    'file_system' => env('FILESYSTEM_DRIVER', 'local')
+
+
 ];

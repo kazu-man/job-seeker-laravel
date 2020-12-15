@@ -8,7 +8,6 @@
                             :users="users"
                             @refresh="refreshList"
                             :categories="categories"
-                            @refresh-category-list="refreshList"
                             :loading="loading"
                             ></router-view>
                         </div>
@@ -22,19 +21,15 @@
 <script>
 export default {
     data() {return{
-            users:[],
-            categories:[],
             loading : false
     }},
+    props:["categories"],
     methods: { 
-        categoryUpdate(newVal) {
-            this.categories = newVal;
-        },
         updateData(){
             this.$refs.placeCom.updatePlaceTable();
         },
         refreshList(){
-           this.init();        
+            this.$store.dispatch('auth/initData')
         },
         changeComponent(target){
             console.log("component change");
@@ -43,16 +38,10 @@ export default {
         goToMainPage(){
             this.$router.push(`${this.routePath}/top`).catch(()=>{});
         },
-        init(){
+        async init(){
             this.loading = true;
-            axios.get('/api/getSettingData').then(res => {
-                var $userList = res.data.users;
-                var $cateList = res.data.categories;
-
-                this.users = $userList;
-                this.categories = $cateList;
-                this.loading = false;
-            });
+            await this.$store.dispatch('auth/getUsers');
+            this.loading = false;
         },
     },
     created : function() {
@@ -68,11 +57,15 @@ export default {
         refreshDataFlg:function(){
             return this.$store.state.auth.refreshAdminDataFlg;
         },
+        countries:function(){
+            return this.$store.getters['auth/countries'];
+        },
+        users:function(){
+            return this.$store.getters['auth/users'] != undefined ? this.$store.getters['auth/users'] : [];
+        }
     },
     watch:{
         refreshDataFlg:function(next){
-            console.log(next);
-            console.log("asdfsafsdfsdfsadfsafsdafsafdsafluhsdiuhvalisudhfliashduflausdifhliuasdhlviuasdhluifnext");
             if(next){
                 this.init();
                 this.$store.dispatch('auth/refreshAdminData', false);

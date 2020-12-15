@@ -47,7 +47,7 @@ import store from './store'
 
 const createApp = async () => {
     await store.dispatch('auth/currentUser')
- 
+    
     const app = new Vue({
         el: '#app',
         router, // ルーティングの定義を読み込む

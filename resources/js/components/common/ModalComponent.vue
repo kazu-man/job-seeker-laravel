@@ -220,14 +220,14 @@
                             <label>
                                 Job type
                             </label>
-                            <select-box-component :target="'type'" @changeSelectedVal="selectType" :initVal="editPostForm.type"></select-box-component>
+                            <select-box-component :baseData="jobTypes" @changeSelectedVal="selectType" :initVal="editPostForm.type"></select-box-component>
                         </div>
 
                         <div class="form-group category-form">
                             <label>
                                 Category
                             </label>
-                            <select-box-component :target="'category'" @changeSelectedVal="selectCategory" :initVal="editPostForm.category"></select-box-component>
+                            <select-box-component :baseData="category" @changeSelectedVal="selectCategory" :initVal="editPostForm.category"></select-box-component>
                         </div>
 
                         <div class="form-group description-form">
@@ -845,6 +845,7 @@ export default {
                 message = "ユーザをログイン不可に変更しました。"
             }
             this.$store.dispatch('common/alertModalUp', {data:status, successMessage:message});
+            this.$store.dispatch('auth/getUsers')
         },
         resumeDownLoad(){
             var data = {
@@ -1018,7 +1019,7 @@ export default {
 
         }
     },
-
+    props:["jobTypes","category"],
     mixins: [methodMixIn],
 
 }
