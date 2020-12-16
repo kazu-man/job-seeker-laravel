@@ -30,6 +30,7 @@ const routes = [
     children: [
         {
             path: '',
+            props: { pageType: "top",initPage: "top" },
             component: top
           },
           {

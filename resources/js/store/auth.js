@@ -10,7 +10,7 @@ const state = {
   applyList:[],
   newMessageExistFlg:false,
   lastDeletedUser:null,
-  routePath:'/jobsList',
+  routePath:'',
   refreshAdminDataFlg:false,
 
   categories:"",

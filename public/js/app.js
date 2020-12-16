@@ -90211,6 +90211,10 @@ var routes = [{
   component: _components_jobList_jobListMain_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
   children: [{
     path: '',
+    props: {
+      pageType: "top",
+      initPage: "top"
+    },
     component: _components_jobList_TopComponent_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   }, {
     path: 'top',
@@ -90445,7 +90449,7 @@ var state = {
   applyList: [],
   newMessageExistFlg: false,
   lastDeletedUser: null,
-  routePath: '/jobsList',
+  routePath: '',
   refreshAdminDataFlg: false,
   categories: "",
   countries: "",
