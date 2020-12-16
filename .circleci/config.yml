@@ -44,7 +44,6 @@ jobs:
               git pull origin main && \
               docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
               docker exec job_seeker_laravel_app npm ci && \
-              docker exec job_seeker_laravel_app npm run prod && \
               docker exec job_seeker_laravel_app php artisan migrate --force && \
               docker exec job_seeker_laravel_app php artisan config:cache"
       - run:
@@ -55,7 +54,6 @@ jobs:
               git pull origin main && \
               docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
               docker exec job_seeker_laravel_app npm ci && \
-              docker exec job_seeker_laravel_app npm run prod && \
               docker exec job_seeker_laravel_app php artisan migrate --force && \
               docker exec job_seeker_laravel_app php artisan config:cache"
 workflows:
