@@ -3,7 +3,6 @@
 @section('title', 'job list')
 
 @section('ownCss')
-    <link href="{{asset('css/jobsList.css')}}" rel="stylesheet">
     <title></title>
 @endsection
 
