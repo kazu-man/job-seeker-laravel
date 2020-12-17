@@ -49,7 +49,7 @@ class PasswordResetNotification extends Notification
           ->view(
             'mail.passwordreset',
             [
-              'reset_url' => url('jobslist/password/reset', $this->token),
+              'reset_url' => url('password/reset', $this->token),
             ]);
     }
 

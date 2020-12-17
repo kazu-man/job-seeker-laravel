@@ -874,8 +874,10 @@ export default {
                 if(res.status != 200){
                     return false;
                 }
-                
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'パスワード再設定メールを送信しました'});
+            })
+            .catch(res => {
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'メールアドレスが見つかりませんでした。\nメールアドレスをご確認ください。'});
             });
         }
 
