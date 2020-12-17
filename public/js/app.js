@@ -4620,6 +4620,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     data: res.status,
                     successMessage: 'パスワード再設定メールを送信しました'
                   });
+                })["catch"](function (res) {
+                  _this9.$store.dispatch('common/alertModalUp', {
+                    data: res.status,
+                    successMessage: 'メールアドレスが見つかりませんでした。\nメールアドレスをご確認ください。'
+                  });
                 });
 
               case 3:
