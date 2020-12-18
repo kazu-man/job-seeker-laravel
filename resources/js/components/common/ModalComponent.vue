@@ -768,7 +768,6 @@ export default {
         },
         sendMessage(){
             this.messageForm.applyRecordId = this.applyRecord.id;
-            // this.messageForm.message = this.messageForm.message.trim();
             if(this.messageForm.message == null || this.messageForm.message == ""){
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'メッセージを入力してください'});
                 return false;

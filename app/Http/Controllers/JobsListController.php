@@ -372,9 +372,6 @@ class JobsListController extends Controller
         $user = Auth::User();
         $userType = $user->user_type;
 
-        // \Log::info($request->all());
-
-
         if($userType == "C"){
             $sendTo = "U";
         }else{
@@ -390,7 +387,9 @@ class JobsListController extends Controller
         
         $newMessage->save();
 
-        return "messaged sent";
+        
+
+        return "message sent";
 
     }
 
@@ -402,10 +401,6 @@ class JobsListController extends Controller
         \Log::info($user);
         $userId = $user->id;
         $userType = $user->user_type;
-        // $messages = ApplyRecord::
-        // with(['messages' => function ($query) use($userId){
-        //     $query->where('sent_to','U')->where('checked',0);
-        // }])->where('user_id',$userId)->get();
         $messages = 0;
         if($userType == "U"){
             $messages = \DB::table('apply_records')

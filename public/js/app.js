@@ -4387,7 +4387,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     sendMessage: function sendMessage() {
       var _this5 = this;
 
-      this.messageForm.applyRecordId = this.applyRecord.id; // this.messageForm.message = this.messageForm.message.trim();
+      this.messageForm.applyRecordId = this.applyRecord.id;
 
       if (this.messageForm.message == null || this.messageForm.message == "") {
         this.$store.dispatch('common/alertModalUp', {
@@ -5698,6 +5698,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   _this2.countUp(_this2.posts.length);
 
                   _this2.loading = false;
+                })["catch"](function (res) {
+                  window.location.href = store.getters['auth/routePath'];
                 });
 
               case 7:
@@ -5857,7 +5859,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_CommonMethodsMixIn_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../common/CommonMethodsMixIn.vue */ "./resources/js/components/common/CommonMethodsMixIn.vue");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util */ "./resources/js/util.js");
-//
 //
 //
 //
@@ -6925,6 +6926,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   components: {
     modal: _common_ModalComponent_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     VueLoading: vue_loading_template__WEBPACK_IMPORTED_MODULE_2__["VueLoading"]
+  },
+  filters: {
+    omittedText: function omittedText(text) {
+      return text.length > 15 ? text.slice(0, 15) + "…" : text;
+    }
   }
 });
 
@@ -12870,7 +12876,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.company-logo-image[data-v-27bffa53] {\n    width:80px;\n    height:80px;\n    margin-top:-15px !important;\n}\n.uploadedResume[data-v-27bffa53] {\n    display:inline-block;\n    padding-left:10px;\n    text-decoration:underline;\n}\n.changePassword[data-v-27bffa53] {\n    position:absolute;\n    top:10px;\n    right:0px;\n}\n", ""]);
+exports.push([module.i, "\n.company-logo-image[data-v-27bffa53] {\n    width:150px;\n    height:150px;\n    margin-top:-15px !important;\n    cursor:pointer;\n}\n.uploadedResume[data-v-27bffa53] {\n    display:inline-block;\n    padding-left:10px;\n    text-decoration:underline;\n}\n.changePassword[data-v-27bffa53] {\n    position:absolute;\n    top:10px;\n    right:0px;\n}\n.card-header[data-v-27bffa53]{\n    margin-bottom:0 !important;\n}\n", ""]);
 
 // exports
 
@@ -12889,7 +12895,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.container[data-v-602fe5a7] {\n    padding-top:100px;\n    z-index:100;\n}\n.fade-enter-active[data-v-602fe5a7],\n.fade-leave-active[data-v-602fe5a7] {\n  transition: opacity 200ms;\n}\n.fade-enter[data-v-602fe5a7],\n.fade-leave-to[data-v-602fe5a7] {\n  opacity: 0\n}\n.search-country-area[data-v-602fe5a7] {\n  word-break:break-all;\n  padding:30px 0px 100px 0px;\n}\n.search-area[data-v-602fe5a7]{\n  width: 80%;\nmargin: 0 auto;\n}\n\n\n", ""]);
+exports.push([module.i, "\n.container[data-v-602fe5a7] {\n    padding-top:100px;\n    z-index:100;\n}\n.fade-enter-active[data-v-602fe5a7],\n.fade-leave-active[data-v-602fe5a7] {\n  transition: opacity 200ms;\n}\n.fade-enter[data-v-602fe5a7],\n.fade-leave-to[data-v-602fe5a7] {\n  opacity: 0\n}\n.search-country-area[data-v-602fe5a7] {\n  word-break:break-all;\n  padding:30px 0px 100px 0px;\n}\n.search-area[data-v-602fe5a7]{\n  width: 80%;\nmargin: 0 auto;\n}\n.seach-by-country[data-v-602fe5a7]{\n  word-break:initial;\n}\n\n", ""]);
 
 // exports
 
@@ -64567,7 +64573,7 @@ var render = function() {
                       { staticClass: "col-3 pt-2 text-right post-salary" },
                       [
                         _c("strong", { staticClass: "text-black" }, [
-                          _vm._v(_vm._s(_vm.post.annual_salary))
+                          _vm._v(_vm._s(_vm.post.annual_salary) + "/Month")
                         ])
                       ]
                     ),
@@ -64954,7 +64960,9 @@ var render = function() {
                             _c("div", { staticClass: "h6" }, [
                               _vm._v("Salary : "),
                               _c("span", { staticClass: "font-gray" }, [
-                                _vm._v(_vm._s(_vm.post.annual_salary))
+                                _vm._v(
+                                  _vm._s(_vm.post.annual_salary) + "/Month"
+                                )
                               ])
                             ])
                           ]),
@@ -65126,40 +65134,56 @@ var render = function() {
             this.$store.state.auth.user != null &&
             this.$store.state.auth.user.user_type == "C"
               ? _c("div", [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { attrs: { for: "companyLogo" } }, [
-                      _c("input", {
-                        staticClass: "p-3",
-                        staticStyle: { display: "none" },
-                        attrs: {
-                          type: "file",
-                          name: "companyLogo",
-                          id: "companyLogo"
-                        },
-                        on: { change: _vm.companyLogoSelect }
-                      }),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "form-group",
+                      staticStyle: { "text-align": "center" }
+                    },
+                    [
+                      _c("div", { staticStyle: { "margin-bottom": "15px" } }, [
+                        _vm._v("Upload your logo")
+                      ]),
                       _vm._v(" "),
-                      _vm.previewLogo != ""
-                        ? _c("img", {
-                            staticClass:
-                              "m-auto p-auto image rounded-circle company-logo-image",
-                            attrs: { src: _vm.previewLogo, alt: "image" }
-                          })
-                        : _vm.currentLogo != null
-                        ? _c("img", {
-                            staticClass:
-                              "m-auto p-auto image rounded-circle company-logo-image",
-                            attrs: { src: _vm.currentLogo, alt: "image" }
-                          })
-                        : _c("img", {
-                            staticClass:
-                              "m-auto p-auto image rounded-circle company-logo-image",
-                            attrs: { src: _vm.defaultImage, alt: "image" }
-                          }),
-                      _vm._v(" "),
-                      _vm._m(0)
-                    ])
-                  ])
+                      _c("label", { attrs: { for: "companyLogo" } }, [
+                        _c("input", {
+                          staticClass: "p-3",
+                          staticStyle: { display: "none" },
+                          attrs: {
+                            type: "file",
+                            name: "companyLogo",
+                            id: "companyLogo"
+                          },
+                          on: { change: _vm.companyLogoSelect }
+                        }),
+                        _vm._v(" "),
+                        _vm.previewLogo != ""
+                          ? _c("img", {
+                              staticClass:
+                                "m-auto p-auto image rounded-circle company-logo-image",
+                              attrs: { src: _vm.previewLogo, alt: "image" }
+                            })
+                          : _vm.currentLogo != null
+                          ? _c("img", {
+                              staticClass:
+                                "m-auto p-auto image rounded-circle company-logo-image",
+                              attrs: { src: _vm.currentLogo, alt: "image" }
+                            })
+                          : _c("img", {
+                              staticClass:
+                                "m-auto p-auto image rounded-circle company-logo-image",
+                              attrs: { src: _vm.defaultImage, alt: "image" }
+                            }),
+                        _vm._v(" "),
+                        _c("div", {
+                          staticStyle: {
+                            display: "inline-block",
+                            "margin-left": "10px"
+                          }
+                        })
+                      ])
+                    ]
+                  )
                 ])
               : _vm._e(),
             _vm._v(" "),
@@ -65597,22 +65621,7 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticStyle: { display: "inline-block", "margin-left": "10px" } },
-      [
-        _c("div", [_vm._v("Upload your logo")]),
-        _vm._v(" "),
-        _c("div", { staticClass: "btn btn-primary p-2" }, [_vm._v("Upload")])
-      ]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -65797,7 +65806,7 @@ var render = function() {
                     "a",
                     {
                       key: country.id,
-                      staticClass: "m-3 text-white",
+                      staticClass: "m-3 text-white seach-by-country",
                       attrs: { href: "#" },
                       on: {
                         click: function($event) {
@@ -66101,9 +66110,11 @@ var render = function() {
                                           [
                                             _vm._v(
                                               _vm._s(
-                                                _vm.loginUser.name == null
-                                                  ? _vm.loginUser.email
-                                                  : _vm.loginUser.name
+                                                _vm._f("omittedText")(
+                                                  _vm.loginUser.name == null
+                                                    ? _vm.loginUser.email
+                                                    : _vm.loginUser.name
+                                                )
                                               )
                                             )
                                           ]

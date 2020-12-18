@@ -30,7 +30,7 @@
               </div>
           <form action="" method="POST" class="text-center search-country-area" >
             <h3 class="text-white">Search by Country ?</h3>
-            <a href="#" v-for="country in countries" @click="searchByCountry(country.country_name)" class="m-3 text-white" :key="country.id">{{country.country_name}}</a>
+            <a href="#" v-for="country in countries" @click="searchByCountry(country.country_name)" class="m-3 text-white seach-by-country" :key="country.id">{{country.country_name}}</a>
           </form>
           </div>
         </div>
@@ -135,7 +135,7 @@
         route:function(){
           this.searchKeysClear();
         }
-      }
+      },
 
     }
 </script>
@@ -165,7 +165,9 @@
     margin: 0 auto;
 
     }
-
+    .seach-by-country{
+      word-break:initial;
+    }
 
 </style>
 
