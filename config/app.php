@@ -228,7 +228,7 @@ return [
 
     ],
 
-    'file_system' => env('FILESYSTEM_DRIVER', 'local')
-
+    'file_system' => env('FILESYSTEM_DRIVER', 'local'),
+    'my_temp_address' => env('MAIL_FROM_ADDRESS', 'xx@gmail.com'),
 
 ];

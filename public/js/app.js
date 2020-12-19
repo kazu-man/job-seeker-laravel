@@ -4398,16 +4398,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       axios.post('/api/sendMessage', this.messageForm).then(function (res) {
+        _this5.$store.dispatch('common/refreshMessage', _this5.applyRecord.id);
+
         _this5.$store.dispatch('common/alertModalUp', {
           data: res.status,
           successMessage: '送信しました'
         });
-
-        _this5.$store.dispatch('common/refreshMessage', _this5.applyRecord.id);
-
-        setTimeout(function () {
-          _this5.scrollBottomOfMessage();
-        }, 100);
       });
     },
     closePost: function closePost() {
@@ -4863,6 +4859,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           close: false
         });
       }
+    },
+    messagesList: function messagesList() {
+      var _this10 = this;
+
+      setTimeout(function () {
+        _this10.scrollBottomOfMessage();
+      }, 50);
     }
   },
   props: ["jobTypes", "category"],
@@ -63467,7 +63470,7 @@ var render = function() {
                 "div",
                 {
                   staticClass: "messages-area",
-                  staticStyle: { height: "382px", "overflow-y": "scroll" },
+                  staticStyle: { height: "360px", "overflow-y": "scroll" },
                   attrs: { id: "messages-area" }
                 },
                 [

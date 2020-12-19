@@ -400,7 +400,7 @@
                     <div v-on:click="modalHide('messageModal')" class="close">X</div>
                 </div>
 
-                <div class="messages-area" id="messages-area" style="height:382px;overflow-y:scroll" v-if="messagesList != null">
+                <div class="messages-area" id="messages-area" style="height:360px;overflow-y:scroll" v-if="messagesList != null">
                     <div class="message">
                         <transition-group name="message">
                             <div v-for="message in messagesList" class="message-text" :key="message.id">
@@ -773,11 +773,8 @@ export default {
                 return false;
             }
             axios.post('/api/sendMessage', this.messageForm).then(res => {
+                this.$store.dispatch('common/refreshMessage', this.applyRecord.id)
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'送信しました'});
-                this.$store.dispatch('common/refreshMessage', this.applyRecord.id);
-                setTimeout(() => {
-                    this.scrollBottomOfMessage();
-                }, 100);
             });
         },
         closePost(){
@@ -1018,6 +1015,11 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:UNPROCESSABLE_ENTITY, successMessage:message,close:false});
             }
 
+        },
+        messagesList:function(){
+            setTimeout(() => {
+                this.scrollBottomOfMessage();
+            },50);
         }
     },
     props:["jobTypes","category"],

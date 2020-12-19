@@ -9,11 +9,13 @@ use App\Model\Company;
 use App\Model\Message;
 use App\Model\Profile;
 use App\Model\ApplyRecord;
+use App\Mail\MailController;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class DefaultUser {
@@ -365,17 +367,21 @@ class JobsListController extends Controller
         $this->validate($request,[
             'message' => 'required',
         ]);
-
-
         $applyRecordId = $request->input('applyRecordId');
         $message = $request->input('message');
         $user = Auth::User();
         $userType = $user->user_type;
+        
+        $applyRecord = ApplyRecord::where('id', $applyRecordId) ->with("user") ->with("job.company") ->first();
 
         if($userType == "C"){
             $sendTo = "U";
+            $to = $applyRecord->user->email;
+            $name = $applyRecord->user->name != null ? $applyRecord->user->name : "";
         }else{
             $sendTo = "C";
+            $to = $applyRecord->job->company->user->email;
+            $name = $applyRecord->job->company->user->name != null ? $applyRecord->job->company->user->name : "";
         }
 
         $newMessage = new Message();
@@ -384,11 +390,32 @@ class JobsListController extends Controller
         $newMessage->message = $message;
         $newMessage->sent_to = $sendTo;
         $newMessage->checked = 0;
-        
+
+        $lastMessage = Message::where('apply_record_id', $applyRecordId)
+        ->orderBy('created_at', 'desc')->first();
+
+        $oneHourBefore = new Carbon();
+        $oneHourBefore->subHours(1);
+
+        //最初の送信もしくは最後の送信が自分あて、もしくは1時間以上立っている場合は、メール通知
+        if($lastMessage == null || $lastMessage->created_at->lt($oneHourBefore) || $lastMessage->sent_to == $userType){
+
+            \Log::info("メッセージ送信");
+            //メール送信
+            $mailName = config('app.name') . " - メッセージを受信しました。";
+            $text = '';
+            $view = 'mail.messageNotification';
+            $data = [
+                'reset_url' => url('/top'),
+                'name' => $name
+            ];
+            //実際のメールアドレスは登録されないので、全て自分のメールに送る
+            $to = config('app.my_temp_address');
+            Mail::to($to)
+            ->send(new MailController($mailName, $text, $view, $data));  
+        }
+
         $newMessage->save();
-
-        
-
         return "message sent";
 
     }
