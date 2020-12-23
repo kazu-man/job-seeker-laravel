@@ -90269,7 +90269,7 @@ var routes = [{
         if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
           next();
         } else {
-          window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+          window.location.href = "/";
         }
       });
     }
@@ -90287,7 +90287,7 @@ var routes = [{
         if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
           next();
         } else {
-          window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+          window.location.href = "/";
         }
       });
     }
@@ -90301,7 +90301,7 @@ var routes = [{
         if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.company_id) {
           next();
         } else {
-          window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+          window.location.href = "/";
         }
       });
     }
@@ -90309,18 +90309,16 @@ var routes = [{
     path: 'profile/:id',
     component: _components_jobList_ProfileComponent_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
     beforeEnter: function beforeEnter(to, from, next) {
-      var value = _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck'); // .then(value => {
+      var value = _store__WEBPACK_IMPORTED_MODULE_14__["default"].dispatch('auth/accessAllowCheck').then(function (value) {
+        var id = to.params.id;
 
-      var id = to.params.id;
-
-      if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
-        console.log('mada');
-        next();
-      } else {
-        window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
-      }
-
-      console.log('owattemota'); // });
+        if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
+          console.log('mada');
+          next();
+        } else {
+          window.location.href = "/";
+        }
+      });
     }
   }, {
     path: 'likes/:id',
@@ -90335,7 +90333,7 @@ var routes = [{
         if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
           next();
         } else {
-          window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+          window.location.href = "/";
         }
       });
     }
@@ -90352,7 +90350,7 @@ var routes = [{
         if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && id == _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.id) {
           next();
         } else {
-          window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+          window.location.href = "/";
         }
       });
     }
@@ -90370,7 +90368,7 @@ var routes = [{
           if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
             next();
           } else {
-            window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+            window.location.href = "/";
           }
         });
       }
@@ -90385,7 +90383,7 @@ var routes = [{
           if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
             next();
           } else {
-            window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+            window.location.href = "/";
           }
         });
       }
@@ -90400,7 +90398,7 @@ var routes = [{
           if (_store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user != null && value && _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/check'] && _store__WEBPACK_IMPORTED_MODULE_14__["default"].state.auth.user.user_type == "A") {
             next();
           } else {
-            window.location.href = _store__WEBPACK_IMPORTED_MODULE_14__["default"].getters['auth/routePath'];
+            window.location.href = "/";
           }
         });
       }
