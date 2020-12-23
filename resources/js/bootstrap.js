@@ -54,7 +54,7 @@ window.axios.interceptors.request.use(config => {
         if(message == ""){
           message = "エラーが発生しました"
         }
-        store.dispatch('common/alertModalUp', {data:status, successMessage:message,close:false});
+        store.dispatch('common/alertModalUp', {data:status, successMessage:message,close:false,reload:true});
     }
   		return Promise.reject(error)
     }

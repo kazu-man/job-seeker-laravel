@@ -643,25 +643,28 @@ export default {
             if(target == 'alert' && status == UNAUTHORIZED){
                 this.$router.go({path: this.routePath, force: true})
                 await this.$store.dispatch('auth/logout')       
-            }else 
-            if(target == 'alert'){
+            }else if(target == 'alert'){
                 console.log('クローズするか')
                 console.log(this.$store.state.common.alertModalMessage.close)
                 this.$modal.hide(target);
-            if(this.$store.state.common.alertModalMessage.close){
-                this.$modal.hide('changePassword');
-                this.$modal.hide('editPost');
-                this.$modal.hide('apply');
-                this.$modal.hide('postClose');
-                this.$modal.hide('deleteUserModal');
-                this.$modal.hide('register');
-                this.$modal.hide('registerAdmin');
-                this.$modal.hide('login');
-                this.$modal.hide('bgChangeModal');
+                if(this.$store.state.common.alertModalMessage.close){
+                    this.$modal.hide('changePassword');
+                    this.$modal.hide('editPost');
+                    this.$modal.hide('apply');
+                    this.$modal.hide('postClose');
+                    this.$modal.hide('deleteUserModal');
+                    this.$modal.hide('register');
+                    this.$modal.hide('registerAdmin');
+                    this.$modal.hide('login');
+                    this.$modal.hide('bgChangeModal');
+                }
+                //エラーの場合などはリロードする
+                if(this.$store.state.common.alertModalMessage.reload){
+                    window.location.href = "/";
+                }
                 this.$store.commit('common/setApplyTargetPost', null)
                 this.$store.commit('common/setEditPost', null)
                 this.$store.commit('common/setAlertModalMessage', null)
-                }
                 this.passwordResetForm.password = "";
                 this.passwordResetForm.password_confirmation = "";
             }else{

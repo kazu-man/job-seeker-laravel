@@ -101,14 +101,17 @@ const actions = {
         context.commit('setModalTarget', 'postClose');
         context.commit('setSinglepost', post);
     },
-    alertModalUp (context,　{data, successMessage, close}) {
+    alertModalUp (context,　{data, successMessage, close, reload}) {
         console.log('modal up');
         console.log(close);
         console.log(successMessage);
         if(close == null){
             close = true;
         }
-        context.commit('setAlertModalMessage', {"successMessage":successMessage, "status":data, "close":close})
+        if(reload == null){
+            reload = false;
+        }
+        context.commit('setAlertModalMessage', {"successMessage":successMessage, "status":data, "close":close,"reload":reload})
         context.commit('setModalTarget', 'alert')
     },
     setBgChangeModal(context,countryData){

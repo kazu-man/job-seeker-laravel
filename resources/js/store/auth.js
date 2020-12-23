@@ -180,7 +180,7 @@ const actions = {
       context.commit('setApiStatus', true)
       if(user != null){
         console.log('access OK')
-        console.log(user)
+        context.commit('setUser', user)
         return true
       }
       console.log('access NG')

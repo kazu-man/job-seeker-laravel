@@ -4204,11 +4204,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     this.$modal.hide('registerAdmin');
                     this.$modal.hide('login');
                     this.$modal.hide('bgChangeModal');
-                    this.$store.commit('common/setApplyTargetPost', null);
-                    this.$store.commit('common/setEditPost', null);
-                    this.$store.commit('common/setAlertModalMessage', null);
+                  } //エラーの場合などはリロードする
+
+
+                  if (this.$store.state.common.alertModalMessage.reload) {
+                    window.location.href = "/";
                   }
 
+                  this.$store.commit('common/setApplyTargetPost', null);
+                  this.$store.commit('common/setEditPost', null);
+                  this.$store.commit('common/setAlertModalMessage', null);
                   this.passwordResetForm.password = "";
                   this.passwordResetForm.password_confirmation = "";
                 } else {
@@ -88294,7 +88299,8 @@ window.axios.interceptors.response.use(function (response) {
     _store__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch('common/alertModalUp', {
       data: status,
       successMessage: message,
-      close: false
+      close: false,
+      reload: true
     });
   }
 
@@ -90756,7 +90762,7 @@ var actions = {
               }
 
               console.log('access OK');
-              console.log(user);
+              context.commit('setUser', user);
               return _context5.abrupt("return", true);
 
             case 11:
@@ -91138,7 +91144,8 @@ var actions = {
   alertModalUp: function alertModalUp(context, _ref) {
     var data = _ref.data,
         successMessage = _ref.successMessage,
-        close = _ref.close;
+        close = _ref.close,
+        reload = _ref.reload;
     console.log('modal up');
     console.log(close);
     console.log(successMessage);
@@ -91147,10 +91154,15 @@ var actions = {
       close = true;
     }
 
+    if (reload == null) {
+      reload = false;
+    }
+
     context.commit('setAlertModalMessage', {
       "successMessage": successMessage,
       "status": data,
-      "close": close
+      "close": close,
+      "reload": reload
     });
     context.commit('setModalTarget', 'alert');
   },
