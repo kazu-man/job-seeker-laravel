@@ -476,7 +476,7 @@ export default {
     width:50%;
 }
 
-@media (max-width:414px){
+@media (max-width:667px){
     .pc-view{
         display: none;
     }
