@@ -64370,7 +64370,10 @@ var render = function() {
                             props.row.newMessageFlg
                               ? _c(
                                   "span",
-                                  { staticClass: "badge badge-danger" },
+                                  {
+                                    staticClass: "badge badge-danger",
+                                    staticStyle: { position: "absolute" }
+                                  },
                                   [_vm._v("new")]
                                 )
                               : _vm._e()

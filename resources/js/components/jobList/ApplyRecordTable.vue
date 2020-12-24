@@ -40,7 +40,7 @@
                 <template slot="table-row" slot-scope="props">
                     <span v-if="props.column.field == 'message'">
                         <transition name="badge">
-                            <span v-if="props.row.newMessageFlg" class="badge badge-danger">new</span>
+                            <span v-if="props.row.newMessageFlg" class="badge badge-danger" style="position:absolute">new</span>
                         </transition>
                         <button @click="setMessageModal(props.row)" class="btn btn-info message-btn">Messages</button>
                     </span>
