@@ -166,7 +166,7 @@
 
     }
     .seach-by-country{
-      word-break:initial;
+      word-break:break-all;
     }
 
 </style>

@@ -12903,7 +12903,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.container[data-v-602fe5a7] {\n    padding-top:100px;\n    z-index:100;\n}\n.fade-enter-active[data-v-602fe5a7],\n.fade-leave-active[data-v-602fe5a7] {\n  transition: opacity 200ms;\n}\n.fade-enter[data-v-602fe5a7],\n.fade-leave-to[data-v-602fe5a7] {\n  opacity: 0\n}\n.search-country-area[data-v-602fe5a7] {\n  word-break:break-all;\n  padding:30px 0px 100px 0px;\n}\n.search-area[data-v-602fe5a7]{\n  width: 80%;\nmargin: 0 auto;\n}\n.seach-by-country[data-v-602fe5a7]{\n  word-break:initial;\n}\n\n", ""]);
+exports.push([module.i, "\n.container[data-v-602fe5a7] {\n    padding-top:100px;\n    z-index:100;\n}\n.fade-enter-active[data-v-602fe5a7],\n.fade-leave-active[data-v-602fe5a7] {\n  transition: opacity 200ms;\n}\n.fade-enter[data-v-602fe5a7],\n.fade-leave-to[data-v-602fe5a7] {\n  opacity: 0\n}\n.search-country-area[data-v-602fe5a7] {\n  word-break:break-all;\n  padding:30px 0px 100px 0px;\n}\n.search-area[data-v-602fe5a7]{\n  width: 80%;\nmargin: 0 auto;\n}\n.seach-by-country[data-v-602fe5a7]{\n  word-break:break-all;\n}\n\n", ""]);
 
 // exports
 
