@@ -12,15 +12,14 @@
         <div class="card-body ">
             <form class="form" @submit.prevent="updateProfile">
                 <div v-if="this.$store.state.auth.user != null && this.$store.state.auth.user.user_type == 'C'">
-                    <div class="form-group">
+                    <div class="form-group" style="text-align:center">
+                        <div style="margin-bottom: 15px;">Upload your logo</div>
                         <label for="companyLogo">
                             <input type="file" name="companyLogo" id="companyLogo" class="p-3" style="display:none" @change="companyLogoSelect">
                             <img v-if="previewLogo != ''" :src="previewLogo" class="m-auto p-auto image rounded-circle company-logo-image" alt="image">
                             <img v-else-if="currentLogo != null" :src="currentLogo" class="m-auto p-auto image rounded-circle company-logo-image" alt="image">
                             <img v-else :src="defaultImage" class="m-auto p-auto image rounded-circle company-logo-image" alt="image">
                             <div style="display:inline-block;margin-left:10px">
-                                <div>Upload your logo</div>
-                                <div class="btn btn-primary p-2">Upload</div>
                             </div>
                         </label>
                     </div>
@@ -236,9 +235,10 @@ export default {
 <style scoped>
 
 .company-logo-image {
-    width:80px;
-    height:80px;
+    width:150px;
+    height:150px;
     margin-top:-15px !important;
+    cursor:pointer;
 }
 .uploadedResume {
     display:inline-block;
@@ -249,5 +249,8 @@ export default {
     position:absolute;
     top:10px;
     right:0px;
+}
+.card-header{
+    margin-bottom:0 !important;
 }
 </style>

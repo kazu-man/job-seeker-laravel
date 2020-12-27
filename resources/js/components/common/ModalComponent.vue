@@ -400,7 +400,7 @@
                     <div v-on:click="modalHide('messageModal')" class="close">X</div>
                 </div>
 
-                <div class="messages-area" id="messages-area" style="height:382px;overflow-y:scroll" v-if="messagesList != null">
+                <div class="messages-area" id="messages-area" style="height:360px;overflow-y:scroll" v-if="messagesList != null">
                     <div class="message">
                         <transition-group name="message">
                             <div v-for="message in messagesList" class="message-text" :key="message.id">
@@ -643,25 +643,28 @@ export default {
             if(target == 'alert' && status == UNAUTHORIZED){
                 this.$router.go({path: this.routePath, force: true})
                 await this.$store.dispatch('auth/logout')       
-            }else 
-            if(target == 'alert'){
+            }else if(target == 'alert'){
                 console.log('クローズするか')
                 console.log(this.$store.state.common.alertModalMessage.close)
                 this.$modal.hide(target);
-            if(this.$store.state.common.alertModalMessage.close){
-                this.$modal.hide('changePassword');
-                this.$modal.hide('editPost');
-                this.$modal.hide('apply');
-                this.$modal.hide('postClose');
-                this.$modal.hide('deleteUserModal');
-                this.$modal.hide('register');
-                this.$modal.hide('registerAdmin');
-                this.$modal.hide('login');
-                this.$modal.hide('bgChangeModal');
+                if(this.$store.state.common.alertModalMessage.close){
+                    this.$modal.hide('changePassword');
+                    this.$modal.hide('editPost');
+                    this.$modal.hide('apply');
+                    this.$modal.hide('postClose');
+                    this.$modal.hide('deleteUserModal');
+                    this.$modal.hide('register');
+                    this.$modal.hide('registerAdmin');
+                    this.$modal.hide('login');
+                    this.$modal.hide('bgChangeModal');
+                }
+                //エラーの場合などはリロードする
+                if(this.$store.state.common.alertModalMessage.reload){
+                    window.location.href = "/";
+                }
                 this.$store.commit('common/setApplyTargetPost', null)
                 this.$store.commit('common/setEditPost', null)
                 this.$store.commit('common/setAlertModalMessage', null)
-                }
                 this.passwordResetForm.password = "";
                 this.passwordResetForm.password_confirmation = "";
             }else{
@@ -768,17 +771,13 @@ export default {
         },
         sendMessage(){
             this.messageForm.applyRecordId = this.applyRecord.id;
-            // this.messageForm.message = this.messageForm.message.trim();
             if(this.messageForm.message == null || this.messageForm.message == ""){
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'メッセージを入力してください'});
                 return false;
             }
             axios.post('/api/sendMessage', this.messageForm).then(res => {
+                this.$store.dispatch('common/refreshMessage', this.applyRecord.id)
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'送信しました'});
-                this.$store.dispatch('common/refreshMessage', this.applyRecord.id);
-                setTimeout(() => {
-                    this.scrollBottomOfMessage();
-                }, 100);
             });
         },
         closePost(){
@@ -1019,6 +1018,11 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:UNPROCESSABLE_ENTITY, successMessage:message,close:false});
             }
 
+        },
+        messagesList:function(){
+            setTimeout(() => {
+                this.scrollBottomOfMessage();
+            },50);
         }
     },
     props:["jobTypes","category"],

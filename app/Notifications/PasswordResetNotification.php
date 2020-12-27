@@ -12,7 +12,6 @@ class PasswordResetNotification extends Notification
     use Queueable;
 
     public $token;
-    protected $title = 'Job Seeker - パスワードリセット';
 
     /**
      * Create a new notification instance.
@@ -45,7 +44,7 @@ class PasswordResetNotification extends Notification
     {
         
         return (new MailMessage)
-          ->subject($this->title)
+          ->subject(config('app.name') . ' - パスワードリセット')
           ->view(
             'mail.passwordreset',
             [

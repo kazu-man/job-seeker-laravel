@@ -110,6 +110,9 @@ export default {
                 console.log(res.data);
                 this.countUp(this.posts.length);
                 this.loading = false;
+            })
+            .catch(res => {
+                  window.location.href = store.getters['auth/routePath'];
             });
         },
         init:function(){

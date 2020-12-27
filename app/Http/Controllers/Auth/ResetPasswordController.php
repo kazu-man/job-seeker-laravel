@@ -200,10 +200,6 @@ class ResetPasswordController extends Controller
      */
     protected function redirectWithMessage($vueRoute, $message)
     {
-        // vueでアクセスするルートを作る
-        // コールバックURLをルート名で取得
-        // TODO: これだとホットリロードでポートがとれない
-        // $route = url($vueRoute);
 
         // TODO: とりあえずこれで対応
         // .envの「APP_URL」に設定したurlを取得
@@ -225,13 +221,6 @@ class ResetPasswordController extends Controller
      */
     protected function redirectWithToken($vueRoute, $token)
     {
-        // vueでアクセスするルートを作る
-        // コールバックURLをルート名で取得
-        // TODO: これだとホットリロードでポートがとれない
-        // $route = url($vueRoute);
-
-        // TODO: とりあえずこれで対応
-        // .envの「APP_URL」に設定したurlを取得
         $baseUrl = config('app.url');
         $route = "{$baseUrl}/{$vueRoute}";
         return redirect($route)->cookie('RESETTOKEN', $token, 0, '', '', false, false);
@@ -268,9 +257,5 @@ class ResetPasswordController extends Controller
                 'message' => 'tokenが不正です',
             ], 503);
         }
-
-        // return view('auth.passwords.reset')->with(
-        //     ['token' => $token, 'email' => $request->email]
-        // );
     }
 }

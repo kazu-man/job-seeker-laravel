@@ -37,7 +37,7 @@
                             </div>
 
                             <div class="col-3 pt-2 text-right post-salary">
-                                <strong class="text-black">{{post.annual_salary}}</strong>
+                                <strong class="text-black">{{post.annual_salary}}/Month</strong>
                             </div>
 
                             <div class="col-12 post-title">
@@ -142,7 +142,7 @@
                                 <div class="h6">Published On: <span class="font-gray"></span></div>
                                 <div class="h6">Employment Status: <span class="font-gray">{{post.job_type.job_type}}</span></div>
                                 <div class="h6">Job Location: <span class="font-gray">{{post.city.province.province_name}} - {{post.city.province.country.country_name}}</span></div>
-                                <div class="h6">Salary : <span class="font-gray">{{post.annual_salary}}</span></div>
+                                <div class="h6">Salary : <span class="font-gray">{{post.annual_salary}}/Month</span></div>
                             </div>
                             <div class="reviews">
 
@@ -476,7 +476,7 @@ export default {
     width:50%;
 }
 
-@media (max-width:414px){
+@media (max-width:667px){
     .pc-view{
         display: none;
     }

@@ -65,7 +65,7 @@ const routes = [
                 if (store.state.auth.user != null && value && id == store.state.auth.user.company_id) {
                     next()
                   } else {
-                    window.location.href = store.getters['auth/routePath'];
+                    window.location.href = "/";
                   }
               });
             }
@@ -80,7 +80,7 @@ const routes = [
                 if (store.state.auth.user != null && value && id == store.state.auth.user.company_id) {
                     next()
                   } else {
-                    window.location.href = store.getters['auth/routePath'];
+                    window.location.href = "/";
                   }
               });
             }
@@ -95,7 +95,8 @@ const routes = [
                 if (store.state.auth.user != null && value && id == store.state.auth.user.company_id) {
                     next()
                   } else {
-                    window.location.href = store.getters['auth/routePath'];
+                    window.location.href = "/";
+
                   }
               });
             }
@@ -106,16 +107,15 @@ const routes = [
             component: profile,
             beforeEnter (to, from, next) {
               var value =  store.dispatch('auth/accessAllowCheck')
-              // .then(value => {
+              .then(value => {
                 const id = to.params.id
                 if (store.state.auth.user != null && value && id == store.state.auth.user.id) {
                     console.log('mada')
                     next()
                   } else {
-                    window.location.href = store.getters['auth/routePath'];
+                    window.location.href = "/";
                   }
-                  console.log('owattemota')
-              // });
+              });
             }
           },  
           {
@@ -128,7 +128,8 @@ const routes = [
               if (store.state.auth.user != null && value && id == store.state.auth.user.id) {
                   next()
                 } else {
-                  window.location.href = store.getters['auth/routePath'];
+                  window.location.href = "/";
+
                 }
             });
           }
@@ -143,7 +144,8 @@ const routes = [
               if (store.state.auth.user != null && value && id == store.state.auth.user.id) {
                   next()
                 } else {
-                  window.location.href = store.getters['auth/routePath'];
+                  window.location.href = "/";
+
                 }
             });
           }
@@ -163,7 +165,8 @@ const routes = [
                   if (store.state.auth.user != null && value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
                       next()
                   } else {
-                    window.location.href = store.getters['auth/routePath'];
+                    window.location.href = "/";
+
                   }
                 });
               }
@@ -180,7 +183,8 @@ const routes = [
                   if (store.state.auth.user != null && value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
                       next()
                   } else {
-                    window.location.href = store.getters['auth/routePath'];
+                    window.location.href = "/";
+
                   }
                 });
               }
@@ -196,7 +200,8 @@ const routes = [
                   if (store.state.auth.user != null && value && store.getters['auth/check'] && store.state.auth.user.user_type == "A") {
                       next()
                   } else {
-                      window.location.href = store.getters['auth/routePath'];
+                      window.location.href = "/";
+
                     }
                 });
               }

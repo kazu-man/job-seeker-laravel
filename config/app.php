@@ -228,7 +228,7 @@ return [
 
     ],
 
-    'file_system' => env('FILESYSTEM_DRIVER', 'local')
-
+    'file_system' => env('FILESYSTEM_DRIVER', 'local'),
+    'my_temp_address' => env('MY_TEMP_ADDRESS'),
 
 ];

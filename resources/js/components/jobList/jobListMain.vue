@@ -36,7 +36,7 @@
                     <div v-else>
                 <transition-group name="inMenu" class="a">
                         <div class="menu-title user-info"  v-on:click="modalShow('login')" :key="'loginTitle'" v-if="!loginCheck">Login</div>
-                        <div class="menu-title user-info login-menu" :key="'loginTitle'" @click="logoutInMenu = !logoutInMenu" v-else >{{loginUser.name == null ? loginUser.email : loginUser.name}}</div>
+                        <div class="menu-title user-info login-menu" :key="'loginTitle'" @click="logoutInMenu = !logoutInMenu" v-else >{{loginUser.name == null ? loginUser.email : loginUser.name | omittedText}}</div>
                         <div class="drawer-menu" v-if="loginCheck && logoutInMenu" :key="'loginMenus'">
                             <ul>
                                 <li @click="switchMenu('profile')" v-bind:class="{selectedBg:selectedMenu == 'profile'}">Profile</li>
@@ -458,11 +458,15 @@ export default {
         this.initData();
         this.scrollTop();
     },
- 
     components: {
         modal,
         VueLoading
-    }
+    },
+    filters: {
+        omittedText(text) {
+        return text.length > 15 ? text.slice(0, 15) + "…" : text;
+        },
+    },
 
 }
 </script>
