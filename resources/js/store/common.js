@@ -1,7 +1,7 @@
 
 const state = {
     modalTarget:"",
-    alertModalMessage:"",
+    alertModalMessage:null,
     editPost:null,
     updatedPost:null,
     applyTargetPost:null,
@@ -111,6 +111,7 @@ const actions = {
         if(reload == null){
             reload = false;
         }
+
         context.commit('setAlertModalMessage', {"successMessage":successMessage, "status":data, "close":close,"reload":reload})
         context.commit('setModalTarget', 'alert')
     },

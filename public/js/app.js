@@ -4092,11 +4092,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    return _defineProperty({
+    var _ref;
+
+    return _ref = {
       message: '',
       alert: false,
       modalType: "",
@@ -4147,7 +4168,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         "email": ""
       },
       modalCurrentBgImage: null
-    }, "defaultImage", "/images/search.jpg");
+    }, _defineProperty(_ref, "defaultImage", "/images/search.jpg"), _defineProperty(_ref, "loading", false), _ref;
   },
   methods: {
     modalShow: function modalShow(val) {
@@ -4164,16 +4185,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     modalHide: function () {
       var _modalHide = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(target) {
-        var status;
+        var status, reloadFlg;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 console.log(target);
                 status = this.$store.state.error.code;
+                reloadFlg = this.$store.state.common.alertModalMessage != null ? this.$store.state.common.alertModalMessage.reload : true;
 
                 if (!(target == 'alert' && status == _util__WEBPACK_IMPORTED_MODULE_1__["UNAUTHORIZED"])) {
-                  _context.next = 8;
+                  _context.next = 9;
                   break;
                 }
 
@@ -4181,14 +4203,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   path: this.routePath,
                   force: true
                 });
-                _context.next = 6;
+                _context.next = 7;
                 return this.$store.dispatch('auth/logout');
 
-              case 6:
-                _context.next = 9;
+              case 7:
+                _context.next = 10;
                 break;
 
-              case 8:
+              case 9:
                 if (target == 'alert') {
                   console.log('クローズするか');
                   console.log(this.$store.state.common.alertModalMessage.close);
@@ -4204,10 +4226,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     this.$modal.hide('registerAdmin');
                     this.$modal.hide('login');
                     this.$modal.hide('bgChangeModal');
+                  } else {
+                    reloadFlg = false;
                   } //エラーの場合などはリロードする
 
 
-                  if (this.$store.state.common.alertModalMessage.reload) {
+                  if (reloadFlg) {
                     window.location.href = "/";
                   }
 
@@ -4220,10 +4244,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   this.$modal.hide(target);
                 }
 
-              case 9:
+              case 10:
                 this.clearError();
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
@@ -4635,6 +4659,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }, _callee7);
       }))();
+    },
+    googleLogin: function googleLogin() {
+      var _this10 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee8() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _this10.loading = true;
+                console.log('google login');
+                location.href = "/api/auth/google";
+
+              case 3:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8);
+      }))();
     }
   },
   computed: {
@@ -4866,10 +4910,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     messagesList: function messagesList() {
-      var _this10 = this;
+      var _this11 = this;
 
       setTimeout(function () {
-        _this10.scrollBottomOfMessage();
+        _this11.scrollBottomOfMessage();
       }, 50);
     }
   },
@@ -61839,9 +61883,21 @@ var render = function() {
         "modal",
         {
           staticClass: "login sm-modal",
-          attrs: { name: "login", draggable: false, height: 320 }
+          attrs: { name: "login", draggable: false, height: 360 }
         },
         [
+          _vm.loading
+            ? _c("spinner", {
+                staticStyle: {
+                  position: "absolute",
+                  top: "45%",
+                  left: "50%",
+                  "z-index": "99999999"
+                },
+                attrs: { size: "40", "line-fg-color": "#f00" }
+              })
+            : _vm._e(),
+          _vm._v(" "),
           _c("div", { staticClass: "modal-header" }, [
             _vm.alert
               ? _c("div", { staticClass: "alert" }, [
@@ -61960,17 +62016,51 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _c("div", { staticClass: "form-group row" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass: "form-group row",
+                    staticStyle: { "margin-top": "0" }
+                  },
+                  [
+                    _c(
+                      "div",
+                      { staticClass: "btn submit", on: { click: _vm.login } },
+                      [_vm._v("Login")]
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c("div", { staticStyle: { "text-align": "center" } }, [
                   _c(
-                    "div",
-                    { staticClass: "btn submit", on: { click: _vm.login } },
-                    [_vm._v("Login")]
+                    "span",
+                    {
+                      staticStyle: {
+                        color: "blue",
+                        "text-decoration": "underline"
+                      },
+                      on: { click: _vm.googleLogin }
+                    },
+                    [
+                      _c("img", {
+                        staticStyle: {
+                          cursor: "pointer",
+                          height: "47px",
+                          width: "190px",
+                          margin: "5px 0 0 0",
+                          padding: "0",
+                          "background-color": "white"
+                        },
+                        attrs: { src: "/images/google-button.png" }
+                      })
+                    ]
                   )
                 ])
               ]
             )
           ])
-        ]
+        ],
+        1
       ),
       _vm._v(" "),
       _c(
@@ -91055,7 +91145,7 @@ var actions = {
 __webpack_require__.r(__webpack_exports__);
 var state = {
   modalTarget: "",
-  alertModalMessage: "",
+  alertModalMessage: null,
   editPost: null,
   updatedPost: null,
   applyTargetPost: null,

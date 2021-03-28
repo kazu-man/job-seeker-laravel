@@ -83,8 +83,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/resumeDownload',  'JobsListController@resumeDownload');    
 });
 
-
-
+//google login
+Route::get('/auth/{service}', 'OAuthLoginController@getGoogleAuth')->where('service', 'google');
+Route::get('/auth/callback/google', 'OAuthLoginController@authGoogleCallback');
 
 
 

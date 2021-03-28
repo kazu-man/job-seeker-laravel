@@ -1,7 +1,15 @@
 <template> 
 
         <div>
-            <modal name="login" :draggable="false" :height="320" class="login sm-modal">
+            <modal name="login" :draggable="false" :height="360" class="login sm-modal">
+                <spinner v-if="loading" style="
+                    position:absolute;
+                    top:45%;
+                    left:50%;
+                    z-index: 99999999;
+                " size="40"
+                line-fg-color="#f00"></spinner>
+
                 <div class="modal-header">
                     <div v-if="alert" class="alert">
                         <p>{{message}}</p>
@@ -23,8 +31,19 @@
                     <div style="text-align:right;"><span @click="registerFormShow" class="login-switch">登録する</span></div>
                     <div style="text-align:right;"><span @click="passworForgotModal" class="login-switch">パスワード忘れた</span></div>
 
-                    <div class="form-group row">
+                    <div class="form-group row" style="margin-top:0">
                         <div class="btn submit" @click="login">Login</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <span @click="googleLogin" style="color:blue;text-decoration:underline;">
+                            <img style="
+                                cursor:pointer;
+                                height: 47px;
+                                width: 190px;
+                                margin: 5px 0 0 0;
+                                padding: 0;
+                                background-color: white;" src="/images/google-button.png">
+                        </span>
                     </div>
 
                     </form>
@@ -622,6 +641,7 @@ export default {
         },
         modalCurrentBgImage:null,
         defaultImage: "/images/search.jpg",
+        loading:false
     }},
     methods: {
 
@@ -640,6 +660,8 @@ export default {
         modalHide : async function (target) {
             console.log(target);
             var status = this.$store.state.error.code;
+            var reloadFlg = this.$store.state.common.alertModalMessage != null ? this.$store.state.common.alertModalMessage.reload : true;
+
             if(target == 'alert' && status == UNAUTHORIZED){
                 this.$router.go({path: this.routePath, force: true})
                 await this.$store.dispatch('auth/logout')       
@@ -657,9 +679,11 @@ export default {
                     this.$modal.hide('registerAdmin');
                     this.$modal.hide('login');
                     this.$modal.hide('bgChangeModal');
+                }else{
+                    reloadFlg = false;
                 }
                 //エラーの場合などはリロードする
-                if(this.$store.state.common.alertModalMessage.reload){
+                if(reloadFlg){
                     window.location.href = "/";
                 }
                 this.$store.commit('common/setApplyTargetPost', null)
@@ -878,6 +902,12 @@ export default {
             .catch(res => {
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'メールアドレスが見つかりませんでした。\nメールアドレスをご確認ください。'});
             });
+        },
+        async googleLogin(){
+            this.loading = true;
+
+            console.log('google login');
+            location.href = "/api/auth/google";
         }
 
     },
