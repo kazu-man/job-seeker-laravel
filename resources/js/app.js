@@ -17,7 +17,14 @@ Vue.use(VueGoogleMaps, {
         language: 'ja'
     }
 })
+Vue.use(Geocoder, {
+    defaultCountryCode: null, // e.g. 'CA'
+    defaultLanguage:    null, // e.g. 'en'
+    defaultMode:        'address', // or 'lat-lng'
+    googleMapsApiKey:   process.env.MIX_APP_GOOGLE_MAP_KEY
+});
 window.Vue = require('vue');
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -54,6 +61,7 @@ import App from './App.vue'
 import VModal from 'vue-js-modal'
 import store from './store'
 import * as VueGoogleMaps from 'vue2-google-maps'   
+import Geocoder from "@pderas/vue2-geocoder";
 
 const createApp = async () => {
     await store.dispatch('auth/currentUser')

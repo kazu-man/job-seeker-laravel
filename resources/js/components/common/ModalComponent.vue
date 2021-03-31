@@ -231,7 +231,7 @@
 
                         <div class="form-group place-form">
 
-                            <place-show-component @select-city='selectCity' :initVal="editPostForm.city"></place-show-component>
+                            <place-show-component @select-city='selectCity' :initVal="editPostForm.city" :initAddressObj="editPostForm.addressObj" :initMarkers="editPostForm.latLng" ref="placeShowComponent"></place-show-component>
                         </div>
 
 
@@ -771,11 +771,16 @@ export default {
             this.editPostForm.category = postInfo.category;
             this.editPostForm.city = postInfo.city;
             this.editPostForm.tagList = postInfo.tagList;
+            this.editPostForm.addressObj = postInfo.addressObj;
+            this.editPostForm.latLng =  { lat: postInfo.addressObj.lat, lng: postInfo.addressObj.lng } ;
 
         },
         updatePost:function(){
             var tc = this;
             this.editPostForm.tagList = this.$refs.selectTagComponent.selectedTagList;
+
+            this.editPostForm.latLng = this.$refs.placeShowComponent.lastMarkerPosition,
+            this.editPostForm.mapFlg = this.$refs.placeShowComponent.mapShow
 
             axios.post('/api/updatePost', this.editPostForm).then(res => {
 

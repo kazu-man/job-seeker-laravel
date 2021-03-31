@@ -5,7 +5,7 @@
                         Country:
                     </label>
                     <select class="country form-control" v-model="checkedCountry">
-                        <option v-for="(country ,key) in countries" v-bind:key="key" v-bind:value="country.id">{{country.country_name}}</option>
+                        <option v-for="(country ,key) in countries" v-bind:key="key" v-bind:value="country">{{country.country_name}}</option>
                     </select>
                 </div>
                 <div class="place-form">
@@ -14,7 +14,7 @@
                         Region:
                     </label>
                     <select class="province form-control" v-model="checkedProvince">
-                        <option v-for="(province ,key) in provinces" v-bind:key="key" v-bind:value="province.id">{{province.province_name}}</option>
+                        <option v-for="(province ,key) in provinces" v-bind:key="key" v-bind:value="province">{{province.province_name}}</option>
                     </select>
                 </div>
                 <div class="place-form">
@@ -23,8 +23,58 @@
                         City:
                     </label>
                     <select class="city form-control" v-model="checkedCity">
-                        <option v-for="(city ,key) in cities" v-bind:key="key" v-bind:value="city.id">{{city.city_name}}</option>
+                        <option v-for="(city ,key) in cities" v-bind:key="key" v-bind:value="city">{{city.city_name}}</option>
                     </select>
+
+                </div>
+
+                <div>
+                    <div class="mapButtonArea">
+                        <p v-if="!mapShow" @click="mapAreaShow"><span class="add-btn">+</span>　地図を表示する</p>    
+                        <p v-else @click="mapAreaShow"><span class="add-btn">-</span>　地図を表示しない</p> 
+
+                        
+                    </div>
+                    <div class="mapListArea" v-show="mapShow">
+
+                        <div class="mapTypeArea" >
+                            <div style="padding:0 0 3px 0"><span style="width:15%; display: inline-block;">国：</span>{{checkedCountry != "" && checkedCountry != null ? checkedCountry.country_name : ""}}</div>
+                            <div style="padding:3px 0"><span style="width:15%; display: inline-block;">都市：</span>{{checkedProvince != "" && checkedProvince != null ? checkedProvince.province_name : ""}}</div>
+                        </div>
+                        <div>
+                        <label style="width:15%;">
+                            住所1: 
+                        </label>
+                        <input type="text" style="width:80%;display:inline-block" class="form-control" v-model="addressObj.address_line_1">
+                        </div>
+                        <label style="width:15%;">
+                            住所2: 
+                        </label>
+                        <input type="text" style="width:80%;display:inline-block" class="form-control" v-model="addressObj.address_line_2">
+                        <label style="width:15%;">
+                            郵便番号: 
+                        </label>
+                        <input type="text" style="width:40%;display:inline-block" class="form-control" v-model="addressObj.zip_code">
+                        
+
+                        <GmapMap
+                            :center="{ lat: currentLat, lng:currentLng  }"
+                            :zoom="mapZoom"
+                            map-type-id="roadmap"
+                            style="width: 90%; height: 300px; margin:30px auto;"
+                        >
+                              <GmapMarker
+                                :key="index"
+                                v-for="(m, index) in markers"
+                                :position="m.position"
+                                :clickable="true"
+                                :draggable="true"
+                                @click="center=m.position"
+                                @drag="drag"
+                            />
+                        </GmapMap>
+                        
+                    </div>
 
                 </div>
         </div>         
@@ -45,6 +95,21 @@ export default {
         placeData:{},
         countryInShow:"",
         provinceInShow:"",
+        mapShow:false,
+        addressObj:{
+            address_line_1: '',
+            address_line_2: '',
+            city: '',
+            state: '',
+            zip_code:'',
+            country: '',
+        },
+        currentLat:35.4122,
+        currentLng:139.4130,
+        lastMarkerPosition:{lat:'',lng:''},
+        mapZoom:4,
+        markers: [{ position: { lat: 35.4122, lng: 139.4130 } }],
+        updatedMarker:false
     }},
     components: {
         placeShowListComponent
@@ -56,14 +121,18 @@ export default {
     methods: {
             updateCountry: function () {
                 axios.get('/api/getCountries').then(res => {
-                    console.log("country探しにいきます");
                     var $countries = res.data;
                     this.countries = $countries;
-                    console.log($countries);
 
                     if(this.initVal != undefined && this.initVal.province != undefined && this.initVal.province != ""){
                         console.log("country 初期値あり");
-                        this.checkedCountry = this.initVal.province.country_id;
+                        console.log(res.data);
+                        for(var country of res.data){
+                            if(this.initVal.province.country.country_name == country.country_name){
+                                this.checkedCountry = country;
+                                break;
+                            }
+                        }
                     }
                 });
             },
@@ -71,15 +140,20 @@ export default {
                 if($id == ""){
                     return;
                 }
-                console.log("province探しにいきます" + $id);
-                console.log("checkedCountry = " + this.checkedCountry);
                 axios.post('/api/getProvinces' , {"id":$id}).then(res => {
                     var $provinces = res.data;
                     this.provinces = $provinces;
                     this.checkedCity = "";
+                    this.checkedProvince = "";
                     console.log(res);
                     if(this.initVal != undefined && this.initVal.province != undefined && this.initVal.province != ""){
-                        this.checkedProvince = this.initVal.province.id;
+                        for(var province of res.data){
+                            if(this.initVal.province.province_name == province.province_name){
+                                this.checkedProvince = province;
+                                break;
+                            }
+                        }
+
                     }
                 });
             },
@@ -87,13 +161,18 @@ export default {
                 if($id == ""){
                     return;
                 }
-                console.log("city探しにいきます" + $id);
                 axios.post('/api/getCities' , {"id":$id}).then(res => {
                     var $cities = res.data;
                     this.cities = $cities;
                     console.log(res);
-                    if(this.initVal != undefined && this.initVal.province != undefined && this.initVal.province != ""){
-                        this.checkedCity = this.initVal.id;
+                    if(this.initVal != undefined && this.initVal != "" && this.initVal.province != undefined &&  this.initVal.province != ""){
+                        for(var city of res.data){
+                            if(this.initVal.city_name == city.city_name){
+                                this.checkedCity = city;
+                                this.addressObj = this.initAddressObj;
+                                break;
+                            }
+                        }
                     }
                 });
             },
@@ -110,16 +189,84 @@ export default {
                 console.log("placeTableのデータ");
                 console.log(res.data);
             });
+        },
+        mapAreaShow:function() {
+            this.mapShow = !this.mapShow;
+        },
+        updateMap:function(){
+            Vue.$geocoder.send(this.addressObj, response => { 
+                console.log("map検索結果");
+                console.log(response);
+                if(response.status == "ZERO_RESULTS"){
+                    return;
+                }
+                var newLat = response.results[0].geometry.location.lat;
+                var newLng = response.results[0].geometry.location.lng;
+
+                // 保存用
+                this.lastMarkerPosition.lat = newLat;
+                this.lastMarkerPosition.lng = newLng;
+                // 地図表示用
+                this.currentLat = newLat;
+                this.currentLng = newLng;
+                // マーカー表示用
+                if(!this.updatedMarker && this.initMarkers != undefined){
+
+                    this.markers[0].position.lat = this.initMarkers.lat;
+                    this.markers[0].position.lng = this.initMarkers.lng;
+
+                }else{
+
+                    this.markers[0].position.lat = newLat;
+                    this.markers[0].position.lng = newLng;
+
+                }
+            });
+        },
+        drag:function(e){
+            console.log(e.latLng.lat());
+            console.log(e.latLng.lng());
+            this.lastMarkerPosition.lat = e.latLng.lat();
+            this.lastMarkerPosition.lng = e.latLng.lng();
         }
     }, 
     watch: {
-        checkedCountry: function($id) {this.updateProvince($id)},
-        checkedProvince: function($id) {this.updateCity($id)},
-        countryInShow : function($id) {console.log('country = ' + $id)},
-        provinceInShow : function($id) {console.log('province = ' + $id)},
-        checkedCity:function(val){console.log('province = ' + val);this.$emit('select-city',val);}
+        checkedCountry: function($el) {
+            this.updateProvince($el.id);
+            this.addressObj.city = "";
+            this.addressObj.address_line_1 = "";
+            this.mapZoom = 4;
+            this.addressObj.country = $el != undefined && $el != "" ? $el.country_name : "";
+        },
+        checkedProvince: function($el) {
 
-    },props:['initVal']
+            if($el != "" && $el != undefined){
+                this.updateCity($el != undefined && $el != "" ? $el.id : "");
+                this.addressObj.address_line_1 = "";
+                this.mapZoom = 8;
+                this.addressObj.city = $el != undefined && $el != "" ? $el.province_name : "";
+            }
+        },
+        checkedCity:function($el){
+            
+            if($el != "" && $el != undefined){
+                this.$emit('select-city',$el.id);
+                this.mapZoom = 16;
+                this.addressObj.address_line_1 = $el.city_name;
+            }
+        },
+        countryInShow : function($el) {console.log('country = ' + $el.id)},
+        provinceInShow : function($el) {console.log('province = ' + $el.id)},
+        
+        addressObj:{
+            handler: function (val, old) {
+                this.updateMap();
+            },
+            deep:true
+        }
+    
+
+    },props:['initVal','initAddressObj','initMarkers']
 }
 </script>
 
@@ -164,6 +311,74 @@ export default {
 }
 .form-controll{
     min-width: 200px;    
+}
+
+
+
+
+
+
+
+.mapButtonArea {
+    width: 100%;
+    min-height: 30px;
+    border-radius: 5px;
+    padding-left: 20px;
+    position: relative;
+    margin-top: 10px;
+}
+.mapButtonArea p{
+    font-size:13px;
+    display:inline;
+    cursor:pointer;
+}
+.mapListArea {
+    width: 100%;
+    min-height: 300px;
+    border-radius: 5px;
+    background: white;
+    margin-top:20px;
+    padding: 15px 5% 15px 5%;
+}
+
+.mapListArea label{
+    color:black;
+}
+.mapTypeArea{
+    color:black;
+}
+
+.mapName{
+    font-size: 18px;
+    /* border-bottom: solid 2px darkgray; */
+    margin: 0 auto;
+    padding: 0px 20px;
+    margin: 20px 0px;
+    font-weight:500;
+}
+.mapName:after{
+    background-color: darkgray;
+    border-radius: 5px;
+    content: "";
+    display: block;
+    height: 6px;
+    width: 103%;
+    margin-left: -3%;
+}
+
+.add-btn{
+    border-radius: 100%;
+    border: 1px solid white;
+    padding: 0px;
+    cursor: pointer;
+    font-size: 15px;
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    text-align: center;
+    position: absolute;
+    left: 0px;
+
 }
 
 </style>

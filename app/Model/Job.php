@@ -41,7 +41,10 @@ class Job extends Model
     {
         return $this->hasMany('App\Model\JobTagRelation');
     }
-
+    public function address()
+    {
+        return $this->hasOne('App\Model\Address');
+    }
 
 
 }

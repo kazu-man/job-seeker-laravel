@@ -158,12 +158,21 @@
                         </div>
                         
                         <GmapMap
-                            v-if="openFlg"
-                            :center="{ lat: 35.66606091, lng: 139.41392096 }"
+                            v-if="openFlg && post.address != null"
+                            :center="{ lat: post.address.lat, lng: post.address.lng }"
                             :zoom="16"
-                            map-type-id="terrain"
+                            map-type-id="roadmap"
                             style="width: 90%; height: 300px; margin:30px auto;"
-                        ></GmapMap>
+                        >
+                            <GmapMarker
+                                :key="index"
+                                v-for="(m, index) in [{ position: { lat: post.address.lat, lng: post.address.lng } }]"
+                                :position="m.position"
+                                :clickable="false"
+                                :draggable="false"
+                                @click="center=m.position"
+                            />
+                        </GmapMap>
 
                     </div>
                     
@@ -275,7 +284,10 @@ export default {
                 tagList.push(tagRelation.tag);
             }
             this.editForm.tagList = tagList;
-    
+
+            this.editForm.addressObj = this.post.address;
+            this.editForm.tagList = tagList;
+
             this.$store.dispatch('common/setEditForm', this.editForm);
         },
         apply: function(){

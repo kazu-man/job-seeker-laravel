@@ -19,7 +19,7 @@
 
         <div class="form-group place-form">
 
-            <place-show-component @select-city='selectCity'></place-show-component>
+            <place-show-component @select-city='selectCity' ref="placeShowComponent"></place-show-component>
         </div>
 
 
@@ -113,7 +113,10 @@ export default {
                             experience:this.experience,
                             category:this.category,
                             company:this.companyId,
-                            tag:this.$refs.selectTagComponent.selectedTagList
+                            tag:this.$refs.selectTagComponent.selectedTagList,
+                            addressObj:this.$refs.placeShowComponent.addressObj,
+                            latLng:this.$refs.placeShowComponent.lastMarkerPosition,
+                            mapFlg:this.$refs.placeShowComponent.mapShow
                         };
             axios.post('/api/registerJob', data).then(res => {
                 // テストのため返り値をコンソールに表示
@@ -149,7 +152,8 @@ export default {
     text-align:left;
 }
 .title-form,
-.salary-form {
+.salary-form,
+.address-form {
     display: inline-block;
     width: 49%;
     padding-left: 2%;

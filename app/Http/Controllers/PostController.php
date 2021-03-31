@@ -10,6 +10,7 @@ use App\Model\Message;
 use App\Model\Profile;
 use App\Model\ApplyRecord;
 use App\Model\JobTagRelation;
+use App\Model\Address;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
 use Illuminate\Support\Carbon;
@@ -64,11 +65,18 @@ class PostController extends Controller
 
         $job->save();
 
-        $this->sageTag($job->id, $request->input('tag'));
+        $this->saveTag($job->id, $request->input('tag'));
+
+        if($request->input('mapFlg')){
+
+            $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
+        }
 
 
         return [ "registeredJob" => $job, "registeredDescription" => $description ];
     }
+
+    
 
 
     public function updatePost(Request $request){
@@ -117,7 +125,12 @@ class PostController extends Controller
 
         $job->save();
 
-        $this->sageTag($job->id, $request->input('tagList'));
+        $this->saveTag($job->id, $request->input('tagList'));
+
+        if($request->input('mapFlg')){
+
+            $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
+        }
 
         $updatedPost = Job::with('company')
         ->with('category')
@@ -125,6 +138,7 @@ class PostController extends Controller
         ->with('jobType')
         ->with('jobDescription')
         ->with('jobTagRelations.tag')
+        ->with('address')
         ->where('id',$job->id)
         ->first();
 
@@ -164,7 +178,8 @@ class PostController extends Controller
         ->with('city.province.country')
         ->with('jobType')
         ->with('jobDescription')
-        ->with('jobTagRelations.tag');
+        ->with('jobTagRelations.tag')
+        ->with('address');
         
         if($applies){
             $applyJobNo = app()->make('App\Http\Controllers\JobsListController')->getApplyList();
@@ -258,6 +273,7 @@ class PostController extends Controller
         }
 
         $post = $query->get();
+        \Log::info($post);
         return $post;
     }
 
@@ -277,7 +293,7 @@ class PostController extends Controller
 
     }
 
-    public function sageTag($jobId ,$tagList){
+    public function saveTag($jobId ,$tagList){
 
         $currentStoredTags = JobTagRelation::where('job_id',$jobId)->delete();
 
@@ -290,6 +306,32 @@ class PostController extends Controller
 
         }
     }
+
+    public function saveMapInfo($jobId ,$latLng, $addressObj){
+
+        \Log::info("kokomadede----su");
+        $address = Address::where('job_id',$jobId)->first();
+
+        if($address == null){
+            $address = new Address();
+        }
+        \Log::info($address);
+
+        $address->job_id = $jobId;
+        $address->address_line_1 = $addressObj['address_line_1'];
+        $address->address_line_2 = $addressObj['address_line_2'];
+        $address->city = $addressObj['city'];
+        $address->state = $addressObj['state'];
+        $address->zip_code = $addressObj['zip_code'];
+        $address->country = $addressObj['country'];
+        $address->lat = $latLng['lat'];
+        $address->lng = $latLng['lng'];
+
+        $address->save();
+  
+    }
+
+    
 }
 
 
