@@ -156,6 +156,15 @@
 
                             </div>
                         </div>
+                        
+                        <GmapMap
+                            v-if="openFlg"
+                            :center="{ lat: 35.66606091, lng: 139.41392096 }"
+                            :zoom="16"
+                            map-type-id="terrain"
+                            style="width: 90%; height: 300px; margin:30px auto;"
+                        ></GmapMap>
+
                     </div>
                     
                 </transition-group>

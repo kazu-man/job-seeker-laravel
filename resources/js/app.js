@@ -9,7 +9,14 @@ import Vue from 'vue'
 
 
 Vue.use(VModal);
-
+Vue.use(VueGoogleMaps, {
+    load: {
+        key: process.env.MIX_APP_GOOGLE_MAP_KEY,
+        libraries: 'places',
+        region: 'JP',
+        language: 'ja'
+    }
+})
 window.Vue = require('vue');
 
 /**
@@ -46,6 +53,7 @@ import App from './App.vue'
 
 import VModal from 'vue-js-modal'
 import store from './store'
+import * as VueGoogleMaps from 'vue2-google-maps'   
 
 const createApp = async () => {
     await store.dispatch('auth/currentUser')
