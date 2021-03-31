@@ -9,6 +9,7 @@ use App\Model\Company;
 use App\Model\Message;
 use App\Model\Profile;
 use App\Model\ApplyRecord;
+use App\Model\JobTagRelation;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
 use Illuminate\Support\Carbon;
@@ -47,7 +48,7 @@ class PostController extends Controller
         $description->save();
 
 
-        $newDescriptionId = JobDescription::max('id');
+        $newDescriptionId = $description->id;
         \Log::info("desc Id = " . $newDescriptionId);
 
         $job = new Job();
@@ -62,6 +63,8 @@ class PostController extends Controller
 
 
         $job->save();
+
+        $this->sageTag($job->id, $request->input('tag'));
 
 
         return [ "registeredJob" => $job, "registeredDescription" => $description ];
@@ -114,15 +117,16 @@ class PostController extends Controller
 
         $job->save();
 
+        $this->sageTag($job->id, $request->input('tagList'));
 
         $updatedPost = Job::with('company')
         ->with('category')
         ->with('city.province.country')
         ->with('jobType')
         ->with('jobDescription')
+        ->with('jobTagRelations.tag')
         ->where('id',$job->id)
         ->first();
-
 
 
         return [ "updatedPost" => $updatedPost ];
@@ -159,7 +163,8 @@ class PostController extends Controller
         ->with('category')
         ->with('city.province.country')
         ->with('jobType')
-        ->with('jobDescription');
+        ->with('jobDescription')
+        ->with('jobTagRelations.tag');
         
         if($applies){
             $applyJobNo = app()->make('App\Http\Controllers\JobsListController')->getApplyList();
@@ -261,7 +266,6 @@ class PostController extends Controller
         $targetPostId = $request->input('targetPostId');
         \Log::info($targetPostId);
 
-
         $post = Job::find($targetPostId);
         if($post->job_status == "D"){
             $post->job_status = "A";
@@ -272,4 +276,22 @@ class PostController extends Controller
         $post->save();
 
     }
+
+    public function sageTag($jobId ,$tagList){
+
+        $currentStoredTags = JobTagRelation::where('job_id',$jobId)->delete();
+
+        foreach($tagList as $tag){
+
+            $tagRelation = new JobTagRelation();
+            $tagRelation->job_id = $jobId;
+            $tagRelation->tag_id = $tag['id'];
+            $tagRelation->save();
+
+        }
+    }
 }
+
+
+
+

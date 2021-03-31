@@ -17,6 +17,7 @@ const state = {
   countries:"",
   placeData:"",
   jobTypes:"",
+  tagTypeList:"",
 
   users:""
 
@@ -30,7 +31,8 @@ const getters = {
   countries: state => state.countries ,
   placeData: state => state.placeData ,
   jobTypes: state => state.jobTypes, 
-  users: state => state.users 
+  users: state => state.users ,
+  tagTypeList: state => state.tagTypeList
 }
 
 const mutations = {
@@ -80,7 +82,9 @@ const mutations = {
   setUsers(state, data){
     state.users = data;
   },
-
+  setTagTypeList(state, data){
+    state.tagTypeList = data;
+  },
 
 }
 
@@ -275,6 +279,7 @@ const actions = {
         context.commit('setCountries', res.data.countries);
         context.commit('setPlaceData', res.data.placeData);
         context.commit('setJobTypes', res.data.jobTypes);
+        context.commit('setTagTypeList', res.data.tagTypeList);
       });
       // await axios.get('/api/getCountries').then(res => {
       // });

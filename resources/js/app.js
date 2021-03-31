@@ -28,6 +28,8 @@ Vue.component('place-show-component2', require('./components/common/PlaceShowCom
 Vue.component('side-header-component', require('./components/common/SideHeaderComponent.vue').default);
 Vue.component('select-box-component', require('./components/common/SelectBox.vue').default);
 Vue.component('posts-component', require('./components/jobList/PostComponent.vue').default);
+Vue.component('select-tag-component', require('./components/common/SelectTagComponent.vue').default);
+Vue.component('tag-component', require('./components/common/TagComponent.vue').default);
 
 Vue.component('spinner', require('vue-simple-spinner'));
 

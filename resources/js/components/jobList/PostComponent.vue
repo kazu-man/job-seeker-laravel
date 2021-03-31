@@ -54,6 +54,14 @@
                     </div>
 
                     <div v-if="openFlg" class="toggle-down-area row" :class="{singlePostHeight:onSinglePost,singlePostMargin:onSinglePost}" :key="'content'">
+                        <div class="tagShowArea">
+                            <tag-component v-for="tagRelation in post.job_tag_relations" 
+                                :key="tagRelation.tag.id" 
+                                :value="tagRelation.tag.id" 
+                                :tag="tagRelation.tag" 
+                                :active="false">
+                            </tag-component>
+                        </div>
                         <div class="post-buttons">
                             <div v-if="pageType == 'applies'" class="buttons">
                                 <div class="row">
@@ -252,6 +260,12 @@ export default {
 
             this.editForm.type = this.post.job_type.id;
             this.editForm.category = this.post.category.id;
+
+            var tagList = [];
+            for(var tagRelation of this.post.job_tag_relations){
+                tagList.push(tagRelation.tag);
+            }
+            this.editForm.tagList = tagList;
     
             this.$store.dispatch('common/setEditForm', this.editForm);
         },
@@ -495,6 +509,13 @@ export default {
     }
     .close-badge-position{
         top:-18px;
+    }
+    .tagShowArea {
+        width: 100%;
+        min-height: 30px;
+        border-radius: 5px;
+        padding-left: 20px;
+        position: relative;
     }
 }
 

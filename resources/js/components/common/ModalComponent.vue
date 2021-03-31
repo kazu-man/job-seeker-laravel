@@ -242,6 +242,13 @@
                             <select-box-component :baseData="jobTypes" @changeSelectedVal="selectType" :initVal="editPostForm.type"></select-box-component>
                         </div>
 
+                        <div class="form-group type-form">
+                            <label>
+                                Tags
+                            </label>
+                            <select-tag-component ref="selectTagComponent" :initialList="editPostForm.tagList"></select-tag-component>
+                        </div>
+
                         <div class="form-group category-form">
                             <label>
                                 Category
@@ -615,6 +622,7 @@ export default {
             requirement:'',
             benefit:'',
             experience:'',
+            tagList:[]
         },
         messageForm:{
             applyRecordId:"",
@@ -762,11 +770,13 @@ export default {
             this.editPostForm.type = postInfo.type;
             this.editPostForm.category = postInfo.category;
             this.editPostForm.city = postInfo.city;
+            this.editPostForm.tagList = postInfo.tagList;
 
         },
         updatePost:function(){
             var tc = this;
-            
+            this.editPostForm.tagList = this.$refs.selectTagComponent.selectedTagList;
+
             axios.post('/api/updatePost', this.editPostForm).then(res => {
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'postを更新しました。'});

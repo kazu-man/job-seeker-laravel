@@ -215,6 +215,7 @@ export default {
                     post.category = this.updatedPost.category;
                     post.job_type = this.updatedPost.job_type;
                     post.job_status = this.updatedPost.job_status;
+                    post.job_tag_relations = this.updatedPost.job_tag_relations;
 
                     break;
                 }

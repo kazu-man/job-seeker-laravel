@@ -30,6 +30,13 @@
             <select-box-component :baseData="jobTypes" @changeSelectedVal="selectType"></select-box-component>
         </div>
 
+        <div class="form-group type-form">
+            <label>
+                Tags
+            </label>
+            <select-tag-component ref="selectTagComponent"></select-tag-component>
+        </div>
+
         <div class="form-group category-form">
             <label>
                 Category
@@ -105,7 +112,8 @@ export default {
                             benefit:this.benefit,
                             experience:this.experience,
                             category:this.category,
-                            company:this.companyId
+                            company:this.companyId,
+                            tag:this.$refs.selectTagComponent.selectedTagList
                         };
             axios.post('/api/registerJob', data).then(res => {
                 // テストのため返り値をコンソールに表示
@@ -125,6 +133,9 @@ export default {
         },
         selectCity: function(val) {
             this.city = val;
+        },
+        selectTag: function(){
+            console.log("tag");
         }
     },
     props:["categories","jobTypes"]

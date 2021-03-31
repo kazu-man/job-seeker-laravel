@@ -10,6 +10,8 @@ use App\Model\Country;
 use App\Model\JobType;
 use App\Model\Category;
 use App\Model\Province;
+use App\Model\Tag;
+use App\Model\TagType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -98,6 +100,11 @@ class SettingController extends Controller
     public function getJobType() 
     {
         return JobType::where('id','<=','3')->get();
+    }
+    public function getTagList() 
+    {
+        return TagType::with('tags')->get();
+        // return Tag::All();
     }
 
     public function deleteCity($id){
@@ -272,12 +279,14 @@ class SettingController extends Controller
         $countries = $this->getCountries();
         $placeData = $this->getPlaceData();
         $jobTypes = $this->getJobType();
+        $tagTypeList = $this->getTagList();
 
         return [
             "categories" => $categories,
             "countries" => $countries,
             "placeData" => $placeData,
-            "jobTypes" => $jobTypes
+            "jobTypes" => $jobTypes,
+            "tagTypeList" => $tagTypeList
         ];
 
     }    

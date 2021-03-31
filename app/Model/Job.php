@@ -37,6 +37,10 @@ class Job extends Model
     {   
         return $this->hasMany('App\Model\ApplyRecord');
     }
+    public function JobTagRelations()
+    {
+        return $this->hasMany('App\Model\JobTagRelation');
+    }
 
 
 
