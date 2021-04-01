@@ -14,6 +14,7 @@
 
                 
             </div>
+            <transition name="content">
             <div class="tagListArea" v-show="listShow">
 
                 <div class="tagTypeArea" v-for="tagType in tagTypeList" :key="'type:'+tagType.id">
@@ -29,6 +30,7 @@
                 </div>
                 
             </div>
+            </transition>
 
         </div>
 </template>
@@ -107,14 +109,15 @@ select {
     border-radius: 5px;
     padding-left: 20px;
     position: relative;
+    margin-bottom:20px;
 }
 .tagListArea {
     width: 100%;
-    min-height: 300px;
+    height: 500px;
     border-radius: 5px;
     background: white;
-    margin-top:20px;
     padding: 1px 5% 15px 5%;
+    overflow:scroll;
 
 }
 .tagTypeArea{
@@ -185,5 +188,28 @@ select {
 .provinceRow {
     color:blue;
 }
+
+/* 表示・非表示アニメーション中 */
+.content-enter-active{
+  transition: ease-in-out 500ms;
+}
+.content-leave-active{
+  transition: ease-in-out 500ms;
+}
+
+/* 表示アニメーション開始時 ・ 非表示アニメーション後 */
+.content-enter,
+.content-leave-to,
+.content-leave{
+  height:0;
+  margin:0;
+  padding-top:0;
+  padding-bottom:0;
+}
+
+.content-move {
+    transition:ease-in-out 300ms;
+}
+
 
 </style>

@@ -35,47 +35,48 @@
 
                         
                     </div>
-                    <div class="mapListArea" v-show="mapShow">
+                    <transition name="content">
+                        <div class="mapListArea" v-show="mapShow">
 
-                        <div class="mapTypeArea" >
-                            <div style="padding:0 0 3px 0"><span style="width:15%; display: inline-block;">国：</span>{{checkedCountry != "" && checkedCountry != null ? checkedCountry.country_name : ""}}</div>
-                            <div style="padding:3px 0"><span style="width:15%; display: inline-block;">都市：</span>{{checkedProvince != "" && checkedProvince != null ? checkedProvince.province_name : ""}}</div>
+                            <div class="mapTypeArea" >
+                                <div style="padding:0 0 3px 0"><span style="width:16%; display: inline-block;">国：</span>{{checkedCountry != "" && checkedCountry != null ? checkedCountry.country_name : ""}}</div>
+                                <div style="padding:3px 0"><span style="width:16%; display: inline-block;">都市：</span>{{checkedProvince != "" && checkedProvince != null ? checkedProvince.province_name : ""}}</div>
+                            </div>
+                            <div>
+                            <label style="width:16%;">
+                                住所1: 
+                            </label>
+                            <input type="text" style="width:78%;display:inline-block" class="form-control" v-model="addressObj.address_line_1">
+                            </div>
+                            <label style="width:16%;">
+                                住所2: 
+                            </label>
+                            <input type="text" style="width:78%;display:inline-block" class="form-control" v-model="addressObj.address_line_2">
+                            <label style="width:16%;">
+                                郵便番号: 
+                            </label>
+                            <input type="text" style="width:40%;display:inline-block" class="form-control" v-model="addressObj.zip_code">
+                            
+
+                            <GmapMap
+                                :center="{ lat: currentLat, lng:currentLng  }"
+                                :zoom="mapZoom"
+                                map-type-id="roadmap"
+                                style="width: 90%; height: 300px; margin:30px auto;"
+                            >
+                                <GmapMarker
+                                    :key="index"
+                                    v-for="(m, index) in markers"
+                                    :position="m.position"
+                                    :clickable="true"
+                                    :draggable="true"
+                                    @click="center=m.position"
+                                    @drag="drag"
+                                />
+                            </GmapMap>
+                            
                         </div>
-                        <div>
-                        <label style="width:15%;">
-                            住所1: 
-                        </label>
-                        <input type="text" style="width:80%;display:inline-block" class="form-control" v-model="addressObj.address_line_1">
-                        </div>
-                        <label style="width:15%;">
-                            住所2: 
-                        </label>
-                        <input type="text" style="width:80%;display:inline-block" class="form-control" v-model="addressObj.address_line_2">
-                        <label style="width:15%;">
-                            郵便番号: 
-                        </label>
-                        <input type="text" style="width:40%;display:inline-block" class="form-control" v-model="addressObj.zip_code">
-                        
-
-                        <GmapMap
-                            :center="{ lat: currentLat, lng:currentLng  }"
-                            :zoom="mapZoom"
-                            map-type-id="roadmap"
-                            style="width: 90%; height: 300px; margin:30px auto;"
-                        >
-                              <GmapMarker
-                                :key="index"
-                                v-for="(m, index) in markers"
-                                :position="m.position"
-                                :clickable="true"
-                                :draggable="true"
-                                @click="center=m.position"
-                                @drag="drag"
-                            />
-                        </GmapMap>
-                        
-                    </div>
-
+                    </transition>
                 </div>
         </div>         
 </template>
@@ -313,12 +314,6 @@ export default {
     min-width: 200px;    
 }
 
-
-
-
-
-
-
 .mapButtonArea {
     width: 100%;
     min-height: 30px;
@@ -334,11 +329,12 @@ export default {
 }
 .mapListArea {
     width: 100%;
-    min-height: 300px;
+    height:550px;
     border-radius: 5px;
     background: white;
     margin-top:20px;
     padding: 15px 5% 15px 5%;
+    overflow:hidden;
 }
 
 .mapListArea label{
@@ -379,6 +375,46 @@ export default {
     position: absolute;
     left: 0px;
 
+}
+
+@media (max-width: 415px) {
+
+    .mapListArea,.mapListArea input{
+        font-size:10px !important;
+    }
+
+    .mapListArea {
+        height:500px ;
+    }
+}
+
+@media (max-width: 376px) {
+
+    .mapListArea label,.mapListArea span{
+        width:20% !important;
+    }
+}
+
+/* 表示・非表示アニメーション中 */
+.content-enter-active{
+  transition: ease-in-out 500ms !important;
+}
+.content-leave-active{
+  transition: ease-in-out 500ms !important;
+}
+
+/* 表示アニメーション開始時 ・ 非表示アニメーション後 */
+.content-enter,
+.content-leave-to,
+.content-leave{
+  height:0;
+  margin:0;
+  padding-top:0;
+  padding-bottom:0;
+}
+
+.content-move {
+    transition:ease-in-out 300ms !important;
 }
 
 </style>
