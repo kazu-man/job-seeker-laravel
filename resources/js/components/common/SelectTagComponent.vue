@@ -41,7 +41,7 @@ export default {
     data() {
         return{
         data:{},
-        selectedVal:"",
+        // selectedVal:"",
         listShow:false,
         selectedTagList:[]
     }},
@@ -72,20 +72,21 @@ export default {
 
     },
     computed:{
-        route:function(){
-          return this.$route.params;
-        },
         tagTypeList:function(){
             return this.$store.getters['auth/tagTypeList'];
         },
 
+        route:function(){
+          return this.$route.path;
+        }
     },
     watch:{
         route:function(){
-          this.selectedVal = "";
-          this.selectVal();
-        },
+            this.selectedTagList = [];
+            this.listShow = false;
+        }
     },
+
     created:function(){
         console.log(this.initialList)
         if(this.initialList != null && this.initialList != undefined){
@@ -150,7 +151,7 @@ select {
     text-align: center;
     position: absolute;
     left: 0px;
-
+    color:white;
 }
 
 

@@ -159,8 +159,6 @@ class PostController extends Controller
     }
     public function getPosts(Request $request) {
         
-        \Log::info("serchInfo");
-
         $companyId = $request->input('companyId');
         $keyWord = $request->input('keyWord');
         $cityId = $request->input('cityId');
@@ -172,7 +170,8 @@ class PostController extends Controller
         $categoryId = $request->input('categoryId');
         $likes = $request->input('likes');
         $applies = $request->input('applies');
-
+        $tags = $request->input('tagList');
+        
         $query = Job::with('company')
         ->with('category')
         ->with('city.province.country')
@@ -272,6 +271,23 @@ class PostController extends Controller
             });
         }
 
+        if($tags != null && $tags != ""){
+
+            $tagIds = [];
+            $tagNames = [];
+
+            foreach($tags as $tag){
+                array_push($tagIds,$tag['id']);
+                array_push($tagNames,$tag['tag_name']);
+            }
+
+            \Log::info("tag list　= " . implode(",",$tagNames));
+
+            $query->whereHas('jobTagRelations.tag', function ($query) use($tagIds)  {
+                return $query->whereIn('id', $tagIds);
+            });
+        }
+
         $post = $query->get();
         \Log::info($post);
         return $post;
@@ -309,7 +325,6 @@ class PostController extends Controller
 
     public function saveMapInfo($jobId ,$latLng, $addressObj){
 
-        \Log::info("kokomadede----su");
         $address = Address::where('job_id',$jobId)->first();
 
         if($address == null){

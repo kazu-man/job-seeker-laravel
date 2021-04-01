@@ -17,18 +17,26 @@
                 <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'country'">
                   <place-show-component2 @changeSelectedPlace="changeSelectedPlace" v-model="searchKeys.city" :placeData="placeData"></place-show-component2>
                 </div>
-                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0">
+                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" style="margin-bottom:1.5rem!important">
                   <select-box-component @changeSelectedVal="changeSelectedType" :target="'jobType'" v-model="searchKeys.jobTypeId" :baseData="jobTypes"></select-box-component>
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'category'">
+                <div class="col-12 col-sm-6 col-md-6  mb-4 mb-lg-0" v-if="initPage != 'category'" style="margin-bottom:1.5rem!important">
                   <select-box-component @changeSelectedVal="changeSelectedCategory" :target="'category'" v-model="searchKeys.jobTypeId" :baseData="categories"></select-box-component>
                 </div>
-                <div class="col-12 col-sm-6 col-md-6 col-lg-6 my-4 mx-auto mb-lg-0">
+
+                <div class="form-group" style="width:90%;margin:auto">
+                    <label style="color:white">
+                        詳細検索
+                    </label>
+                    <select-tag-component ref="selectTagComponent"></select-tag-component>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-6 col-lg-6 my-4 mx-auto mb-lg-0" style="margin-top: 5px !important;">
                   <button @click="refreshList" type="submit" name="search" class="btn btn-primary btn-lg btn-block text-white btn-search"><span class="icon-search icon mr-2"></span>Search Job</button>
                 </div>
               </div>
-          <form action="" method="POST" class="text-center search-country-area" >
+          <form action="" method="POST" class="text-center search-country-area">
             <h3 class="text-white">Search by Country ?</h3>
             <a href="#" v-for="country in countries" @click="searchByCountry(country.country_name)" class="m-3 text-white seach-by-country" :key="country.id">{{country.country_name}}</a>
           </form>
@@ -58,7 +66,8 @@
               provinceId:"",
               categoryId:"",
               jobTypeId:"",
-              keyWord:""
+              keyWord:"",
+              tagList:""
           },
           mountedOK:false
         }
@@ -92,6 +101,7 @@
           this.searchKeys.jobTypeId = val;
         },
         refreshList:function(){
+          this.searchKeys.tagList = this.$refs.selectTagComponent.selectedTagList;
           this.$refs.postList.commitSearchKeys(this.searchKeys);
           this.$refs.postList.getPostList();
         },

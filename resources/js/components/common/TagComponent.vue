@@ -25,7 +25,12 @@ export default {
     },
     computed:{
         route:function(){
-          return this.$route.params;
+          return this.$route.path;
+        }
+    },
+    watch:{
+        route:function(){
+            this.selected = true;
         }
     },
     mounted:function(){

@@ -164,6 +164,7 @@ export default {
                 this.searchInfo.categoryId = searchKeys.categoryId
                 this.searchInfo.jobTypeId = searchKeys.jobTypeId
                 this.searchInfo.keyWord = searchKeys.keyWord
+                this.searchInfo.tagList = searchKeys.tagList
                 this.getPostList();
         },
         searchInfoClear:function(){
