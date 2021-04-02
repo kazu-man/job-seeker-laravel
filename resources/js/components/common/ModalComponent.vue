@@ -341,7 +341,7 @@
                         <!-- </a> -->
                     </div>
 
-                    <div class="row border mt-0 mx-4">
+                    <div class="row border mt-0 mx-4" style="border-radius:5px">
                         <div class="col-md-6 col-sm-12 row  p-2">
                             <div class="col-4 pr-0"><strong>Name: </strong></div>
                             <div class="col-8 text-left p-0" v-if="applicantProfile.user.user_lastname != null && applicantProfile.user.user_firstname != null">
@@ -1202,6 +1202,7 @@ label.userType{
 
 .profile-item{
     position:relative;
+    border-radius: 5px;
 }
 .profile-item-label{
     position:absolute;

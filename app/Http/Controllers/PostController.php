@@ -153,6 +153,8 @@ class PostController extends Controller
         ->with('jobType')
         ->with('jobDescription')
         ->where('id',$id)
+        ->with('jobTagRelations.tag')
+        ->with('address')
         ->get();
 
         return $result;

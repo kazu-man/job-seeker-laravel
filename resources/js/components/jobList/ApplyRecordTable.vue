@@ -44,7 +44,7 @@
                         </transition>
                         <button @click="setMessageModal(props.row)" class="btn btn-info message-btn">Messages</button>
                     </span>
-                    <span v-else>
+                    <span v-else style="cursor:pointer">
                         {{props.formattedRow[props.column.field]}}
                     </span>
                 </template>
