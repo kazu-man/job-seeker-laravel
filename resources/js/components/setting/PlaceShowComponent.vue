@@ -1,17 +1,29 @@
 <template> 
         <div class="place-show-area">
                 <div class="place-form">
-                    <label>
+                    <label style="position:relative">
                         Country:
-                    </label>
+                        <spinner v-if="loadingCountry" style="
+                            position: absolute;
+                            left: 70px;
+                            top: 12%;
+                        " size="20"
+                        line-fg-color="#f00"></spinner>
+                    </label>                    
                     <select class="country form-control" v-model="checkedCountry">
                         <option v-for="(country ,key) in countries" v-bind:key="key" v-bind:value="country">{{country.country_name}}</option>
                     </select>
                 </div>
                 <div class="place-form">
 
-                    <label>
+                    <label style="position:relative">
                         Region:
+                        <spinner v-if="loadingProvince" style="
+                            position: absolute;
+                            left: 60px;
+                            top: 12%;
+                        " size="20"
+                        line-fg-color="#f00"></spinner>
                     </label>
                     <select class="province form-control" v-model="checkedProvince">
                         <option v-for="(province ,key) in provinces" v-bind:key="key" v-bind:value="province">{{province.province_name}}</option>
@@ -19,8 +31,14 @@
                 </div>
                 <div class="place-form">
         
-                    <label>
+                    <label style="position:relative">
                         City:
+                        <spinner v-if="loadingCity" style="
+                            position: absolute;
+                            left: 40px;
+                            top: 12%;
+                        " size="20"
+                        line-fg-color="#f00"></spinner>
                     </label>
                     <select class="city form-control" v-model="checkedCity">
                         <option v-for="(city ,key) in cities" v-bind:key="key" v-bind:value="city">{{city.city_name}}</option>
@@ -110,7 +128,10 @@ export default {
         lastMarkerPosition:{lat:'',lng:''},
         mapZoom:4,
         markers: [{ position: { lat: 35.4122, lng: 139.4130 } }],
-        updatedMarker:false
+        updatedMarker:false,
+        loadingCountry:false,
+        loadingProvince:false,
+        loadingCity:false,
     }},
     components: {
         placeShowListComponent
@@ -121,10 +142,10 @@ export default {
     },
     methods: {
             updateCountry: function () {
+                this.loadingCountry = true;
                 axios.get('/api/getCountries').then(res => {
                     var $countries = res.data;
                     this.countries = $countries;
-
                     if(this.initVal != undefined && this.initVal.province != undefined && this.initVal.province != ""){
                         console.log("country 初期値あり");
                         console.log(res.data);
@@ -135,12 +156,18 @@ export default {
                             }
                         }
                     }
+
+                    this.loadingCountry = false;
                 });
             },
             updateProvince: function($id) {
+
                 if($id == ""){
                     return;
                 }
+
+                this.loadingProvince = true;
+
                 axios.post('/api/getProvinces' , {"id":$id}).then(res => {
                     var $provinces = res.data;
                     this.provinces = $provinces;
@@ -156,12 +183,19 @@ export default {
                         }
 
                     }
+
+                this.loadingProvince = false;
+
                 });
             },
             updateCity: function($id){
+
                 if($id == ""){
                     return;
                 }
+
+                this.loadingCity = true;
+
                 axios.post('/api/getCities' , {"id":$id}).then(res => {
                     var $cities = res.data;
                     this.cities = $cities;
@@ -175,6 +209,7 @@ export default {
                             }
                         }
                     }
+                    this.loadingCity = false;
                 });
             },
             updateAll: function() {
@@ -232,6 +267,9 @@ export default {
         }
     }, 
     watch: {
+        provinces:function(){
+            this.cities = {};
+        },
         checkedCountry: function($el) {
             this.updateProvince($el.id);
             this.addressObj.city = "";
