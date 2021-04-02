@@ -159,11 +159,11 @@
 
                         <div v-if="openFlg && post.address != null" style="margin-left:5%" class="address-line">
                             
-                            {{post.address.address_line_1 != null ?  post.address.address_line_1 : ""}}
-                            {{post.address.address_line_2 != null ?  ", " + post.address.address_line_2 : ""}}
-                            {{post.address.city != null ?  ", " + post.address.city : ""}}
-                            {{post.address.country != null ?  ", " + post.address.country : ""}}
-                            {{post.address.zip_code != null ?  ", " + post.address.zip_code : ""}}
+                            {{post.address.address_line_1 != null && post.address.address_line_1 != "" ?  post.address.address_line_1 : ""}}
+                            {{post.address.address_line_2 != null && post.address.address_line_1 != "" ?  ", " + post.address.address_line_2 : ""}}
+                            {{post.address.city != null && post.address.address_line_1 != "" ?  ", " + post.address.city : ""}}
+                            {{post.address.country != null && post.address.address_line_1 != "" ?  ", " + post.address.country : ""}}
+                            {{post.address.zip_code != null && post.address.address_line_1 != "" ?  ", " + post.address.zip_code : ""}}
 
                         </div>
 

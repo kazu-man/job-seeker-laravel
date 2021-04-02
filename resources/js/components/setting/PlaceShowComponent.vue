@@ -251,6 +251,8 @@ export default {
                     this.markers[0].position.lat = this.initMarkers.lat;
                     this.markers[0].position.lng = this.initMarkers.lng;
 
+                    this.updatedMarker = true;
+
                 }else{
 
                     this.markers[0].position.lat = newLat;
