@@ -156,13 +156,23 @@
 
                             </div>
                         </div>
-                        
+
+                        <div v-if="openFlg && post.address != null" style="margin-left:5%" class="address-line">
+                            
+                            {{post.address.address_line_1 != null ?  post.address.address_line_1 : ""}}
+                            {{post.address.address_line_2 != null ?  ", " + post.address.address_line_2 : ""}}
+                            {{post.address.city != null ?  ", " + post.address.city : ""}}
+                            {{post.address.country != null ?  ", " + post.address.country : ""}}
+                            {{post.address.zip_code != null ?  ", " + post.address.zip_code : ""}}
+
+                        </div>
+
                         <GmapMap
                             v-if="openFlg && post.address != null"
                             :center="{ lat: post.address.lat, lng: post.address.lng }"
                             :zoom="16"
                             map-type-id="roadmap"
-                            style="width: 90%; height: 300px; margin:30px auto;"
+                            style="width: 90%; height: 300px; margin:0 auto 30px auto;"
                         >
                             <GmapMarker
                                 :key="index"
@@ -510,7 +520,13 @@ export default {
 .post-buttons .buttons{
     width:50%;
 }
+@media (max-width:991px){
+    .address-line{
+        margin-top:20px;
+        font-size:12px;
+    }
 
+}
 @media (max-width:667px){
     .pc-view{
         display: none;
