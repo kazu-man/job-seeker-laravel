@@ -373,6 +373,13 @@
 
                     <div class="profile-item border m-4 p-3 mt-5">
                         <div class="h-3 profile-item-label"><strong>Experience</strong></div>
+                        <div class="text-left" v-for="ex in applicantProfile.experiences" :obj="ex" :key="ex.id">
+                            <span style="width:20%">{{ex.category.category_name}}</span> - <span style="width:70%">{{ex.experience_years}} years</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-item border m-4 p-3 mt-5">
+                        <div class="h-3 profile-item-label"><strong>Experience Details</strong></div>
                         <div class="text-left  word-break" >
                             {{applicantProfile.experience}}
                         </div>

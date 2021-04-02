@@ -11,6 +11,13 @@ class Profile extends Model
     {
         return $this->belongsTo('App\User');
     }
+
+    public function experiences(){
+
+        return $this->hasMany('App\Model\Experience');
+        
+      }
+
     protected $table = 'profiles';
 
 }

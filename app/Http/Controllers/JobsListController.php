@@ -9,6 +9,7 @@ use App\Model\Company;
 use App\Model\Message;
 use App\Model\Profile;
 use App\Model\ApplyRecord;
+use App\Model\Experience;
 use App\Mail\MailController;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
@@ -106,6 +107,7 @@ class JobsListController extends Controller
         $skill = $request->input('skill');
         $education = $request->input('education');
         $companyName = $request->input('companyName');
+        $experiences = $request->input('experiences');
 
 
         $user = Auth::User();
@@ -149,11 +151,55 @@ class JobsListController extends Controller
                 \Log::info("resume stored");
             }
 
+
+
+            
+            
             $profile->experience = $experience; 
             $profile->skill = $skill; 
             $profile->gender = $gender; 
             $profile->education = $education; 
             $profile->save();
+
+            if($experiences != null){
+                \Log::info("------------------------------------");
+                \Log::info($experiences);
+                $experienceArray = json_decode($experiences);
+
+                
+
+                foreach($experienceArray as $ex){
+
+                    // 更新
+                    if($ex->id != null && $ex->id != ""){
+
+                        $exModel = Experience::where('id',$ex->id)->first();
+
+                        if($ex->category_id == "" || $ex->experience_years == ""){
+
+                            $exModel->delete();
+
+                        }else{
+
+                            $exModel->category_id = $ex->category_id;
+                            $exModel->experience_years = $ex->experience_years;
+                            $exModel->save();
+                        }
+
+
+                    // 新規
+                    }else{
+                        $exModel = new Experience();
+                        $exModel->category_id = $ex->category_id;
+                        $exModel->profile_id = $profile->id;
+                        $exModel->experience_years = $ex->experience_years;
+
+                        $exModel->save();
+
+                    }
+
+                }
+            }
 
         }else if($userType == 'C'){
 
@@ -194,7 +240,9 @@ class JobsListController extends Controller
         $user = Auth::User();
         $profile = "";
         if($user->user_type == 'U'){
-            $profile = Profile::where('user_id',$user->id)->first();
+            $profile = Profile::where('user_id',$user->id)
+            ->with('experiences')
+            ->first();
             $profile["profileType"] = "U";
         }else if($user->user_type == 'C'){
             $profile = Company::find($user->company_id);
@@ -334,7 +382,7 @@ class JobsListController extends Controller
     public function getApplicantProfile($id){
         \Log::info($id);
 
-        $profile = Profile::where("id",$id)->with('user')->first();
+        $profile = Profile::where("id",$id)->with('user')->with('experiences.category')->first();
         \Log::info("applicant profile");
         \Log::info($profile);
 

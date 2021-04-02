@@ -62,8 +62,24 @@
                         <input type="radio"  v-model="profileForm.gender" :value="'Female'" name="gender" id="Female" class="ml-1" checked=""> Female
                     </div>
 
+                    <div class="form-group" style="position:relative; margin-bottom: 30px;">
+                        <label for="" style="display:block">Experience</label>
+                        <div v-for="(experience, index) in profileForm.experiences" :key="index" >
+                            <div style="width:45%;display:inline-block">
+                                <select-box-component @changeSelectedVal="changeSelectedCategory($event,experience,index)" :target="'category'" :baseData="categories" :initVal="experience.category_id"></select-box-component>
+                            </div>
+                            <div style="width:45%;display:inline-block">
+                                <input type="number" class="form-control" v-model="experience.experience_years" style="display: inline-block;width: 50%;margin-right: 10px;margin-bottom:5px;">
+                                <span min="1">years</span>
+                            </div>
+                        </div>
+
+                        <span class="add-btn" @click="addExForm">+</span>    
+
+                    </div>
+
                     <div class="form-group">
-                        <label for="">Experience</label>
+                        <label for="">Experience Details</label>
                         <textarea  v-model="profileForm.experience" name="experience" id="Experience" cols="30" rows="10" class="form-control">
                             </textarea>
                     </div>
@@ -118,6 +134,12 @@ export default {
                 email:"",
                 companyName:"",
                 companyLogo:"",
+                categoryId:"",
+                experiences: [
+                    { 
+                        id :"", category_id : "", experience_years : "" 
+                    },
+                ]
             },
             currentLogo:"",
             previewLogo:"",
@@ -143,6 +165,7 @@ export default {
             formData.append("email", this.profileForm.email);
             formData.append("companyName", this.profileForm.companyName);
             formData.append("companyLogo", this.profileForm.companyLogo);
+            formData.append("experiences", JSON.stringify(this.profileForm.experiences));
 
             axios.post('/api/updateProfile', formData).then(res => {
                 this.$store.dispatch('auth/currentUser');
@@ -159,6 +182,7 @@ export default {
                     this.profileForm.gender = data.gender != undefined ? data.gender : "" ;
                     this.profileForm.education = data.education != undefined ? data.education : "" ;
                     this.currentResume = data.resume != undefined ? data.resume : "" ;
+                    this.profileForm.experiences = data.experiences != undefined ? data.experiences : "" ;
                     console.log('user profile');
                 }else if(data.profileType == 'C'){
                     this.profileForm.companyName = data.company_name;
@@ -209,6 +233,19 @@ export default {
                 "resumeFile":this.resumeName
             }
             this.download(data);
+        },
+        changeSelectedCategory:function(val,experience,index){
+          console.log(val);
+          console.log(experience);
+          this.profileForm.experiences[index].category_id = val;
+        },
+        addExForm:function(){
+            var length = this.profileForm.experiences.length;
+            this.profileForm.experiences.push(
+                { 
+                        id : "", category_id : "", experience_years : "" 
+                }
+            );
         }
 
     },
@@ -226,7 +263,10 @@ export default {
             if(this.currentResume != null){
                 return this.currentResume.substr(this.currentResume.lastIndexOf('/') + 1);
             }
-        }
+        },
+        categories:function(){
+            return this.$store.getters['auth/categories'];
+        },
     }
 }
 </script>
@@ -252,5 +292,19 @@ export default {
 }
 .card-header{
     margin-bottom:0 !important;
+}
+.add-btn{
+    border-radius: 100%;
+    border: 1px solid gray;
+    padding: 0px;
+    cursor: pointer;
+    font-size: 15px;
+    width: 23px;
+    height: 23px;
+    display: inline-block;
+    text-align: center;
+    position: absolute;
+    left: 0px;
+    color:gray;
 }
 </style>

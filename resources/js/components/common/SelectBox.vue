@@ -19,7 +19,7 @@ export default {
         selectedVal:""
     }},
     props:['target','initVal','baseData'],
-    created: function() {
+    mounted: function() {
         this.getTableData();
     },
     methods: {
@@ -28,7 +28,8 @@ export default {
             var tc = this;
             // axios.get('/api/' + url).then(res => {
             //     this.data = res.data;
-
+                console.log("--------------------initval----------------")
+                console.log(tc.initVal);
                 if(tc.initVal != undefined && tc.initVal != ""){
                     tc.selectedVal = tc.initVal;
                 }
@@ -47,8 +48,11 @@ export default {
         route:function(){
           this.selectedVal = "";
           this.selectVal();
+        },
+        initVal:function(val){
+          this.selectedVal = val;
         }
-    }
+    },
 }
 </script>
 
