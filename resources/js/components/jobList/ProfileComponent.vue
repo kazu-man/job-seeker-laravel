@@ -62,7 +62,12 @@
                         <input type="radio"  v-model="profileForm.gender" :value="'Female'" name="gender" id="Female" class="ml-1" checked=""> Female
                     </div>
 
-                    <div class="form-group" style="position:relative; margin-bottom: 30px;">
+                    <select-experience-component 
+                    　@selectExperience="changeSelectedCategory" 
+                    　@addExForm="addExForm"
+                    　:experiences="profileForm.experiences"></select-experience-component>
+
+                    <!-- <div class="form-group" style="position:relative; margin-bottom: 30px;">
                         <label for="" style="display:block">Experience</label>
                         <div v-for="(experience, index) in profileForm.experiences" :key="index" >
                             <div style="width:45%;display:inline-block">
@@ -76,7 +81,7 @@
 
                         <span class="add-btn" @click="addExForm">+</span>    
 
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <label for="">Experience Details</label>
@@ -263,9 +268,6 @@ export default {
             if(this.currentResume != null){
                 return this.currentResume.substr(this.currentResume.lastIndexOf('/') + 1);
             }
-        },
-        categories:function(){
-            return this.$store.getters['auth/categories'];
         },
     }
 }

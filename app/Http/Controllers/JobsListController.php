@@ -189,6 +189,9 @@ class JobsListController extends Controller
 
                     // 新規
                     }else{
+                        if($ex->category_id == "" || $ex->experience_years == ""){
+                            continue;
+                        }
                         $exModel = new Experience();
                         $exModel->category_id = $ex->category_id;
                         $exModel->profile_id = $profile->id;

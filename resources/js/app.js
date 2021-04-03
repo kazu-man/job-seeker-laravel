@@ -44,6 +44,7 @@ Vue.component('select-box-component', require('./components/common/SelectBox.vue
 Vue.component('posts-component', require('./components/jobList/PostComponent.vue').default);
 Vue.component('select-tag-component', require('./components/common/SelectTagComponent.vue').default);
 Vue.component('tag-component', require('./components/common/TagComponent.vue').default);
+Vue.component('select-experience-component', require('./components/common/SelectExperienceComponent.vue').default);
 
 Vue.component('spinner', require('vue-simple-spinner'));
 
