@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Model\Scout;
 
 class User extends Authenticatable
 {
@@ -56,6 +57,16 @@ class User extends Authenticatable
     {   
         return $this->belongsTo('App\Model\Company');
     }
+
+    public function recievedScouts()
+    {
+        return $this->hasMany(Scout::class, 'reciever_id', 'id');
+    }
+    public function sentScouts()
+    {
+        return $this->hasMany(Scout::class, 'sender_id', 'id');
+    }
+
 
         /**
      * パスワードリセット通知の送信をオーバーライド

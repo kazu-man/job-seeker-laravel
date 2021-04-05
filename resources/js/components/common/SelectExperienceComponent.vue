@@ -27,10 +27,9 @@ export default {
         changeSelectedCategory:function(val,experience,index){
 
           this.$emit("selectExperience",val,experience,index);
-
+          
         },
         addExForm:function(){
-            
           this.$emit("addExForm");
 
         }

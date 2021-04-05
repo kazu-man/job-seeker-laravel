@@ -18,4 +18,8 @@ class Company extends Model
     {
         return $this->belongsTo('App\User');
     }
+    public function jobs()
+    {   
+        return $this->hasMany('App\Model\Job');
+    }
 }

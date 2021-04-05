@@ -10,9 +10,13 @@
             Your applies
         </div>
 
-        <div class="title" v-if="searchInfo.pageType != 'applies'" v-cloak>
+        <div class="title" v-if="searchInfo.pageType == 'scout'" v-cloak>
+            {{count}} Scouts
+        </div>
+        <div class="title" v-else-if="searchInfo.pageType != 'applies'" v-cloak>
             {{count}} Jobs found
         </div>
+
         <spinner v-if="loading" style="
             position:absolute;
             top:35%;
@@ -154,7 +158,11 @@ export default {
                 this.searchInfo.searchedBy = this.$route.params.category;
                 this.searchInfo.categoryName = this.$route.params.category;
 
+            }else if(this.initPage == 'scout'){
+                this.searchInfoClear();
+                this.searchInfo.pageType = "scout";
             }
+
             this.getPostList();
         },
         commitSearchKeys:function(searchKeys){

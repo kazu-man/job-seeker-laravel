@@ -121,26 +121,26 @@
                             <div class="mb-5">
                                 <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>
                                 Description</h3>
-                                <p>{{post.job_description.description}}</p>
+                                <p class="longText">{{post.job_description.description}}</p>
 
                             </div>
 
                             <div class="mb-5">
                                 <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>
                                 Requirements</h3>
-                                <p>{{post.job_description.requirement}}</p>
+                                <p class="longText">{{post.job_description.requirement}}</p>
                             </div>
 
                             <div class="mb-5">
                                 <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>
                                 Experience</h3>
-                                <p>{{post.job_description.experience}}</p>
+                                <p class="longText">{{post.job_description.experience}}</p>
                             </div>
 
                             <div class="mb-5">
                                 <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>
                                 Other Benefits</h3>
-                                <p>{{post.job_description.benefit}}</p>
+                                <p class="longText">{{post.job_description.benefit}}</p>
                             </div>
                         </div>
 
@@ -409,7 +409,7 @@ export default {
     cursor:pointer;
 }
 .post-header .col-2{
-    padding-left:3px !important;
+    padding-left:10px !important;
 }
 .post-main {
     word-break: break-all;
@@ -493,6 +493,11 @@ export default {
 }
 .new-message-badge {
   animation: blink 1s infinite alternate;
+}
+
+.longText{
+    white-space:pre-line;
+    overflow-wrap: break-word;
 }
 @keyframes blink{
    0%{ background:red }

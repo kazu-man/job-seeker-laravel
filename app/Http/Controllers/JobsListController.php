@@ -10,6 +10,7 @@ use App\Model\Message;
 use App\Model\Profile;
 use App\Model\ApplyRecord;
 use App\Model\Experience;
+use App\Model\Scout;
 use App\Mail\MailController;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
@@ -516,7 +517,7 @@ class JobsListController extends Controller
         $id = strstr($path, '/storage/images/resume/'); 
 
         if(config('app.file_system') == "s3"){
-        $replacedPath = "/storage/images/resume/" . $user->id . "/" . $fileName;
+        $replacedPath = strstr($path, '/storage/images/resume/') ;
 
         }else if(config('app.file_system') == "local"){
 
@@ -543,5 +544,4 @@ class JobsListController extends Controller
             return response()->json([], 503);
         }
     }
-
 }

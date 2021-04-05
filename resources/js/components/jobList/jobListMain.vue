@@ -83,6 +83,9 @@
                                     <span v-if="newMessageFlg" class="badge badge-danger new-message-badge">new message</span>
                                 </transition>
                                 </div>
+
+                                <div class="menu-title" @click="switchMenu('sendScout')" 
+                                :key="'sendScoutTitle'" v-bind:class="{selectedBg:selectedMenu == 'sendScout'}">Scouts</div>
                             </div>
                         </div>
 
@@ -97,9 +100,12 @@
                                 <transition name="badge">
                                     <span v-if="newMessageFlg" class="badge badge-danger new-message-badge">new message</span>
                                 </transition>
-
                                 </div>
                             </div>
+
+                            <div class="menu-title" @click="switchMenu('scoutList')" 
+                            :key="'scoutListTitle'" v-bind:class="{selectedBg:selectedMenu == 'scoutList'}">Scout List</div>
+
                         </div>
                 </transition-group>
                     </div>
@@ -256,6 +262,26 @@ export default {
 
             if(this.selectedMenu == 'postJob' || this.selectedMenu == 'posts' || this.selectedMenu == "appliesList"){
                 await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.loginUser.company_id}`)
+                .then(() => {
+                    this.scrollTop();
+                    this.menuClear();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'sendScout'){
+                await this.$router.push(`${this.routePath}/${this.selectedMenu}`)
+                .then(() => {
+                    this.scrollTop();
+                    this.menuClear();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
+                })
+                .catch(()=>{});
+
+            }else if(this.selectedMenu == 'scoutList'){
+                await this.$router.push(`${this.routePath}/${this.selectedMenu}/${this.loginUser.id}`)
                 .then(() => {
                     this.scrollTop();
                     this.menuClear();
@@ -425,7 +451,9 @@ export default {
                     || this.selectedContentsBg == 'appliesList' 
                     || this.selectedContentsBg == 'setting/country'
                     || this.selectedContentsBg == 'setting/category'
-                    || this.selectedContentsBg == 'setting/users',
+                    || this.selectedContentsBg == 'setting/users'
+                    || this.selectedContentsBg == 'scoutList'
+                    || this.selectedContentsBg == 'sendScout',
                 countryBg:(this.selectedContentsBg == 'country' && this.selectedCountry != '' )
             }
         },

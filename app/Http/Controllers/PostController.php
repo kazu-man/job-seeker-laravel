@@ -10,6 +10,8 @@ use App\Model\Message;
 use App\Model\Profile;
 use App\Model\ApplyRecord;
 use App\Model\JobTagRelation;
+use App\Model\Scout;
+use App\Model\ScoutJobRelation;
 use App\Model\Address;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
@@ -160,6 +162,34 @@ class PostController extends Controller
         return $result;
     }
     public function getPosts(Request $request) {
+
+        $pageType = $request->input('pageType');
+        
+        if($pageType == "scout"){
+            
+            $user = Auth::User();
+            $userId = $user->id;
+
+            $scouts = $query = Scout::with('jobRelations.job.company')
+            ->with('jobRelations.job.category')
+            ->with('jobRelations.job.city.province.country')
+            ->with('jobRelations.job.jobType')
+            ->with('jobRelations.job.jobDescription')
+            ->with('jobRelations.job.jobTagRelations.tag')
+            ->with('jobRelations.job.address')
+            ->where('reciever_id',$userId)
+            ->first();
+
+            $resultPosts = [];
+            if($scouts != null){
+                foreach($scouts["jobRelations"] as $scoutPost){
+                    array_push($resultPosts,$scoutPost->job);
+                }
+            }
+
+            return $resultPosts;
+
+        }
         
         $companyId = $request->input('companyId');
         $keyWord = $request->input('keyWord');
@@ -181,12 +211,14 @@ class PostController extends Controller
         ->with('jobDescription')
         ->with('jobTagRelations.tag')
         ->with('address');
+
         
         if($applies){
-            $applyJobNo = app()->make('App\Http\Controllers\JobsListController')->getApplyList();
-
             $user = Auth::User();
             $userId = $user->id;
+    
+            $applyJobNo = app()->make('App\Http\Controllers\JobsListController')->getApplyList();
+
             $query->with('applyRecords.messages');
 
             $query->with(['applyRecords' => function ($query) use($userId){

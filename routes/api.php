@@ -81,6 +81,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/sendMessage', 'JobsListController@sendMessage')->name('sendMessage');
     Route::get('/getNewMessageExistFlg', 'JobsListController@getNewMessageExistFlg')->name('getNewMessageExistFlg');
     Route::post('/resumeDownload',  'JobsListController@resumeDownload');    
+    Route::post('/searchUser', 'ScoutController@searchUser')->name('searchUser');
+    Route::post('/getScout', 'ScoutController@getScout')->name('getScout');
+    Route::post('/sendScout', 'ScoutController@sendScout')->name('sendScout');
+    Route::get('/getScoutsByReciever', 'ScoutController@getScoutsByReciever')->name('getScoutsByReciever');
+
 });
 
 //google login

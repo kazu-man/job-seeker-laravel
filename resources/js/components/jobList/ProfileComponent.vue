@@ -67,22 +67,6 @@
                     　@addExForm="addExForm"
                     　:experiences="profileForm.experiences"></select-experience-component>
 
-                    <!-- <div class="form-group" style="position:relative; margin-bottom: 30px;">
-                        <label for="" style="display:block">Experience</label>
-                        <div v-for="(experience, index) in profileForm.experiences" :key="index" >
-                            <div style="width:45%;display:inline-block">
-                                <select-box-component @changeSelectedVal="changeSelectedCategory($event,experience,index)" :target="'category'" :baseData="categories" :initVal="experience.category_id"></select-box-component>
-                            </div>
-                            <div style="width:45%;display:inline-block">
-                                <input type="number" class="form-control" v-model="experience.experience_years" style="display: inline-block;width: 50%;margin-right: 10px;margin-bottom:5px;">
-                                <span min="1">years</span>
-                            </div>
-                        </div>
-
-                        <span class="add-btn" @click="addExForm">+</span>    
-
-                    </div> -->
-
                     <div class="form-group">
                         <label for="">Experience Details</label>
                         <textarea  v-model="profileForm.experience" name="experience" id="Experience" cols="30" rows="10" class="form-control">
@@ -181,13 +165,16 @@ export default {
         getProfile() {
             axios.get('/api/getProfile').then(res => {
                 var data = res.data;
+                console.log(data.experiences);
                 if(data.profileType == 'U'){
                     this.profileForm.experience = data.experience != undefined ? data.experience : "" ;
                     this.profileForm.skill = data.skill != undefined ? data.skill : "" ;
                     this.profileForm.gender = data.gender != undefined ? data.gender : "" ;
                     this.profileForm.education = data.education != undefined ? data.education : "" ;
                     this.currentResume = data.resume != undefined ? data.resume : "" ;
-                    this.profileForm.experiences = data.experiences != undefined ? data.experiences : "" ;
+                    if(data.experiences != undefined){
+                        this.profileForm.experiences = data.experiences ;
+                    }
                     console.log('user profile');
                 }else if(data.profileType == 'C'){
                     this.profileForm.companyName = data.company_name;
@@ -240,9 +227,9 @@ export default {
             this.download(data);
         },
         changeSelectedCategory:function(val,experience,index){
-          console.log(val);
-          console.log(experience);
+
           this.profileForm.experiences[index].category_id = val;
+
         },
         addExForm:function(){
             var length = this.profileForm.experiences.length;

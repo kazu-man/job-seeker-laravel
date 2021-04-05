@@ -14,6 +14,8 @@ import passwordReset from './components/resetPassword/resetPassword.vue'
 import userShow from './components/setting/UserShowComponent.vue'
 import categoryShow from './components/setting/CategoryShowComponent.vue'
 import AdminPlaceShowComponent from './components/setting/AdminPlaceShowComponent.vue'
+import SearchUserComponent from './components/jobList/SearchUserComponent.vue'
+import MyScoutListComponent from './components/jobList/MyScoutListComponent.vue'
 
 import store from './store' 
 import { UNAUTHORIZED } from './util'
@@ -99,8 +101,38 @@ const routes = [
 
                   }
               });
+            },
+          },  
+          {
+            path: 'sendScout',
+            component: SearchUserComponent,
+            beforeEnter (to, from, next) {
+              store.dispatch('auth/accessAllowCheck')
+              .then(value => {
+                const id = to.params.id
+                if (store.state.auth.user != null && value && store.state.auth.user.user_type == "C") {
+                    next()
+                  } else {
+                    window.location.href = "/";
+                  }
+              });
             }
           },  
+          {
+            path: 'scoutList/:id',
+            component: MyScoutListComponent,
+            beforeEnter (to, from, next) {
+              store.dispatch('auth/accessAllowCheck')
+              .then(value => {
+                const id = to.params.id
+                if (store.state.auth.user != null && value && store.state.auth.user.user_type == "U" && id == store.state.auth.user.id) {
+                    next()
+                  } else {
+                    window.location.href = "/";
+                  }
+              });
+            }
+          }, 
           
           {
             path: 'profile/:id',

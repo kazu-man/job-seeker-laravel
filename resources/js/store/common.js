@@ -11,7 +11,9 @@ const state = {
     applyRecord:null,
     commonDataForModal:null,
     deleteTargetUser:null,
-    settingCountryReloadFlg:false
+    settingCountryReloadFlg:false,
+    scoutInfo:null,
+    scoutedIds:[]
   }
     
 const mutations = {
@@ -51,7 +53,18 @@ const mutations = {
     setSettingCountryReloadFlg(state, target){
         state.settingCountryReloadFlg = target
     },
+    setScoutInfo(state, target){
+        state.scoutInfo = target
+    },
+    setScoutedIds(state, target){
+        state.scoutedIds = target
+    },
+
 }
+
+const getters = {
+    scoutedIds: state => state.scoutedIds,
+  }
  
 const actions = {
     setApplyModal(context, post){
@@ -123,7 +136,17 @@ const actions = {
     setUserDeleteModal(context,user){
         context.commit('setModalTarget', 'deleteUserModal');
         context.commit('setDeleteTargetUser', user);
-    }
+    },
+    setScoutModal(context,record){
+
+        axios.post('/api/getScout' ,record).then(res => {
+            console.log(res.data);
+            var response = res.data;
+
+            context.commit('setScoutInfo', response);
+            context.commit('setModalTarget', 'scoutModal');
+        });
+    },
   
 }
 
@@ -133,6 +156,7 @@ const actions = {
 export default {
     namespaced: true,
     state,
+    getters,
     mutations,
     actions
   }

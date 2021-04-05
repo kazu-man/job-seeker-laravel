@@ -380,25 +380,19 @@
 
                     <div class="profile-item border m-4 p-3 mt-5">
                         <div class="h-3 profile-item-label"><strong>Experience Details</strong></div>
-                        <div class="text-left  word-break" >
-                            {{applicantProfile.experience}}
-                        </div>
+                        <div class="text-left" style="white-space:pre-line;overflow-wrap: break-word;">{{applicantProfile.experience}}</div>
                     </div>
 
 
                     <div class="profile-item border m-4 p-3 mt-5">
                         <div class="h-3 profile-item-label"><strong>Skills</strong></div>
-                        <div class="text-left  word-break">
-                            {{applicantProfile.skill}}
-                        </div>
+                        <div class="text-left" style="white-space:pre-line;overflow-wrap: break-word;">{{applicantProfile.skill}}</div>
                     </div>
 
 
                     <div class="profile-item border m-4 p-3 mt-5">
                         <div class="h-3 profile-item-label"><strong>Education</strong></div>
-                        <div class="text-left  word-break">
-                            {{applicantProfile.education}}
-                        </div>
+                        <div class="text-left" style="white-space:pre-line;overflow-wrap: break-word;">{{applicantProfile.education}}</div>
                     </div>
 
                     <div class="btn btn-info" @click="modalHide('applicantProfile')">
@@ -576,6 +570,62 @@
                     </div>
                 </div>  
             </modal> 
+
+            <modal name="scoutModal" :draggable="false" class="scoutModal" :height="520">
+                <div class="modal-header">
+                    <p>Scout</p>
+                    <div v-on:click="modalHide('scoutModal')" class="close">X</div>
+                </div>
+                <div class="modal-body" style="width:100%;padding-top:15px" v-if="scoutInfo != null">
+
+                    <div class="scout-job-area">
+                        <div style="pading-left:5%">
+                            Scout for :
+                        </div>
+
+                        <div v-if="scoutInfo.id != null" class="scout-job-check-area">
+
+                            <div v-for="job in scoutInfo.sender.company.jobs" :obj="job" :key="job.id" class="scout-job-check">
+                                <input type="checkbox" :id="job.id" name="registeredJobs" :value="job.id" v-model="scoutInfo.scoutJobList" disabled="true">
+                                <label :for="job.id" style="display: inline;">{{job.job_title}}</label>
+                            </div>
+
+                        </div>
+                        <div v-else class="scout-job-check-area">
+                            <div v-for="job in scoutInfo.registeredJobs" :obj="job" :key="job.id" class="scout-job-check">
+                                <input type="checkbox" :id="job.id" name="registeredJobs" :value="job.id" v-model="scoutInfo.scoutJobList">
+                                <label :for="job.id" style="display: inline;">{{job.job_title}}</label>
+                            </div>
+                        </div>
+                    </div>  
+
+
+                    <div v-if="scoutInfo.id != null" >
+                        <div style="margin-top: 10px;text-align:left;">Scout Message has been sent <span style="font-size: 12px;float: right;padding-top: 5px;">({{scoutInfo.created_at}})</span></div>
+                        <div class="sent-scout-message">{{scoutInfo.scout_message}}</div>
+                    </div>  
+                    <div v-else>
+                        <div style="margin-top: 10px;text-align:left;">Scout Message</div>
+
+                        <div>
+                            <textarea class="form-control" rows="10" v-model="scoutInfo.scout_message"></textarea>
+                        </div>
+                    </div>  
+
+                    <div class="row button-area">
+                        <div class="col-6" :class="{width30:scoutInfo.id != null}">
+                            <button  @click="modalHide('scoutModal')" name="scoutModal" class="btn btn-block btn-warning btn-md p-2 text-danger">
+                                <span class="icon-heart-o mr-2 text-danger">閉じる</span>
+                            </button>
+                        </div>
+                        <div v-if="scoutInfo.id == null" class="col-6">
+                            <button @click="sendScout" type="button" class="btn btn-primary p-2 btn-block">
+                                送信
+                            </button>
+                        </div>
+                    </div>
+                </div>  
+            </modal> 
             
 
             <!-- 一番下固定 -->
@@ -656,7 +706,7 @@ export default {
         },
         modalCurrentBgImage:null,
         defaultImage: "/images/search.jpg",
-        loading:false
+        loading:false,
     }},
     methods: {
 
@@ -694,6 +744,7 @@ export default {
                     this.$modal.hide('registerAdmin');
                     this.$modal.hide('login');
                     this.$modal.hide('bgChangeModal');
+                    this.$modal.hide('scoutModal');
                 }else{
                     reloadFlg = false;
                 }
@@ -930,6 +981,29 @@ export default {
 
             console.log('google login');
             location.href = "/api/auth/google";
+        },
+        sendScout:function(){
+
+            if(this.scoutInfo.scoutJobList.length < 1){
+                this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'スカウトする求人を選択して下さい',close:false});
+                return;
+            }
+            axios.post('/api/sendScout',this.scoutInfo).then(res => {
+                if(res.status != 200){
+                    return false;
+                }
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'スカウトを送信しました。'});
+
+                //searchUserComponentのscoutボタンをscouted表示にするためidを渡す
+                var scoutedList = this.$store.state.common.scoutedIds;
+                console.log(scoutedList);
+                scoutedList.push(this.scoutInfo.reciever_id);
+                this.$store.commit('common/setScoutedIds', scoutedList);
+
+            })
+            .catch(res => {
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'スカウトメッセージ送信に失敗しました。'});
+            });
         }
 
     },
@@ -993,7 +1067,11 @@ export default {
             if(this.applicantProfile.resume != null){
                 return this.applicantProfile.resume.substr(this.applicantProfile.resume.lastIndexOf('/') + 1);
             }
-        }
+        },
+        scoutInfo:function(){
+            return this.$store.state.common.scoutInfo;
+        },
+
 
 
     },
@@ -1067,7 +1145,7 @@ export default {
             }
 
             if(message != null){
-                this.$store.dispatch('common/alertModalUp', {data:UNPROCESSABLE_ENTITY, successMessage:message,close:false});
+                this.$store.dispatch('common/alertModalUp', {data:UNPROCESSABLE_ENTITY, successMessage:message,close:true});
             }
 
         },
@@ -1370,6 +1448,41 @@ label.userType{
     text-align: center;
     margin-right: auto;
     margin-left: auto;
+}
+.width30{
+    width:30%;
+    flex: unset;
+    max-width: unset;
+    margin:auto;
+}
+.sent-scout-message{
+    text-align: left;
+    border: gray 1px solid;
+    padding: 15px;
+    height: 250px;
+    border-radius: 5px;
+    overflow-y: scroll;
+    white-space:pre-line;
+    overflow-wrap: break-word;
+}
+.scout-job-area{
+    text-align: left;
+}
+
+.scout-job-check-area{
+    padding-left: 5%;
+    height: 60px;
+    border: solid 1px #80808038;
+    overflow-y: scroll;
+    border-radius: 5px;
+}
+.scout-job-check{
+    width: auto;
+    display: inline-block;
+    margin-right: 5%;
+}
+.scout-job-check input, .scout-job-check label{
+    cursor:pointer;
 }
 </style>
 <style>
