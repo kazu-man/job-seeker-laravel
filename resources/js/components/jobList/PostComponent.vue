@@ -251,7 +251,7 @@ export default {
             // this.toggleSlide();
             axios.post('/api/addLike', {"jobId":jobId}).then(res => {
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'likeリストに追加しました。'});
-                this.$emit('refreshLike');
+                this.$store.dispatch('auth/getLikeList');
             });
         },
         removeLike(jobId){
@@ -265,7 +265,7 @@ export default {
             axios.post('/api/removeLike', {"jobId":jobId}).then(res => {
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'likeリストから削除しました。'});
-                this.$emit('refreshLike');
+                this.$store.dispatch('auth/getLikeList');
 
                 if(this.likePageOrNot){
                     this.$emit('hidePost',this.post.id);
