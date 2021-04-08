@@ -300,9 +300,9 @@
                     <p>こちらの求人に応募しますか？</p>
                     <div v-on:click="modalHide('apply')" class="close">X</div>
                 </div>
-                <div class="modal-body" style="width:50%;">
+                <div class="modal-body" style="width:100%;">
 
-                    <div  style="text-align:left;margin:auto">
+                    <div  style="text-align:left;margin:auto;margin-left:20%">
                         <div v-if="applyTargetPost != null">求人名：{{applyTargetPost.job_title}}</div>
                         <div v-if="applyTargetPost != null">会社名：{{applyTargetPost.company.company_name}}</div>
                         <div v-if="applyTargetPost != null">求人タイプ：{{applyTargetPost.job_type.job_type}}</div>
