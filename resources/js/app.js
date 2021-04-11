@@ -6,6 +6,7 @@
 import './bootstrap'
 // require('./bootstrap');
 import Vue from 'vue'
+import Vuetify from 'vuetify';
 
 
 Vue.use(VModal);
@@ -23,6 +24,9 @@ Vue.use(Geocoder, {
     defaultMode:        'address', // or 'lat-lng'
     googleMapsApiKey:   process.env.MIX_APP_GOOGLE_MAP_KEY
 });
+
+Vue.use(Vuetify);
+
 window.Vue = require('vue');
 
 
@@ -45,6 +49,7 @@ Vue.component('posts-component', require('./components/jobList/PostComponent.vue
 Vue.component('select-tag-component', require('./components/common/SelectTagComponent.vue').default);
 Vue.component('tag-component', require('./components/common/TagComponent.vue').default);
 Vue.component('select-experience-component', require('./components/common/SelectExperienceComponent.vue').default);
+Vue.component('video-upload-component', require('./components/common/VideoUploadComponent.vue').default);
 
 Vue.component('spinner', require('vue-simple-spinner'));
 
@@ -63,6 +68,8 @@ import VModal from 'vue-js-modal'
 import store from './store'
 import * as VueGoogleMaps from 'vue2-google-maps'   
 import Geocoder from "@pderas/vue2-geocoder";
+import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/dist/vuetify.min.css'
 
 const createApp = async () => {
     await store.dispatch('auth/currentUser')
@@ -72,7 +79,12 @@ const createApp = async () => {
         router, // ルーティングの定義を読み込む
         components: { App }, // ルートコンポーネントの使用を宣言する
         template: '<App />', // ルートコンポーネントを描画する
-        store
+        store,
+        vuetify: new Vuetify({
+            icons: {
+                iconfont: 'mdi', // 追加
+              },
+        }),
     });
 
 }

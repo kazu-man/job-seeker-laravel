@@ -19,6 +19,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
+use Aws\Exception\MultipartUploadException;
+use Aws\S3\MultipartUploader;
+use Aws\S3\S3Client;
 
 class PostController extends Controller
 {
@@ -47,6 +50,7 @@ class PostController extends Controller
         $description->benefit = $request->input('benefit');
         $description->experience = $request->input('experience');
         $description->job_title = $request->input('title');
+        $video = $request->input('videoFile');
 
         $description->save();
 
@@ -74,6 +78,10 @@ class PostController extends Controller
             $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
         }
 
+        if($video != null){
+
+            $this->videoUpload($video);
+        }
 
         return [ "registeredJob" => $job, "registeredDescription" => $description ];
     }
@@ -82,6 +90,7 @@ class PostController extends Controller
 
 
     public function updatePost(Request $request){
+        $this->videoUpload($request->input('videoFile'));
 
         $this->validate($request,[
             'title' => 'required',
@@ -144,6 +153,12 @@ class PostController extends Controller
         ->where('id',$job->id)
         ->first();
 
+        $video = $request->input('videoFile');
+
+        if($video != null){
+
+            $this->videoUpload($video);
+        }
 
         return [ "updatedPost" => $updatedPost ];
     }
@@ -381,6 +396,40 @@ class PostController extends Controller
     }
 
     
+    public function videoUpload($file){
+
+        $user = Auth::User();
+        $userId = $user->id;
+
+        $region = config('filesystems.disks.s3.region');
+        $bucket = config('filesystems.disks.s3.bucket');
+        $key = config('filesystems.disks.s3.key');
+        $secret = config('filesystems.disks.s3.secret');
+
+        $s3Client = S3Client::factory([
+            'version' => 'latest',
+            'key' => $key,
+            'secret' => $secret,
+            'region' => $region
+        ]);
+        $fileName = str_random(16).'.mp4';
+        $to_path = 'storage/images/video/'.$user->id.'/'.$fileName;
+        
+        $uploader = new MultipartUploader($s3Client, $file, [
+            'bucket' => $bucket,
+            'key'    => $to_path,
+        ]);
+
+        try {
+            $uploader->upload();
+
+        } catch (MultipartUploadException $e) {
+
+            \Log::info($e->getMessage());
+
+        }
+
+    }
 }
 
 

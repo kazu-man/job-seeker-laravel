@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Model\Job;
 use App\Model\Like;
+use App\Model\Scout;
 use App\Model\Company;
 use App\Model\Message;
 use App\Model\Profile;
-use App\Model\ApplyRecord;
 use App\Model\Experience;
-use App\Model\Scout;
+use App\Model\ApplyRecord;
 use App\Mail\MailController;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+
 
 class DefaultUser {
     public $userType = 'NoLogin';
@@ -84,7 +85,7 @@ class JobsListController extends Controller
 
 
     public function updateProfile(Request $request) {
-        
+
         $this->validate($request,[
             'email' => 'email',
             'userBirthday' => 'date|nullable',

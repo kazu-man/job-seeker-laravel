@@ -75,6 +75,12 @@
 
         </div>
 
+        <label>
+            Video: 
+        </label>
+        <video-upload-component ref="videoUploadComponent"></video-upload-component>                      
+
+
         <div class="form-group submit-form">
             <button v-on:click='postData' class="btn submit-btn">Submit</button>       
         </div>
@@ -116,13 +122,17 @@ export default {
                             tag:this.$refs.selectTagComponent.selectedTagList,
                             addressObj:this.$refs.placeShowComponent.addressObj,
                             latLng:this.$refs.placeShowComponent.lastMarkerPosition,
-                            mapFlg:this.$refs.placeShowComponent.mapShow
+                            mapFlg:this.$refs.placeShowComponent.mapShow,
+                            videoFile:this.$refs.videoUploadComponent.uploadVideoUrl
                         };
+            console.log(data);
+
             axios.post('/api/registerJob', data).then(res => {
                 // テストのため返り値をコンソールに表示
                 console.log(res.data);
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'登録しました。'});
+
 
             });
 
@@ -193,8 +203,8 @@ label {
     color:white;
     height:100%;
 
-    background:gray;
-    opacity:0.9;
+    background:#d3d3d3b0;
+    opacity:1;
 }
 
 .form-title {
