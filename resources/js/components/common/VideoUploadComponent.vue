@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       inputVideo: null,
-      uploadVideoUrl: '',
+      uploadVideoUrl: 'https://job-seeker-public-bucket.s3-ap-northeast-1.amazonaws.com/storage/video/hls/22/pNFFQ1hUdX52vTrj/hls_video_22_pNFFQ1hUdX52vTrj.m3u8',
     }
   },
   methods: {

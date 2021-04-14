@@ -68,6 +68,11 @@ class PostController extends Controller
         $job->city_id = $request->input('city');
         $job->job_type_id = $request->input('type');
 
+        if($video != null){
+
+            $videoPath = $this->videoUpload($video);
+            $job->video_url = Storage::cloud()->url($videoPath);
+        }
 
         $job->save();
 
@@ -78,10 +83,6 @@ class PostController extends Controller
             $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
         }
 
-        if($video != null){
-
-            $this->videoUpload($video);
-        }
 
         return [ "registeredJob" => $job, "registeredDescription" => $description ];
     }
@@ -412,8 +413,9 @@ class PostController extends Controller
             'secret' => $secret,
             'region' => $region
         ]);
-        $fileName = str_random(16).'.mp4';
-        $to_path = 'storage/images/video/'.$user->id.'/'.$fileName;
+        $randomStr = str_random(16);
+        $fileName = 'mp4_video_' . $userId . '_'. $randomStr .'.mp4';
+        $to_path = 'storage/video/mp4/'.$fileName;
         
         $uploader = new MultipartUploader($s3Client, $file, [
             'bucket' => $bucket,
@@ -428,6 +430,9 @@ class PostController extends Controller
             \Log::info($e->getMessage());
 
         }
+        $resultFileName = str_replace('.mp4','.m3u8',str_replace('mp4_video','hls_video',$fileName));
+        $resultPath = 'storage/video/hls/' . $userId .'/'. $randomStr . '/' . $resultFileName;
+        return $resultPath;
 
     }
 }

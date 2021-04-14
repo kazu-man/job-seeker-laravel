@@ -73,8 +73,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div> 
-
+                            </div>
                             <div v-else-if="!this.$store.state.auth.loginCheck || this.$store.state.auth.user.user_type =='U'" class="buttons">
                                 <div class="row">
                                     <div class="col-6">
@@ -86,10 +85,10 @@
                                         </button>
                                     </div>
                                     <div class="col-6">
-                                        <button v-if="!appliedOrNot" type="button" @click.stop="apply()" class="btn btn-primary p-2 btn-block" data-toggle="modal" data-target="#apply_modal">
-                                            Apply Now
+                                        <button v-if="!appliedOrNot" type="button" @click.stop="apply()" class="btn btn-primary p-2 btn-block text-white" data-toggle="modal" data-target="#apply_modal">
+                                            Apply
                                         </button>
-                                        <button v-else type="button" class="btn btn-primary p-2 btn-block" data-toggle="modal" disabled>
+                                        <button v-else type="button" class="btn btn-primary p-2 btn-block text-white" data-toggle="modal" disabled>
                                             Applied
                                         </button>
 
@@ -117,6 +116,15 @@
 
                         </div>
                         <div class="post-main col-lg-8">
+
+                            <div class="video-area" v-if="post.video_url != undefined && post.video_url != ''">
+                                <video  
+                                    controls 
+                                    autoplay 
+                                    class="video">
+                                        <source :src="post.video_url" />
+                                </video>
+                            </div>
 
                             <div class="mb-5">
                                 <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>
@@ -523,7 +531,18 @@ export default {
     width:100%;
 }
 .post-buttons .buttons{
-    width:50%;
+    width:36%;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.video-area{
+    margin-bottom:50px;
+}
+.video-area .video {
+    width: 95%;
+    display:block;
+    margin:auto;
 }
 @media (max-width:991px){
     .address-line{
