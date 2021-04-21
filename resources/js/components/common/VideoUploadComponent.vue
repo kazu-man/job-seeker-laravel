@@ -15,17 +15,33 @@
           ></v-file-input>
         </v-form>
       </v-sheet>
-          <video v-if="uploadVideoUrl" controls autoplay style="width:100%"><source :src="uploadVideoUrl" /></video>
+          <!-- <video v-if="uploadVideoUrl" controls autoplay style="width:100%"><source :src="uploadVideoUrl" /></video> -->
+          <div style="width:100%">
+            <video-player :options="videoOptions"></video-player>
+          </div>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import VideoPlayer from "./VideoPlayer.vue";
+
 export default {
   data() {
     return {
       inputVideo: null,
       uploadVideoUrl: 'https://job-seeker-public-bucket.s3-ap-northeast-1.amazonaws.com/storage/video/hls/22/pNFFQ1hUdX52vTrj/hls_video_22_pNFFQ1hUdX52vTrj.m3u8',
+      videoOptions: {
+				autoplay: false,
+				controls: true,
+        fluid: true,
+				sources: [
+					{
+						src:"https://job-seeker-public-bucket.s3-ap-northeast-1.amazonaws.com/storage/video/hls/22/pNFFQ1hUdX52vTrj/hls_video_22_pNFFQ1hUdX52vTrj.m3u8",
+            type:"application/x-mpegURL"
+					}
+				]
+			}
     }
   },
   methods: {
@@ -44,7 +60,10 @@ export default {
         this.uploadVideoUrl = ''
       }
     },
-  }
+  },
+  	components: {
+		VideoPlayer
+	},
 }
 </script>
 

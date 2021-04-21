@@ -70,6 +70,7 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import Geocoder from "@pderas/vue2-geocoder";
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/dist/vuetify.min.css'
+import 'video.js/dist/video-js.css';
 
 const createApp = async () => {
     await store.dispatch('auth/currentUser')
