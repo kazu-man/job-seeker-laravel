@@ -135,6 +135,14 @@ class PostController extends Controller
         $job->city_id = $request->input('city');
         $job->job_type_id = $request->input('type');
 
+        $video = $request->input('videoFile');
+
+        if($video != null){
+
+            $videoPath = $this->videoUpload($video);
+            $job->video_url = Storage::cloud()->url($videoPath);
+        }
+
         $job->save();
 
         $this->saveTag($job->id, $request->input('tagList'));

@@ -75,23 +75,33 @@
                             </label>
                             <input type="text" style="width:40%;display:inline-block" class="form-control" v-model="addressObj.zip_code">
                             
+                            <div style="position:relative">
+                            
+                                <div class="spinner-background" v-if="loadingCountry || loadingProvince || loadingCity || loadingMap" >
+                                        <vue-loading type="spiningDubbles" color="#333" :size="{ width: '10%', height: '10%'}" style="
+                                        position: absolute;
+                                        left: 45%;
+                                        top: 33%;
+                                    "></vue-loading>
 
-                            <GmapMap
-                                :center="{ lat: currentLat, lng:currentLng  }"
-                                :zoom="mapZoom"
-                                map-type-id="roadmap"
-                                style="width: 90%; height: 300px; margin:30px auto;"
-                            >
-                                <GmapMarker
-                                    :key="index"
-                                    v-for="(m, index) in markers"
-                                    :position="m.position"
-                                    :clickable="true"
-                                    :draggable="true"
-                                    @click="center=m.position"
-                                    @drag="drag"
-                                />
-                            </GmapMap>
+                                </div>
+                                <GmapMap
+                                    :center="{ lat: currentLat, lng:currentLng  }"
+                                    :zoom="mapZoom"
+                                    map-type-id="roadmap"
+                                    style="width: 90%; height: 300px; margin:30px auto;"
+                                >
+                                    <GmapMarker
+                                        :key="index"
+                                        v-for="(m, index) in markers"
+                                        :position="m.position"
+                                        :clickable="true"
+                                        :draggable="true"
+                                        @click="center=m.position"
+                                        @drag="drag"
+                                    />
+                                </GmapMap>
+                            </div>
                             
                         </div>
                     </transition>
@@ -101,6 +111,7 @@
 
 <script>
 var placeShowListComponent = Vue.component('placeShowListComponent', require('./PlaceShowList.vue').default);
+import { VueLoading } from 'vue-loading-template'
 
 export default {
     data() {
@@ -132,13 +143,19 @@ export default {
         loadingCountry:false,
         loadingProvince:false,
         loadingCity:false,
+        loadingMap:false
     }},
     components: {
-        placeShowListComponent
+        placeShowListComponent,
+        VueLoading
     },
     created: function() {
         this.updateCountry();
         this.getTableData();
+
+        if(this.initAddressObj != null && this.initAddressObj != undefined){
+            this.mapShow = true;
+        }
     },
     methods: {
             updateCountry: function () {
@@ -204,7 +221,9 @@ export default {
                         for(var city of res.data){
                             if(this.initVal.city_name == city.city_name){
                                 this.checkedCity = city;
-                                this.addressObj = this.initAddressObj;
+                                if(this.initAddressObj != null && this.initAddressObj != undefined){
+                                    this.addressObj = this.initAddressObj;
+                                }
                                 break;
                             }
                         }
@@ -230,6 +249,7 @@ export default {
             this.mapShow = !this.mapShow;
         },
         updateMap:function(){
+            this.loadingMap = true;
             Vue.$geocoder.send(this.addressObj, response => { 
                 console.log("map検索結果");
                 console.log(response);
@@ -259,6 +279,7 @@ export default {
                     this.markers[0].position.lng = newLng;
 
                 }
+                this.loadingMap = false;
             });
         },
         drag:function(e){
@@ -415,6 +436,14 @@ export default {
     position: absolute;
     left: 0px;
 
+}
+.spinner-background{
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+    z-index: 9999999;
+    position: absolute;
 }
 
 @media (max-width: 415px) {

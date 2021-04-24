@@ -78,8 +78,7 @@
         <label>
             Video: 
         </label>
-        <video-upload-component ref="videoUploadComponent" v-if="test"></video-upload-component>                      
-        <div @click="test = !test">aiueo</div>
+        <video-upload-component ref="videoUploadComponent"></video-upload-component>                      
 
         <div class="form-group submit-form">
             <button v-on:click='postData' class="btn submit-btn">Submit</button>       

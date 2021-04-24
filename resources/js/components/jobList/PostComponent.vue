@@ -117,13 +117,18 @@
                         </div>
                         <div class="post-main col-lg-8">
 
-                            <div class="video-area" v-if="post.video_url != undefined && post.video_url != ''">
-                                <video  
-                                    controls 
-                                    autoplay 
-                                    class="video">
-                                        <source :src="post.video_url" />
-                                </video>
+                            <div class="video-area" v-if="videoOptions.sources[0].src != undefined && videoOptions.sources[0].src != ''">
+                                <div style="width:100%; padding: 0 1%;">
+                                    <div v-if="videoReload" class="video-area video-area-loading">
+                                            <spinner style="
+                                                position: absolute;
+                                                left: 47%;
+                                                top: 45%;
+                                            " size="20"
+                                            line-fg-color="#f00"></spinner>
+                                    </div>
+                                    <video-player v-else :options="videoOptions"></video-player>
+                                </div>
                             </div>
 
                             <div class="mb-5">
@@ -202,6 +207,8 @@
 
 
 <script>
+import VideoPlayer from "../common/VideoPlayer.vue";
+
 export default {
     data() {return{
         openFlg:false,
@@ -224,6 +231,19 @@ export default {
             experience:'',
         },
         newMessageClose:false,
+        videoOptions: {
+            autoplay: false,
+            controls: true,
+            fluid: true,
+            aspectRatio:"16:9",
+            sources: [
+                {
+                    src:'',
+                    type:"application/x-mpegURL"
+				}
+			]
+        },
+        videoReload:false
     }},
     methods: { 
         toggleSlide:function(){
@@ -249,6 +269,7 @@ export default {
             if(this.toggleDisable != null && this.toggleDisable == true){
                 this.openFlg = true;
             }
+            this.videoOptions.sources[0].src = this.post.video_url;
         },
         addLike(jobId){
             if(!this.$store.state.auth.loginCheck){
@@ -304,8 +325,8 @@ export default {
             this.editForm.tagList = tagList;
 
             this.editForm.addressObj = this.post.address;
-            this.editForm.tagList = tagList;
-
+            this.editForm.videoUrl = this.post.video_url;
+            this.videoOptions.sources[0].src = this.post.video_url;
             this.$store.dispatch('common/setEditForm', this.editForm);
         },
         apply: function(){
@@ -346,10 +367,30 @@ export default {
             }else{
                 return false;
             }
+        },
+        initVideo:function(){
+            return this.post.video_url != '';
         }
 
     },
-    props:["post","likeList","likePageOrNot","pageType","applyList","toggleDisable","onSinglePost","newMessageFlg"]
+    watch:{
+        post:{
+            handler: function (val, old) {
+
+                this.videoReload = true;
+                // this.videoOptions.sources[0].src = "";
+                setTimeout(() => {
+                    this.videoOptions.sources[0].src = val.video_url;
+                    this.videoReload = false;
+                }, 8000);
+            },
+            deep:true
+        }
+    },
+    props:["post","likeList","likePageOrNot","pageType","applyList","toggleDisable","onSinglePost","newMessageFlg"],
+    components: {
+		VideoPlayer
+	},
 }
 </script>
 
@@ -537,13 +578,21 @@ export default {
 }
 
 .video-area{
-    margin-bottom:50px;
+    margin-bottom:10%;
 }
 .video-area .video {
     width: 95%;
     display:block;
     margin:auto;
 }
+.video-area-loading{
+    padding-bottom: 26%;
+    padding-top: 26%;
+    text-align:center;
+    background:black;
+    position:relative;
+}
+
 @media (max-width:991px){
     .address-line{
         margin-top:20px;

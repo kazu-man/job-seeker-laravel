@@ -15,8 +15,8 @@
           ></v-file-input>
         </v-form>
       </v-sheet>
-          <!-- <video v-if="uploadVideoUrl" controls autoplay style="width:100%"><source :src="uploadVideoUrl" /></video> -->
-          <div style="width:100%">
+          <video v-if="uploadVideoUrl" controls autoplay style="width:100%; padding: 0 1%;"><source :src="uploadVideoUrl" /></video>
+          <div v-else-if="initVideoFlg" style="width:100%; padding: 0 1%;">
             <video-player :options="videoOptions"></video-player>
           </div>
     </v-col>
@@ -30,18 +30,21 @@ export default {
   data() {
     return {
       inputVideo: null,
-      uploadVideoUrl: 'https://job-seeker-public-bucket.s3-ap-northeast-1.amazonaws.com/storage/video/hls/22/pNFFQ1hUdX52vTrj/hls_video_22_pNFFQ1hUdX52vTrj.m3u8',
+      uploadVideoUrl: '',
       videoOptions: {
-				autoplay: false,
-				controls: true,
+        autoplay: false,
+        controls: true,
         fluid: true,
-				sources: [
-					{
-						src:"https://job-seeker-public-bucket.s3-ap-northeast-1.amazonaws.com/storage/video/hls/22/pNFFQ1hUdX52vTrj/hls_video_22_pNFFQ1hUdX52vTrj.m3u8",
-            type:"application/x-mpegURL"
-					}
-				]
-			}
+        aspectRatio:"16:9",
+        sources:[  
+            {
+                src:'',
+                type:"application/x-mpegURL"
+            }
+        ]
+
+      },
+      initVideoFlg:false
     }
   },
   methods: {
@@ -61,9 +64,18 @@ export default {
       }
     },
   },
-  	components: {
+  components: {
 		VideoPlayer
 	},
+  created:function(){
+
+    if(this.initVideo != null && this.initVideo != undefined){
+      this.videoOptions.sources[0].src = this.initVideo;
+      this.initVideoFlg = true;
+    }
+  },
+  props:["initVideo"]
+
 }
 </script>
 

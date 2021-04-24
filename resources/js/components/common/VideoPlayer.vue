@@ -44,7 +44,7 @@ export default {
 <style>
 
     .vjs-big-play-button{
-        top: 50% !important;
+        top: 45% !important;
         left: 43% !important;
     }
 

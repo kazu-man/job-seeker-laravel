@@ -287,6 +287,11 @@
 
                         </div>
 
+                        <label>
+                            Video: 
+                        </label>
+                        <video-upload-component ref="videoUploadComponent" :initVideo="editPostForm.videoUrl"></video-upload-component>                      
+
                         <div class="form-group submit-form">
                             <button class="btn submit-btn" @click="updatePost">Submit</button>       
                         </div>
@@ -830,7 +835,12 @@ export default {
             this.editPostForm.city = postInfo.city;
             this.editPostForm.tagList = postInfo.tagList;
             this.editPostForm.addressObj = postInfo.addressObj;
-            this.editPostForm.latLng =  { lat: postInfo.addressObj.lat, lng: postInfo.addressObj.lng } ;
+            console.log("postInfo.addressObj");
+            console.log(postInfo.addressObj);
+            if(postInfo.addressObj != null && postInfo.addressObj != undefined){
+                this.editPostForm.latLng =  { lat: postInfo.addressObj.lat, lng: postInfo.addressObj.lng } ;
+            }
+            this.editPostForm.videoUrl = postInfo.videoUrl;
 
         },
         updatePost:function(){
@@ -839,7 +849,8 @@ export default {
 
             this.editPostForm.latLng = this.$refs.placeShowComponent.lastMarkerPosition,
             this.editPostForm.mapFlg = this.$refs.placeShowComponent.mapShow
-
+            this.editPostForm.videoFile = this.$refs.videoUploadComponent.uploadVideoUrl;
+            
             axios.post('/api/updatePost', this.editPostForm).then(res => {
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'postを更新しました。'});
