@@ -150,6 +150,11 @@ class PostController extends Controller
         if($request->input('mapFlg')){
 
             $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
+            
+        }else{
+
+            $this->deleteMap($job->id);
+
         }
 
         $updatedPost = Job::with('company')
@@ -403,7 +408,12 @@ class PostController extends Controller
         $address->save();
   
     }
+    public function deleteMap($jobId){
 
+        $address = Address::where('job_id',$jobId)->first();
+        $address->delete();
+  
+    }
     
     public function videoUpload($file){
 
