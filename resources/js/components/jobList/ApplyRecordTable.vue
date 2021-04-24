@@ -118,6 +118,8 @@ export default {
         },
         setMessageModal(record){
             record.newMessageFlg = false;
+            this.$store.commit('common/setLoadingFlg', true);
+
             this.$store.dispatch('common/setMessageModal', record)
         },
     },

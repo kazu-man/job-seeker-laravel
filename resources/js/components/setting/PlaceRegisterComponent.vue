@@ -134,8 +134,10 @@ export default {
 
             formData.append("countryName", this.countryForm.countryName);
             formData.append("countryImage", this.countryForm.countryImage);
+            this.$store.commit('common/setLoadingFlg', true);
 
             axios.post('/api/registerCountry', formData).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
                 if(res.status != OK){
                     this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:res.data.message});
                     return false;
@@ -155,8 +157,10 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'地域を入力してください'});
                 return;
             }
-            
+                this.$store.commit('common/setLoadingFlg', true);
             axios.post('/api/registerProvince', this.provinceForm).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'地域を追加しました。'});
                 this.loading = true;
                 this.setProvince();
@@ -178,7 +182,10 @@ export default {
                 return;
             }
             var that = this;
+            this.$store.commit('common/setLoadingFlg', true);
+
             axios.post('/api/registerCity', this.cityForm).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'都市を追加しました。'});
                 console.log(res.data);
                 that.$emit('update_data');

@@ -1,7 +1,7 @@
 <template> 
 
         <div>
-            <modal name="login" :draggable="false" :height="360" class="login sm-modal">
+            <modal name="login" :draggable="false" :height="'auto'" class="login sm-modal">
                 <spinner v-if="loading" style="
                     position:absolute;
                     top:45%;
@@ -100,7 +100,7 @@
                 </div>
             </modal> 
 
-            <modal name="registerAdmin" :draggable="false" :height="350" class="registerAdmin" style="height:2000px">
+            <modal name="registerAdmin" :draggable="false" :height="'auto'" class="registerAdmin" style="height:2000px">
 
                 <div class="modal-header">
                     <div v-if="alert" class="alert">
@@ -111,7 +111,7 @@
                 </div>
 
                 <div class="modal-body">
-                    <form class="form" @submit.prevent="register(true)" style="padding:30px;margin-right: 30px;">
+                    <form class="form" @submit.prevent="register(true)" style="padding:30px;margin-right:30px;overflow-y:scroll">
 
                         <div v-if="registerErrors" class="errors">
                             <ul v-if="registerErrors.name">
@@ -211,6 +211,8 @@
                     </form>
                 </div>  
             </modal> 
+
+
             <modal name="editPost" :draggable="false"  :scrollable="true" :height="600" :width="1000" class="editPost" style="overflow-y:scroll">
                 <div v-on:click="modalHide('editPost')" class="close">X</div>
                 <div class="job-content">
@@ -781,7 +783,11 @@ export default {
             this.$modal.show('login');
         },      
         async login () {
-          await this.$store.dispatch('auth/login', this.loginForm);
+            this.$store.commit('common/setLoadingFlg', true);
+
+            await this.$store.dispatch('auth/login', this.loginForm);
+
+            this.$store.commit('common/setLoadingFlg', false);
 
             if (this.apiStatus) {
                 // トップページに移動する
@@ -795,7 +801,11 @@ export default {
             if(adminFlg){
                 this.registerForm.userType = "A";
             }
+            this.$store.commit('common/setLoadingFlg', true);
+
             await this.$store.dispatch('auth/register', this.registerForm)
+    
+            this.$store.commit('common/setLoadingFlg', false);
 
             if (this.apiStatus) {
                 this.modalHide('register');
@@ -851,7 +861,11 @@ export default {
             this.editPostForm.mapFlg = this.$refs.placeShowComponent.mapShow
             this.editPostForm.videoFile = this.$refs.videoUploadComponent.uploadVideoUrl;
             
+            this.$store.commit('common/setLoadingFlg', true);
+
             axios.post('/api/updatePost', this.editPostForm).then(res => {
+    
+                this.$store.commit('common/setLoadingFlg', false);
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'postを更新しました。'});
                 this.$store.commit('common/setUpdatedPost', res.data.updatedPost)
@@ -868,7 +882,12 @@ export default {
                 "postId":this.applyTargetPost.id,
                 "companyId":this.applyTargetPost.company.id
                 };
+            this.$store.commit('common/setLoadingFlg', true);
+
             axios.post('/api/apply', data).then(res => {
+
+                this.$store.commit('common/setLoadingFlg', false);
+
                 if(res.data.status != null){
                     this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:res.data.status});
                     return;
@@ -883,13 +902,22 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'メッセージを入力してください'});
                 return false;
             }
+            this.$store.commit('common/setLoadingFlg', true);
+
             axios.post('/api/sendMessage', this.messageForm).then(res => {
+
+                this.$store.commit('common/setLoadingFlg', false);
+                this.messageForm.message = "";          
                 this.$store.dispatch('common/refreshMessage', this.applyRecord.id)
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'送信しました'});
             });
         },
         closePost(){
+            this.$store.commit('common/setLoadingFlg', true);
+
             axios.post('/api/closePost', {"targetPostId":this.singlePost.id}).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+
                 if(this.singlePost.job_status == "D"){
                     this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'再公開しました'});
                     this.singlePost.job_status = "A"
@@ -932,8 +960,13 @@ export default {
             formData.append("countryName", this.countryForm.countryName);
             formData.append("countryImage", this.countryForm.modalUploadedFile);
             formData.append("countryId", this.commonDataForModal.country_id);
+  
+            this.$store.commit('common/setLoadingFlg', true);
 
             await axios.post('/api/registerCountry', formData).then(res => {
+        
+                this.$store.commit('common/setLoadingFlg', false);
+
                 if(res.status != 200){
                     this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:"背景を選択してください"});
                     return false;
@@ -946,7 +979,12 @@ export default {
             });
         },
         deleteUser:async function(){
+            this.$store.commit('common/setLoadingFlg', true);
+
             await this.$store.dispatch('auth/userDelete', this.deleteTargetUser);
+
+            this.$store.commit('common/setLoadingFlg', false);
+
             var message = "ユーザをログイン可能に変更しました。"
             if(this.deleteTargetUser.user_status == 'A'){
                 message = "ユーザをログイン不可に変更しました。"
@@ -959,11 +997,18 @@ export default {
                 "resumeFilePath":this.applicantProfile.resume,
                 "resumeFile":this.resumeName
             }
+            this.$store.commit('common/setLoadingFlg', true);
+
             this.download(data);
+
+            this.$store.commit('common/setLoadingFlg', false);
+
         },
         async changePassword(){
             console.log('changePass');
+            this.$store.commit('common/setLoadingFlg', true);
             await axios.post('/api/passwordUpdate',this.passwordResetForm).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
                 if(res.status != 200){
                     return false;
                 }
@@ -977,19 +1022,26 @@ export default {
         },
         async forgotPassword(){
             console.log('forgot pass');
+            this.$store.commit('common/setLoadingFlg', true);
+
             await axios.post('/api/password/email',this.forgotPasswordForm).then(res => {
+
+                this.$store.commit('common/setLoadingFlg', false);
+
                 if(res.status != 200){
                     return false;
                 }
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'パスワード再設定メールを送信しました'});
             })
             .catch(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'メールアドレスが見つかりませんでした。\nメールアドレスをご確認ください。'});
             });
         },
         async googleLogin(){
             this.loading = true;
-
+            this.$store.commit('common/setLoadingFlg', true);
             console.log('google login');
             location.href = "/api/auth/google";
         },
@@ -999,7 +1051,9 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:OK, successMessage:'スカウトする求人を選択して下さい',close:false});
                 return;
             }
+            this.$store.commit('common/setLoadingFlg', true);
             axios.post('/api/sendScout',this.scoutInfo).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
                 if(res.status != 200){
                     return false;
                 }
@@ -1013,6 +1067,8 @@ export default {
 
             })
             .catch(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'スカウトメッセージ送信に失敗しました。'});
             });
         }
@@ -1198,9 +1254,16 @@ export default {
     width:70%;
     margin:10px auto;
 }
+
+.register .form-group {
+    margin:5px auto;
+}
 .login .form-group label,
 .register .form-group label{
     padding-top:5px;
+}
+.register .form-group label{
+    padding-bottom:5px;
 }
 .close {
     position: absolute;
@@ -1323,6 +1386,8 @@ label.userType{
     width: 100%;
     margin-left:5px;
     margin-top:5px;
+    background: white;
+    border-radius: 5px;
 }
 .send-message-area .message-send-btn{
     padding-left:0 !important;

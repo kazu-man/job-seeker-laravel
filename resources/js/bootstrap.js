@@ -36,6 +36,7 @@ window.axios.interceptors.request.use(config => {
   window.axios.interceptors.response.use(
     response => response,
     error => {
+      store.commit('common/setLoadingFlg', false);
       var status = error.response.status;
       if(status != OK){
         store.commit('auth/setApiStatus', false)
@@ -54,6 +55,7 @@ window.axios.interceptors.request.use(config => {
         if(message == ""){
           message = "エラーが発生しました"
         }
+        console.log("kokohakiteruna");
         store.dispatch('common/alertModalUp', {data:status, successMessage:message,close:false,reload:true});
     }
   		return Promise.reject(error)

@@ -54,6 +54,7 @@ export default {
             var data = {"id": id};
             this.loading = true
             axios.post('/api/category/delete', data).then(res => {
+                this.loading = false;
                 if(res.status == 503){
                     this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:res.data.message});
                     return false;
@@ -61,6 +62,10 @@ export default {
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'削除しました。'});
                 console.log(res.data);
                 this.$store.dispatch('auth/refreshCategories');
+            })
+            .catch(res => {
+                this.loading = false;
+
             });
         },
         loadingChange:function(state){

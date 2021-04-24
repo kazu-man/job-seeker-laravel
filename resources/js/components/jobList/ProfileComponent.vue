@@ -156,8 +156,11 @@ export default {
             formData.append("companyName", this.profileForm.companyName);
             formData.append("companyLogo", this.profileForm.companyLogo);
             formData.append("experiences", JSON.stringify(this.profileForm.experiences));
+            this.$store.commit('common/setLoadingFlg', true);
 
             axios.post('/api/updateProfile', formData).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+
                 this.$store.dispatch('auth/currentUser');
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'プロフィールを更新しました。'});
                 console.log(res.data);

@@ -13,7 +13,8 @@ const state = {
     deleteTargetUser:null,
     settingCountryReloadFlg:false,
     scoutInfo:null,
-    scoutedIds:[]
+    scoutedIds:[],
+    loadingFlg:false
   }
     
 const mutations = {
@@ -59,11 +60,15 @@ const mutations = {
     setScoutedIds(state, target){
         state.scoutedIds = target
     },
+    setLoadingFlg(state, target){
+        state.loadingFlg = target
+    },
 
 }
 
 const getters = {
     scoutedIds: state => state.scoutedIds,
+    loadingFlg: state => state.loadingFlg,
   }
  
 const actions = {
@@ -104,7 +109,7 @@ const actions = {
     },
     setMessageModal(context,record){
         axios.get('/api/getMessages/' + record.id).then(res => {
-
+            context.commit('setLoadingFlg', false);
             context.commit('setMessagesList', res.data);
             context.commit('setApplyRecord', record);
             context.commit('setModalTarget', 'messageModal');

@@ -126,10 +126,9 @@ export default {
                             videoFile:this.$refs.videoUploadComponent.uploadVideoUrl
                         };
             console.log(data);
-
+            this.$store.commit('common/setLoadingFlg', true);
             axios.post('/api/registerJob', data).then(res => {
-                // テストのため返り値をコンソールに表示
-                console.log(res.data);
+                this.$store.commit('common/setLoadingFlg', false);
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'登録しました。'});
 

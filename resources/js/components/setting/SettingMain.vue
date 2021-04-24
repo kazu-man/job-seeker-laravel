@@ -1,20 +1,20 @@
 <template>
-            <div>
-                <keep-alive>
-                    <div style="position:relative">
-                    <transition-group>
-                        <div class="component" :key="'company'">
-                            <router-view 
-                            :users="users"
-                            @refresh="refreshList"
-                            :categories="categories"
-                            :loading="loading"
-                            ></router-view>
-                        </div>
-                    </transition-group>
-                    </div>
-                </keep-alive>
+    <div>
+        <keep-alive>
+            <div style="position:relative">
+            <transition-group>
+                <div class="component" :key="'company'">
+                    <router-view 
+                    :users="users"
+                    @refresh="refreshList"
+                    :categories="categories"
+                    :loading="loading"
+                    ></router-view>
+                </div>
+            </transition-group>
             </div>
+        </keep-alive>
+    </div>
 </template>
 
 

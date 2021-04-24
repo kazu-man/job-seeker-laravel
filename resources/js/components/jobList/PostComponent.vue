@@ -278,7 +278,9 @@ export default {
             }
             console.log(jobId);
             // this.toggleSlide();
+            this.$store.commit('common/setLoadingFlg', true);
             axios.post('/api/addLike', {"jobId":jobId}).then(res => {
+            this.$store.commit('common/setLoadingFlg', false);
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'likeリストに追加しました。'});
                 this.$store.dispatch('auth/getLikeList');
             });
@@ -291,8 +293,9 @@ export default {
 
             console.log(jobId);
             // this.toggleSlide();
+            this.$store.commit('common/setLoadingFlg', true);
             axios.post('/api/removeLike', {"jobId":jobId}).then(res => {
-
+                this.$store.commit('common/setLoadingFlg', false);
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'likeリストから削除しました。'});
                 this.$store.dispatch('auth/getLikeList');
 
@@ -339,6 +342,8 @@ export default {
         },
         showMessage:function(){
             this.newMessageClose = true;
+            this.$store.commit('common/setLoadingFlg', true);
+
             axios.get('/api/getSingleApplyRecord/' + this.post.apply_records[0].id).then(res => {
                 this.$store.dispatch('common/setMessageModal', res.data);
             });

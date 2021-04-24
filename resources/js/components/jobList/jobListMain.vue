@@ -16,7 +16,7 @@
         </div>
 
 
-        <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType" :class="{comeFront:loading}">
+        <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType">
             <span  class="menu-btn hide" @click="changeMenuType('normal')" :key="'toggle1'">Menu</span>
             <span  v-if="loginCheck && loginUser != null &&loginUser.user_type == 'A'" class="menu-btn hide setting" @click="changeMenuType('admin')" :key="'toggle2'">Setting</span>
             <section v-if="slotProps.drawerFlg" 　class="drawer-menu-wrapper" :class="{setting:loginCheck && loginUser != null && loginUser.user_type == 'A' && selectedMenuType == 'admin'}" :key="'toggle'">
@@ -417,12 +417,18 @@ export default {
                 }
             },
             deep:true
+        },
+        loadingFlg:function(newVal,old){
+            this.loading = newVal;
         }
         
     },
     computed: {
         routePath:function(){
             return this.$store.getters['auth/routePath'];
+        },
+        loadingFlg:function(){
+            return this.$store.getters['common/loadingFlg'];
         },
         modalTarget:function(){
             return this.$store.state.common.modalTarget;
@@ -729,9 +735,7 @@ export default {
     z-index: 9999999;
     position: fixed;
 }
-.comeFront{
-    z-index: 99999999;
-}
+
 </style>
 <style>
 .spinner-background{
@@ -739,11 +743,8 @@ export default {
     width: 100%;
     background: white;
     opacity: 0.5;
-    z-index: 9999999;
+    z-index: 999999999;
     position: fixed;
-}
-.comeFront{
-    z-index: 99999999;
 }
 .modal-mask {
   position:fixed;
