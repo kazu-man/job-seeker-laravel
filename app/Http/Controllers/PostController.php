@@ -22,158 +22,164 @@ use Illuminate\Support\Facades\Storage;
 use Aws\Exception\MultipartUploadException;
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
+use DB;
 
 class PostController extends Controller
 {
-
+    
     public function registerJob(Request $request){
-
-        $this->validate($request,[
-            'title' => 'required',
-            'salary' => 'required',
-            'category' => 'required',
-            'city' => 'required',
-            'type' => 'required',
-            'type' => [function($attribute, $value, $fail){
-                if($value < 1 && $value > 3){
-                    return $fail('エラーが発生しました。');
-                }
-            },
-            'required',
-            ]
-
-        ]);
-        $description = new JobDescription();
-
-        $description->description = $request->input('description');
-        $description->requirement = $request->input('requirement');
-        $description->benefit = $request->input('benefit');
-        $description->experience = $request->input('experience');
-        $description->job_title = $request->input('title');
-        $video = $request->input('videoFile');
-
-        $description->save();
-
-
-        $newDescriptionId = $description->id;
-        \Log::info("desc Id = " . $newDescriptionId);
-
-        $job = new Job();
         
-        $job->job_title = $request->input('title');
-        $job->annual_salary = $request->input('salary');
-        $job->job_description_id = $newDescriptionId;
-        $job->company_id = $request->input('company');
-        $job->category_id = $request->input('category');
-        $job->city_id = $request->input('city');
-        $job->job_type_id = $request->input('type');
+        
+        DB::transaction(function () use ($request) {
+            $description = new JobDescription();
+            $job = new Job();
 
-        if($video != null){
+                $this->validate($request,[
+                    'title' => 'required',
+                    'salary' => 'required',
+                    'category' => 'required',
+                    'city' => 'required',
+                    'type' => 'required',
+                    'type' => [function($attribute, $value, $fail){
+                        if($value < 1 && $value > 3){
+                            return $fail('エラーが発生しました。');
+                        }
+                    },
+                    'required',
+                    ]
 
-            $videoPath = $this->videoUpload($video);
-            $job->video_url = Storage::cloud()->url($videoPath);
-        }
+                ]);
 
-        $job->save();
+                $description->description = $request->input('description');
+                $description->requirement = $request->input('requirement');
+                $description->benefit = $request->input('benefit');
+                $description->experience = $request->input('experience');
+                $description->job_title = $request->input('title');
+                $video = $request->input('videoFile');
 
-        $this->saveTag($job->id, $request->input('tag'));
-
-        if($request->input('mapFlg')){
-
-            $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
-        }
+                $description->save();
 
 
-        return [ "registeredJob" => $job, "registeredDescription" => $description ];
+                $newDescriptionId = $description->id;
+                \Log::info("desc Id = " . $newDescriptionId);
+
+                
+                $job->job_title = $request->input('title');
+                $job->annual_salary = $request->input('salary');
+                $job->job_description_id = $newDescriptionId;
+                $job->company_id = $request->input('company');
+                $job->category_id = $request->input('category');
+                $job->city_id = $request->input('city');
+                $job->job_type_id = $request->input('type');
+
+                if($video != null){
+
+                    $videoPath = $this->videoUpload($video);
+                    $job->video_url = Storage::cloud()->url($videoPath);
+                }
+
+                $job->save();
+
+                $this->saveTag($job->id, $request->input('tag'));
+
+                if($request->input('mapFlg')){
+                    $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
+                }
+
+                return [ "registeredJob" => $job, "registeredDescription" => $description ];
+            });
+        
+
     }
 
     
 
 
     public function updatePost(Request $request){
-        $this->videoUpload($request->input('videoFile'));
 
-        $this->validate($request,[
-            'title' => 'required',
-            'salary' => 'required',
-            'category' => 'required',
-            'city' => 'required',
-            'type' => 'required',
-            'type' => [function($attribute, $value, $fail){
-                if($value < 1 && $value > 3){
-                    return $fail('エラーが発生しました。');
-                }
-            },
-            'required',
-            ]
+        $updatedPost = DB::transaction(function () use ($request) {
 
-        ]);
+            $this->validate($request,[
+                'title' => 'required',
+                'salary' => 'required',
+                'category' => 'required',
+                'city' => 'required',
+                'type' => 'required',
+                'type' => [function($attribute, $value, $fail){
+                    if($value < 1 && $value > 3){
+                        return $fail('エラーが発生しました。');
+                    }
+                },
+                'required',
+                ]
 
-        // \Log::info($request->all());
-        $jobId = $request->input('jobId');
+            ]);
 
-        $job = Job::find($jobId);
-        $description = JobDescription::find($job->job_description_id);
-        \Log::info($job);
-        \Log::info($description);
+            // \Log::info($request->all());
+            $jobId = $request->input('jobId');
 
-        // $descriptionId = $request->input('descriptionId');
+            $job = Job::find($jobId);
+            $description = JobDescription::find($job->job_description_id);
 
-        $description->description = $request->input('description');
-        $description->requirement = $request->input('requirement');
-        $description->benefit = $request->input('benefit');
-        $description->experience = $request->input('experience');
-        $description->job_title = $request->input('title');
+            // $descriptionId = $request->input('descriptionId');
 
-        $description->save();
-        
-        $job->job_title = $request->input('title');
-        $job->annual_salary = $request->input('salary');
-        // $job->job_description_id = $description->id;
-        // $job->company_id = $request->input('company');
-        $job->category_id = $request->input('category');
-        $job->city_id = $request->input('city');
-        $job->job_type_id = $request->input('type');
+            $description->description = $request->input('description');
+            $description->requirement = $request->input('requirement');
+            $description->benefit = $request->input('benefit');
+            $description->experience = $request->input('experience');
+            $description->job_title = $request->input('title');
 
-        $video = $request->input('videoFile');
-
-        if($video != null){
-
-            $videoPath = $this->videoUpload($video);
-            $job->video_url = Storage::cloud()->url($videoPath);
-        }
-
-        $job->save();
-
-        $this->saveTag($job->id, $request->input('tagList'));
-
-        if($request->input('mapFlg')){
-
-            $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
+            $description->save();
             
-        }else{
+            $job->job_title = $request->input('title');
+            $job->annual_salary = $request->input('salary');
+            // $job->job_description_id = $description->id;
+            // $job->company_id = $request->input('company');
+            $job->category_id = $request->input('category');
+            $job->city_id = $request->input('city');
+            $job->job_type_id = $request->input('type');
 
-            $this->deleteMap($job->id);
+            $video = $request->input('videoFile');
 
-        }
+            if($video != null){
 
-        $updatedPost = Job::with('company')
-        ->with('category')
-        ->with('city.province.country')
-        ->with('jobType')
-        ->with('jobDescription')
-        ->with('jobTagRelations.tag')
-        ->with('address')
-        ->where('id',$job->id)
-        ->first();
+                $videoPath = $this->videoUpload($video);
+                $job->video_url = Storage::cloud()->url($videoPath);
+            }
 
-        $video = $request->input('videoFile');
+            $job->save();
 
-        if($video != null){
+            $this->saveTag($job->id, $request->input('tagList'));
 
-            $this->videoUpload($video);
-        }
+            if($request->input('mapFlg')){
 
+                $this->saveMapInfo($job->id, $request->input('latLng'), $request->input('addressObj'));
+                
+            }else{
+
+                $this->deleteMap($job->id);
+
+            }
+            
+            $video = $request->input('videoFile');
+
+            if($video != null){
+
+                $this->videoUpload($video);
+            }
+            $updatedPost = Job::with('company')
+            ->with('category')
+            ->with('city.province.country')
+            ->with('jobType')
+            ->with('jobDescription')
+            ->with('jobTagRelations.tag')
+            ->with('address')
+            ->where('id',$job->id)
+            ->first();
+
+            return $updatedPost;
+
+        });
         return [ "updatedPost" => $updatedPost ];
     }
 
@@ -367,23 +373,27 @@ class PostController extends Controller
         }else{
             $post->job_status = "D";
         }
+        DB::transaction(function () use ($post) {
 
-        $post->save();
+            $post->save();
 
+        });
     }
 
     public function saveTag($jobId ,$tagList){
 
-        $currentStoredTags = JobTagRelation::where('job_id',$jobId)->delete();
+        DB::transaction(function () use ($jobId ,$tagList) {
+            $currentStoredTags = JobTagRelation::where('job_id',$jobId)->delete();
 
-        foreach($tagList as $tag){
+            foreach($tagList as $tag){
 
-            $tagRelation = new JobTagRelation();
-            $tagRelation->job_id = $jobId;
-            $tagRelation->tag_id = $tag['id'];
-            $tagRelation->save();
+                $tagRelation = new JobTagRelation();
+                $tagRelation->job_id = $jobId;
+                $tagRelation->tag_id = $tag['id'];
+                $tagRelation->save();
 
-        }
+            }
+        });
     }
 
     public function saveMapInfo($jobId ,$latLng, $addressObj){
@@ -393,7 +403,6 @@ class PostController extends Controller
         if($address == null){
             $address = new Address();
         }
-        \Log::info($address);
 
         $address->job_id = $jobId;
         $address->address_line_1 = $addressObj['address_line_1'];
@@ -405,14 +414,25 @@ class PostController extends Controller
         $address->lat = $latLng['lat'];
         $address->lng = $latLng['lng'];
 
-        $address->save();
-  
+        DB::transaction(function () use ($address) {
+
+            $address->save();
+
+        });
     }
     public function deleteMap($jobId){
 
         $address = Address::where('job_id',$jobId)->first();
-        $address->delete();
-  
+
+        if($address == null){
+            return;
+        }
+
+        DB::transaction(function () use ($address) {
+
+            $address->delete();
+
+        });
     }
     
     public function videoUpload($file){

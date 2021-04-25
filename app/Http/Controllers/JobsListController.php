@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use DB;
 
 
 class DefaultUser {
@@ -97,146 +98,145 @@ class JobsListController extends Controller
             'nullable'
             ]
         ]);
-
-        $accountName = $request->input('accountName');
-        $firstName = $request->input('userFirstname');
-        $lastName = $request->input('userLastname');
-        $email = $request->input('email');
-        $birthday = $request->input('userBirthday');
-
-        $gender = $request->input('gender');
-        $experience = $request->input('experience');
-        $skill = $request->input('skill');
-        $education = $request->input('education');
-        $companyName = $request->input('companyName');
-        $experiences = $request->input('experiences');
-
-
-        $user = Auth::User();
-        $userType = $user->user_type;
         
+        DB::transaction(function () use ($request) {
 
-        $user->name = $accountName; 
-        $user->user_firstname = $firstName; 
-        $user->user_lastname = $lastName; 
-        $user->email = $email; 
-        $user->user_birthday = $birthday; 
+            $accountName = $request->input('accountName');
+            $firstName = $request->input('userFirstname');
+            $lastName = $request->input('userLastname');
+            $email = $request->input('email');
+            $birthday = $request->input('userBirthday');
 
-        if($userType == 'U'){
+            $gender = $request->input('gender');
+            $experience = $request->input('experience');
+            $skill = $request->input('skill');
+            $education = $request->input('education');
+            $companyName = $request->input('companyName');
+            $experiences = $request->input('experiences');
 
-            $profile = Profile::where('user_id',$user->id)->first();
 
-            if($profile == null){
-                $profile = new Profile();
-                $profile->user_id = $user->id;
-            }
+            $user = Auth::User();
+            $userType = $user->user_type;
+            
 
-            if($request->resume){
-                \Log::info($request->resume);
-                \Log::info("resume stored");
+            $user->name = $accountName; 
+            $user->user_firstname = $firstName; 
+            $user->user_lastname = $lastName; 
+            $user->email = $email; 
+            $user->user_birthday = $birthday; 
 
-                $resumeFile = $request->resume->getClientOriginalName();
+            if($userType == 'U'){
 
-                $profile->resume = $resumeFile != "" ? '/storage/images/resume/' . $user->id . '/' . $resumeFile : $profile->resume;
+                $profile = Profile::where('user_id',$user->id)->first();
 
-                if(config('app.file_system') == "s3"){
-                    
-                    Storage::putFileAs('/storage/images/resume/'.$user->id, request()->resume, $resumeFile);
-                    $profile->resume = Storage::cloud()->url($profile->resume);
-    
-                }else if(config('app.file_system') == "local"){
-    
-                    request()->resume->storeAs('/public/images/resume/' . $user->id . '/',$resumeFile);        
-                    
+                if($profile == null){
+                    $profile = new Profile();
+                    $profile->user_id = $user->id;
                 }
+
+                if($request->resume){
+                    \Log::info($request->resume);
+                    \Log::info("resume stored");
+
+                    $resumeFile = $request->resume->getClientOriginalName();
+
+                    $profile->resume = $resumeFile != "" ? '/storage/images/resume/' . $user->id . '/' . $resumeFile : $profile->resume;
+
+                    if(config('app.file_system') == "s3"){
+                        
+                        Storage::putFileAs('/storage/images/resume/'.$user->id, request()->resume, $resumeFile);
+                        $profile->resume = Storage::cloud()->url($profile->resume);
+        
+                    }else if(config('app.file_system') == "local"){
+        
+                        request()->resume->storeAs('/public/images/resume/' . $user->id . '/',$resumeFile);        
+                        
+                    }
+                    
+                    \Log::info("resume stored");
+                }
+
+
+
                 
-                \Log::info("resume stored");
-            }
-
-
-
-            
-            
-            $profile->experience = $experience; 
-            $profile->skill = $skill; 
-            $profile->gender = $gender; 
-            $profile->education = $education; 
-            $profile->save();
-
-            if($experiences != null){
-                \Log::info("------------------------------------");
-                \Log::info($experiences);
-                $experienceArray = json_decode($experiences);
-
                 
+                $profile->experience = $experience; 
+                $profile->skill = $skill; 
+                $profile->gender = $gender; 
+                $profile->education = $education; 
+                $profile->save();
 
-                foreach($experienceArray as $ex){
+                if($experiences != null){
+                    $experienceArray = json_decode($experiences);
 
-                    // 更新
-                    if($ex->id != null && $ex->id != ""){
+                    
 
-                        $exModel = Experience::where('id',$ex->id)->first();
+                    foreach($experienceArray as $ex){
 
-                        if($ex->category_id == "" || $ex->experience_years == ""){
+                        // 更新
+                        if($ex->id != null && $ex->id != ""){
 
-                            $exModel->delete();
+                            $exModel = Experience::where('id',$ex->id)->first();
 
+                            if($ex->category_id == "" || $ex->experience_years == ""){
+
+                                $exModel->delete();
+
+                            }else{
+
+                                $exModel->category_id = $ex->category_id;
+                                $exModel->experience_years = $ex->experience_years;
+                                $exModel->save();
+                            }
+
+
+                        // 新規
                         }else{
-
+                            if($ex->category_id == "" || $ex->experience_years == ""){
+                                continue;
+                            }
+                            $exModel = new Experience();
                             $exModel->category_id = $ex->category_id;
+                            $exModel->profile_id = $profile->id;
                             $exModel->experience_years = $ex->experience_years;
+
                             $exModel->save();
+
                         }
-
-
-                    // 新規
-                    }else{
-                        if($ex->category_id == "" || $ex->experience_years == ""){
-                            continue;
-                        }
-                        $exModel = new Experience();
-                        $exModel->category_id = $ex->category_id;
-                        $exModel->profile_id = $profile->id;
-                        $exModel->experience_years = $ex->experience_years;
-
-                        $exModel->save();
 
                     }
-
                 }
-            }
 
-        }else if($userType == 'C'){
+            }else if($userType == 'C'){
 
-            $profile = Company::find($user->company_id);
+                $profile = Company::find($user->company_id);
 
-            $profile->company_name = $companyName; 
-            
-            if($request->companyLogo){
-                $companyLogoFile = $request->companyLogo->getClientOriginalName();
+                $profile->company_name = $companyName; 
+                
+                if($request->companyLogo){
+                    $companyLogoFile = $request->companyLogo->getClientOriginalName();
 
-                $profile->company_image = $companyLogoFile != "" ? '/storage/images/companyLogos/' . $user->id . '/' . $companyLogoFile : $profile->company_image;
-                \Log::info("company logo stored");
+                    $profile->company_image = $companyLogoFile != "" ? '/storage/images/companyLogos/' . $user->id . '/' . $companyLogoFile : $profile->company_image;
+                    \Log::info("company logo stored");
 
-                if(config('app.file_system') == "s3"){
-                    
-                    Storage::putFileAs('/storage/images/companyLogos/'. $user->id, request()->companyLogo, $companyLogoFile);
-                    $profile->company_image = Storage::cloud()->url($profile->company_image);
-    
-                }else if(config('app.file_system') == "local"){
-    
-                    request()->companyLogo->storeAs('/public/images/companyLogos/' . $user->id . '/',$companyLogoFile);        
-
-                }                
-            }
-
-            $profile->save();
-        }
-
-        $user->save();
-
+                    if(config('app.file_system') == "s3"){
+                        
+                        Storage::putFileAs('/storage/images/companyLogos/'. $user->id, request()->companyLogo, $companyLogoFile);
+                        $profile->company_image = Storage::cloud()->url($profile->company_image);
         
-        return "profile!";
+                    }else if(config('app.file_system') == "local"){
+        
+                        request()->companyLogo->storeAs('/public/images/companyLogos/' . $user->id . '/',$companyLogoFile);        
+
+                    }                
+                }
+
+                $profile->save();
+            }
+
+            $user->save();
+
+        });        
 
     }
 
@@ -293,26 +293,29 @@ class JobsListController extends Controller
 
 
     public function apply(Request $request){
+        DB::transaction(function () use ($request) {
+
         
-        $user = Auth::User();
-        $userId = $user->id;
-        $postId = $request->input("postId");
-        // $companyid = $request->input("companyId");
+            $user = Auth::User();
+            $userId = $user->id;
+            $postId = $request->input("postId");
+            // $companyid = $request->input("companyId");
 
-        $profile = Profile::where('user_id',$userId)->get();
+            $profile = Profile::where('user_id',$userId)->get();
 
-        if(count($profile) < 1){
-            return ["status" => "プロフィールを設定した後、応募してください。"];
-        }
+            if(count($profile) < 1){
+                return ["status" => "プロフィールを設定した後、応募してください。"];
+            }
 
-        $applyRecord = new ApplyRecord();
+            $applyRecord = new ApplyRecord();
 
-        $applyRecord->user_id = $userId;
-        $applyRecord->job_id = $postId;
-        // $applyRecord->company_id = $companyid;
-        $applyRecord->apply_date = Carbon::now();
+            $applyRecord->user_id = $userId;
+            $applyRecord->job_id = $postId;
+            // $applyRecord->company_id = $companyid;
+            $applyRecord->apply_date = Carbon::now();
 
-        $applyRecord->save();
+            $applyRecord->save();
+        });
     
     }
 
@@ -385,29 +388,27 @@ class JobsListController extends Controller
 
 
     public function getApplicantProfile($id){
-        \Log::info($id);
 
         $profile = Profile::where("id",$id)->with('user')->with('experiences.category')->first();
-        \Log::info("applicant profile");
-        \Log::info($profile);
 
         return $profile;
     }
 
     public function checkMessage($messages){
-        $user = Auth::User();
+        DB::transaction(function () use ($messages) {
 
-        foreach($messages as $message){
-            if($message->checked == 0 && $message->sent_to == $user->user_type){
-                $message->checked = 1;
-                $message->save();
+            $user = Auth::User();
+
+            foreach($messages as $message){
+                if($message->checked == 0 && $message->sent_to == $user->user_type){
+                    $message->checked = 1;
+                    $message->save();
+                }
             }
-        }
+        });
     }
 
     public function getMessages($id){
-        \Log::info("getMessages     getMessages");
-        \Log::info($id);
 
         $messages = Message::where('apply_record_id',$id)->get();
         $this->checkMessage($messages);
@@ -420,56 +421,60 @@ class JobsListController extends Controller
         $this->validate($request,[
             'message' => 'required',
         ]);
-        $applyRecordId = $request->input('applyRecordId');
-        $message = $request->input('message');
-        $user = Auth::User();
-        $userType = $user->user_type;
-        
-        $applyRecord = ApplyRecord::where('id', $applyRecordId) ->with("user") ->with("job.company") ->first();
 
-        if($userType == "C"){
-            $sendTo = "U";
-            $to = $applyRecord->user->email;
-            $name = $applyRecord->user->name != null ? $applyRecord->user->name : "";
-        }else{
-            $sendTo = "C";
-            $to = $applyRecord->job->company->user->email;
-            $name = $applyRecord->job->company->user->name != null ? $applyRecord->job->company->user->name : "";
-        }
+        DB::transaction(function () use ($request) {
 
-        $newMessage = new Message();
+            $applyRecordId = $request->input('applyRecordId');
+            $message = $request->input('message');
+            $user = Auth::User();
+            $userType = $user->user_type;
+            
+            $applyRecord = ApplyRecord::where('id', $applyRecordId) ->with("user") ->with("job.company") ->first();
 
-        $newMessage->apply_record_id = $applyRecordId;
-        $newMessage->message = $message;
-        $newMessage->sent_to = $sendTo;
-        $newMessage->checked = 0;
+            if($userType == "C"){
+                $sendTo = "U";
+                $to = $applyRecord->user->email;
+                $name = $applyRecord->user->name != null ? $applyRecord->user->name : "";
+            }else{
+                $sendTo = "C";
+                $to = $applyRecord->job->company->user->email;
+                $name = $applyRecord->job->company->user->name != null ? $applyRecord->job->company->user->name : "";
+            }
 
-        $lastMessage = Message::where('apply_record_id', $applyRecordId)
-        ->orderBy('created_at', 'desc')->first();
+            $newMessage = new Message();
 
-        $oneHourBefore = new Carbon();
-        $oneHourBefore->subHours(1);
+            $newMessage->apply_record_id = $applyRecordId;
+            $newMessage->message = $message;
+            $newMessage->sent_to = $sendTo;
+            $newMessage->checked = 0;
 
-        //最初の送信もしくは最後の送信が自分あて、もしくは1時間以上立っている場合は、メール通知
-        if($lastMessage == null || $lastMessage->created_at->lt($oneHourBefore) || $lastMessage->sent_to == $userType){
+            $lastMessage = Message::where('apply_record_id', $applyRecordId)
+            ->orderBy('created_at', 'desc')->first();
 
-            \Log::info("メッセージ送信");
-            //メール送信
-            $mailName = config('app.name') . " - メッセージを受信しました。";
-            $text = '';
-            $view = 'mail.messageNotification';
-            $data = [
-                'reset_url' => url('/top'),
-                'name' => $name
-            ];
-            //実際のメールアドレスは登録されないので、全て自分のメールに送る
-            $to = config('app.my_temp_address');
-            Mail::to($to)
-            ->send(new MailController($mailName, $text, $view, $data));  
-        }
+            $oneHourBefore = new Carbon();
+            $oneHourBefore->subHours(1);
 
-        $newMessage->save();
-        return "message sent";
+            //最初の送信もしくは最後の送信が自分あて、もしくは1時間以上立っている場合は、メール通知
+            if($lastMessage == null || $lastMessage->created_at->lt($oneHourBefore) || $lastMessage->sent_to == $userType){
+
+                \Log::info("メッセージ送信");
+                //メール送信
+                $mailName = config('app.name') . " - メッセージを受信しました。";
+                $text = '';
+                $view = 'mail.messageNotification';
+                $data = [
+                    'reset_url' => url('/top'),
+                    'name' => $name
+                ];
+                //実際のメールアドレスは登録されないので、全て自分のメールに送る
+                $to = config('app.my_temp_address');
+                Mail::to($to)
+                ->send(new MailController($mailName, $text, $view, $data));  
+            }
+
+            $newMessage->save();
+            return "message sent";
+        });
 
     }
 
@@ -511,7 +516,6 @@ class JobsListController extends Controller
     //履歴書のダウンロード
     public function resumeDownLoad(Request $request){
 
-        \Log::info($request->all());
         $path = $request->input('resumeFilePath');
         $fileName = $request->input('resumeFile');
         $user = Auth::User();
@@ -534,7 +538,6 @@ class JobsListController extends Controller
 
         try{
             $pathToFile = Storage::path($replacedPath);  
-            \Log::info($pathToFile);          
             $mimeType = Storage::mimeType($replacedPath);            
             $headers = [['Content-Type' => $mimeType]];
             return Storage::download($replacedPath,$fileName,$headers);

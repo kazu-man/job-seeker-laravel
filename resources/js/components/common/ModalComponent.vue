@@ -2,13 +2,6 @@
 
         <div>
             <modal name="login" :draggable="false" :height="'auto'" class="login sm-modal">
-                <spinner v-if="loading" style="
-                    position:absolute;
-                    top:45%;
-                    left:50%;
-                    z-index: 99999999;
-                " size="40"
-                line-fg-color="#f00"></spinner>
 
                 <div class="modal-header">
                     <div v-if="alert" class="alert">
@@ -233,7 +226,7 @@
 
                         <div class="form-group place-form">
 
-                            <place-show-component @select-city='selectCity' :initVal="editPostForm.city" :initAddressObj="editPostForm.addressObj" :initMarkers="editPostForm.latLng" ref="placeShowComponent"></place-show-component>
+                            <place-show-component @select-city='selectCity' @loading-map='loadingOrNot' :initVal="editPostForm.city" :initAddressObj="editPostForm.addressObj" :initMarkers="editPostForm.latLng" ref="placeShowComponent"></place-show-component>
                         </div>
 
 
@@ -295,7 +288,7 @@
                         <video-upload-component ref="videoUploadComponent" :initVideo="editPostForm.videoUrl"></video-upload-component>                      
 
                         <div class="form-group submit-form">
-                            <button class="btn submit-btn" @click="updatePost">Submit</button>       
+                            <button class="btn submit-btn" @click="updatePost" v-bind:disabled="mapLoading">Submit</button>       
                         </div>
                     </div>
                 </div>
@@ -713,7 +706,7 @@ export default {
         },
         modalCurrentBgImage:null,
         defaultImage: "/images/search.jpg",
-        loading:false,
+        mapLoading:false
     }},
     methods: {
 
@@ -1040,7 +1033,6 @@ export default {
             });
         },
         async googleLogin(){
-            this.loading = true;
             this.$store.commit('common/setLoadingFlg', true);
             console.log('google login');
             location.href = "/api/auth/google";
@@ -1071,7 +1063,11 @@ export default {
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'スカウトメッセージ送信に失敗しました。'});
             });
+        },
+        loadingOrNot:function(flg){
+            this.mapLoading = flg;
         }
+
 
     },
     computed: {

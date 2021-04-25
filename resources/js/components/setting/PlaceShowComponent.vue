@@ -77,7 +77,7 @@
                             
                             <div style="position:relative">
                             
-                                <div class="spinner-background" v-if="loadingCountry || loadingProvince || loadingCity || loadingMap" >
+                                <div class="spinner-background" v-if="loadingAnything" >
                                         <vue-loading type="spiningDubbles" color="#333" :size="{ width: '10%', height: '10%'}" style="
                                         position: absolute;
                                         left: 45%;
@@ -143,19 +143,22 @@ export default {
         loadingCountry:false,
         loadingProvince:false,
         loadingCity:false,
-        loadingMap:false
+        loadingMap:false,
+        loadingAnything:false
     }},
     components: {
         placeShowListComponent,
         VueLoading
     },
     created: function() {
+        if(this.initMarkers != null && this.initMarkers.lat != null && this.initMarkers.lat != undefined){
+            this.mapShow = true;
+            this.$emit('loading-map',true);
+
+        }
         this.updateCountry();
         this.getTableData();
 
-        if(this.initAddressObj != null && this.initAddressObj != undefined){
-            this.mapShow = true;
-        }
     },
     methods: {
             updateCountry: function () {
@@ -221,9 +224,6 @@ export default {
                         for(var city of res.data){
                             if(this.initVal.city_name == city.city_name){
                                 this.checkedCity = city;
-                                if(this.initAddressObj != null && this.initAddressObj != undefined){
-                                    this.addressObj = this.initAddressObj;
-                                }
                                 break;
                             }
                         }
@@ -249,37 +249,38 @@ export default {
             this.mapShow = !this.mapShow;
         },
         updateMap:function(){
+            //値がある初期表示
+            if(!this.updatedMarker && this.initMarkers != null && this.initMarkers.lat != null && this.initMarkers.lat != undefined){
+                    this.currentLat = this.initMarkers.lat;
+                    this.currentLng = this.initMarkers.lng;
+
+                    this.markers[0].position.lat = this.initMarkers.lat;
+                    this.markers[0].position.lng = this.initMarkers.lng;
+                return;
+            }
+            
             this.loadingMap = true;
+            this.$emit('loading-map',this.loadingMap);
             Vue.$geocoder.send(this.addressObj, response => { 
                 console.log("map検索結果");
                 console.log(response);
+                this.loadingMap = false;
+                this.$emit('loading-map',this.loadingMap);
                 if(response.status == "ZERO_RESULTS"){
                     return;
                 }
                 var newLat = response.results[0].geometry.location.lat;
                 var newLng = response.results[0].geometry.location.lng;
-
                 // 保存用
                 this.lastMarkerPosition.lat = newLat;
                 this.lastMarkerPosition.lng = newLng;
                 // 地図表示用
                 this.currentLat = newLat;
                 this.currentLng = newLng;
-                // マーカー表示用
-                if(!this.updatedMarker && this.initMarkers != undefined){
+                // マーカー表示用                    
+                this.markers[0].position.lat = newLat;
+                this.markers[0].position.lng = newLng;
 
-                    this.markers[0].position.lat = this.initMarkers.lat;
-                    this.markers[0].position.lng = this.initMarkers.lng;
-
-                    this.updatedMarker = true;
-
-                }else{
-
-                    this.markers[0].position.lat = newLat;
-                    this.markers[0].position.lng = newLng;
-
-                }
-                this.loadingMap = false;
             });
         },
         drag:function(e){
@@ -310,19 +311,39 @@ export default {
             }
         },
         checkedCity:function($el){
+
             
             if($el != "" && $el != undefined){
                 this.$emit('select-city',$el.id);
                 this.mapZoom = 16;
                 this.addressObj.address_line_1 = $el.city_name;
             }
+
+            //初期マップがある場合はそれを表示
+            if(this.initAddressObj != null && this.initAddressObj != undefined && this.initMarkers.lat != null && this.initMarkers.lat != undefined && !this.updatedMarker){
+                this.addressObj = this.initAddressObj;
+                this.addressObj.country = this.checkedCountry.country_name;
+                this.addressObj.city = this.checkedProvince.province_name;
+            }
+
         },
         countryInShow : function($el) {console.log('country = ' + $el.id)},
         provinceInShow : function($el) {console.log('province = ' + $el.id)},
         
         addressObj:{
-            handler: function (val, old) {
+            handler:function (val, old) {
+
+                console.log(old);
+                console.log(val);
                 this.updateMap();
+
+                if(this.initAddressObj != null && this.initAddressObj != undefined && !this.updatedMarker && this.initMarkers.lat != null && this.initMarkers.lat != undefined && val == this.initAddressObj){
+
+                    this.updatedMarker = true;
+                    this.$emit('loading-map',false);
+
+
+                }
             },
             deep:true
         }

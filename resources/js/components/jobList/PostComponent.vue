@@ -243,6 +243,14 @@ export default {
 				}
 			]
         },
+        defaultAddressObj:{
+            address_line_1: '',
+            address_line_2: '',
+            city: '',
+            state: '',
+            zip_code:'',
+            country: '',
+        },
         videoReload:false
     }},
     methods: { 
@@ -327,7 +335,7 @@ export default {
             }
             this.editForm.tagList = tagList;
 
-            this.editForm.addressObj = this.post.address;
+            this.editForm.addressObj = this.post.address != null ? this.post.address : this.defaultAddressObj;
             this.editForm.videoUrl = this.post.video_url;
             this.videoOptions.sources[0].src = this.post.video_url;
             this.$store.dispatch('common/setEditForm', this.editForm);

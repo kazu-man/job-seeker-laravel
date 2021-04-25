@@ -19,7 +19,7 @@
 
         <div class="form-group place-form">
 
-            <place-show-component @select-city='selectCity' ref="placeShowComponent"></place-show-component>
+            <place-show-component @select-city='selectCity' @loading-map='loadingOrNot' ref="placeShowComponent"></place-show-component>
         </div>
 
 
@@ -81,7 +81,7 @@
         <video-upload-component ref="videoUploadComponent"></video-upload-component>                      
 
         <div class="form-group submit-form">
-            <button v-on:click='postData' class="btn submit-btn">Submit</button>       
+            <button v-on:click='postData' class="btn submit-btn" v-bind:disabled="loading">Submit</button>       
         </div>
     </div>
 </div>
@@ -102,7 +102,7 @@ export default {
             benefit:'',
             experience:'',
             companyId:this.$route.params.id,
-            test:false
+            loading:false
         }
     },
 
@@ -131,8 +131,6 @@ export default {
                 this.$store.commit('common/setLoadingFlg', false);
 
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'登録しました。'});
-
-
             });
 
 
@@ -148,6 +146,9 @@ export default {
         },
         selectTag: function(){
             console.log("tag");
+        },
+        loadingOrNot:function(flg){
+            this.loading = flg;
         }
     },
     props:["categories","jobTypes"]

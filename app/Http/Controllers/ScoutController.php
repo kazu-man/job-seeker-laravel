@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use DB;
 
 class ScoutController extends Controller
 {
@@ -148,46 +149,47 @@ class ScoutController extends Controller
     }
 
     public function sendScout(Request $request){
-        \Log::info($request->all());
+        DB::transaction(function () use ($request) {
 
-        $senderId = $request->input("sender_id");
-        $recieverId = $request->input("reciever_id");
-        $scoutMessage = $request->input("scout_message");
-        $scoutJobList = $request->input("scoutJobList");
+            $senderId = $request->input("sender_id");
+            $recieverId = $request->input("reciever_id");
+            $scoutMessage = $request->input("scout_message");
+            $scoutJobList = $request->input("scoutJobList");
 
-        $targetScout = new Scout();
-        $targetScout->scout_date = Carbon::now();
-        $targetScout->reciever_id = $recieverId;
-        $targetScout->sender_id = $senderId;
-        $targetScout->scout_message = $scoutMessage;
-        $targetScout->save();
+            $targetScout = new Scout();
+            $targetScout->scout_date = Carbon::now();
+            $targetScout->reciever_id = $recieverId;
+            $targetScout->sender_id = $senderId;
+            $targetScout->scout_message = $scoutMessage;
+            $targetScout->save();
 
-        foreach($scoutJobList as $scoutJob){
-            $targetScoutJobRelation = new ScoutJobRelation();
-            $targetScoutJobRelation->scout_id = $targetScout->id;
-            $targetScoutJobRelation->job_id = $scoutJob;
-            $targetScoutJobRelation->save();
-        }
+            foreach($scoutJobList as $scoutJob){
+                $targetScoutJobRelation = new ScoutJobRelation();
+                $targetScoutJobRelation->scout_id = $targetScout->id;
+                $targetScoutJobRelation->job_id = $scoutJob;
+                $targetScoutJobRelation->save();
+            }
 
-        $sender = User::where("id",$senderId)->first();
-        $reciever = User::where("id",$recieverId)->first();
+            $sender = User::where("id",$senderId)->first();
+            $reciever = User::where("id",$recieverId)->first();
 
-        \Log::info("スカウト送信");
-        //メール送信
-        $mailName = config('app.name') . " - スカウトを受信しました。";
-        $text = '';
-        $view = 'mail.scoutNotification';
-        $data = [
-            'reset_url' => url('/top'),
-            'sender' => $sender->company->company_name,
-            'reciever' => $reciever->name != null ? $reciever->name : $reciever->user_firstname . " " . $reciever->user_lastname,
-            'scout_message' => $scoutMessage
-        ];
-        //実際のメールアドレスは登録されないので、全て自分のメールに送る
-        $to = config('app.my_temp_address');
-        Mail::to($to)
-        ->send(new MailController($mailName, $text, $view, $data));  
-        \Log::info("スカウト送信完了");
+            \Log::info("スカウト送信");
+            //メール送信
+            $mailName = config('app.name') . " - スカウトを受信しました。";
+            $text = '';
+            $view = 'mail.scoutNotification';
+            $data = [
+                'reset_url' => url('/top'),
+                'sender' => $sender->company->company_name,
+                'reciever' => $reciever->name != null ? $reciever->name : $reciever->user_firstname . " " . $reciever->user_lastname,
+                'scout_message' => $scoutMessage
+            ];
+            //実際のメールアドレスは登録されないので、全て自分のメールに送る
+            $to = config('app.my_temp_address');
+            Mail::to($to)
+            ->send(new MailController($mailName, $text, $view, $data));  
+            \Log::info("スカウト送信完了"); 
+        });
 
     }
 
