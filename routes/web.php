@@ -1,7 +1,5 @@
 <?php
 
-use App\Model\User;
-use App\Model\Province;
 use Illuminate\Http\Request;
 
 /*

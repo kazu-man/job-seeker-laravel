@@ -103,7 +103,7 @@
         refreshList:function(){
           this.searchKeys.tagList = this.$refs.selectTagComponent.selectedTagList;
           this.$refs.postList.commitSearchKeys(this.searchKeys);
-          this.$refs.postList.getPostList();
+          // this.$refs.postList.getPostList();
         },
         searchByCountry:function(val) {
           this.$emit('changeCountry',val)

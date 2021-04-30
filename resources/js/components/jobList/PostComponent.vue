@@ -2,7 +2,7 @@
     <div id="post">
 
         <transition name="fade" appear>
-            <section class="content post" :class="{singlePostMargin:onSinglePost, closedBackground:isClosedPost}" v-show="visible"  style="position:relative">
+            <section class="content post" :class="{singlePostMargin:onSinglePost, closedBackground:isClosedPost}" v-if="visible"  style="position:relative">
             <div v-if="pageType == 'applies'" style="position:absolute;top: -14px;right: -5px;">
                 <transition name="badge">
                     <span v-if="post.newMessageFlg && !newMessageClose" class="badge new-message-badge">new message</span>
@@ -398,6 +398,11 @@ export default {
                 }, 8000);
             },
             deep:true
+        },
+        visible:function(val){
+            if(val){
+                this.$emit('plusPostNumInDisplay');
+            }
         }
     },
     props:["post","likeList","likePageOrNot","pageType","applyList","toggleDisable","onSinglePost","newMessageFlg"],
@@ -515,7 +520,7 @@ export default {
 .fade-enter,
 .fade-leave-to,
 .fade-leave {
-  opacity: 0
+  opacity: 0;
 }
 
 .fade-move {

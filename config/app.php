@@ -177,6 +177,10 @@ return [
         // Google Login Api
         Laravel\Socialite\SocialiteServiceProvider::class,
         App\Providers\JobSeekerServiceProvider::class,
+        //elastic search
+        App\Providers\ElasticsearchServiceProvider::class, 
+
+
 
     ],
 

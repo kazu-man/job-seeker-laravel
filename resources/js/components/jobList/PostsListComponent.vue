@@ -25,13 +25,6 @@
             {{count}} Jobs found
         </div>
 
-        <spinner v-if="loading" style="
-            position:absolute;
-            top:35%;
-            left:48%;
-            z-index: 99999999;
-        " size="40"
-        line-fg-color="#f00"></spinner>
 
         <transition-group name="post">
             <posts-component 
@@ -45,9 +38,17 @@
             :pageType="searchInfo.pageType"
             @hidePost="addHidePost"
             @minusCount="minusCount"
+            @plusPostNumInDisplay="plusPostNumInDisplay"
             style="width:100%"
             ></posts-component>
         </transition-group>
+
+        <transition>
+            <spinner v-if="loading" style="
+                z-index: 99999999;
+            " size="40"
+            line-fg-color="#f00"></spinner>
+        </transition>
 
     </section>
 </template>
@@ -81,6 +82,7 @@ export default {
             keyWord:"",
             postInitFlg:false
         },
+        postsInDisplay:1
 
     }},
     methods: { 
@@ -97,15 +99,25 @@ export default {
                 }
             })
         },
-        getPostList:async function(){
+        getPostList:function(page = 1){
 
             console.log("function getPostList");
             console.log(this.searchInfo);
             this.count = 0;
-            this.posts = {};
+            //再建策の場合は初期化
+            if(page == 1){
+                this.posts = {};
+                this.postsInDisplay = 1;
+            }
             this.loading = true;
-            await axios.post('/api/getPosts', this.searchInfo).then(res => {
-                this.posts = res.data;
+            axios.post('/api/getPosts?page=' + page, this.searchInfo).then(res => {
+                if(page > 1){
+
+                    this.posts = this.posts.concat(res.data.data)          
+
+                }else{
+                    this.posts = res.data.data;
+                }
                 if(this.searchInfo.pageType == 'applies'){
                     this.posts.forEach(post => {
                         var newMessageFlg = false;
@@ -202,7 +214,18 @@ export default {
         interviewModal:function(){
             this.$store.dispatch('common/setInterviewModal')
 
-        }
+        },
+        //100個づつ表示し、一番下までスクロールされたことを検知
+        plusPostNumInDisplay(){
+            this.postsInDisplay ++;
+            var lastFlg = this.postsInDisplay % 90;
+            if(lastFlg  == 0){
+                console.log("一番下！");
+                var nextPage = this.postsInDisplay / 90 + 1;
+                this.getPostList(nextPage);
+            }
+            
+        },
 
         
     },
@@ -291,6 +314,7 @@ export default {
 .post-move {
   transition: transform 500ms;
 }
+
 .calendar{
     width: 30px;
 }

@@ -22,7 +22,7 @@ class JobsTableSeeder extends Seeder
         // $table->city_id = 1;
         // $table->job_type_id = 1;
         // $table->save();
-        factory(Job::class, 50)->create();
+        factory(Job::class, 1000)->create();
 
     }
 }

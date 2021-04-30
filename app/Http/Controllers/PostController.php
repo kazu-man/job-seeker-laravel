@@ -23,16 +23,18 @@ use Aws\Exception\MultipartUploadException;
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
 use DB;
+use Laravel\Scout\Builder;
 
 class PostController extends Controller
 {
-    
+    //新規追加
     public function registerJob(Request $request){
         
         return \PostService::saveJob($request);
      
     }
 
+    // 更新
     public function updatePost(Request $request){
 
         $this->validate($request,[
@@ -55,6 +57,7 @@ class PostController extends Controller
         return [ "updatedPost" => $updatedPost ];
     }
 
+    //単一ポストの取得
     public function getSinglePost($id){
         $result = Job::with('company')
         ->with('category')
@@ -69,49 +72,30 @@ class PostController extends Controller
         return $result;
     }
 
-    public function getPosts(Request $request) {
+    //ポストの表示・非表示切り替え
+    public function closePost(Request $request){
+        $targetPostId = $request->input('targetPostId');
+        $post = Job::find($targetPostId);
 
+        \PostService::closePost($post);
+    }
+
+    //ポストの取得
+    public function getPosts(Request $request){
+    
         $pageType = $request->input('pageType');
         
-        if($pageType == "scout"){
-            
-            $user = Auth::User();
-            $userId = $user->id;
-
-            $scouts = $query = Scout::with('jobRelations.job.company')
-            ->with('jobRelations.job.category')
-            ->with('jobRelations.job.city.province.country')
-            ->with('jobRelations.job.jobType')
-            ->with('jobRelations.job.jobDescription')
-            ->with('jobRelations.job.jobTagRelations.tag')
-            ->with('jobRelations.job.address')
-            ->where('reciever_id',$userId)
-            ->first();
-
-            $resultPosts = [];
-            if($scouts != null){
-                foreach($scouts["jobRelations"] as $scoutPost){
-                    array_push($resultPosts,$scoutPost->job);
-                }
-            }
-
-            return $resultPosts;
-
-        }
-        
-        $companyId = $request->input('companyId');
-        $keyWord = $request->input('keyWord');
-        $cityId = $request->input('cityId');
-        $provinceId = $request->input('provinceId');
-        $countryId = $request->input('countryId');
-        $countryName = $request->input('countryName');
-        $jobTypeId = $request->input('jobTypeId');
-        $categoryName = $request->input('categoryName');
-        $categoryId = $request->input('categoryId');
         $likes = $request->input('likes');
         $applies = $request->input('applies');
-        $tags = $request->input('tagList');
-        
+        $companyId = $request->input('companyId');
+
+        //スカウトリスト
+        if($pageType == "scout"){
+            \Log::info("scout list");
+            return \PostService::getScoutList();
+
+        }
+
         $query = Job::with('company')
         ->with('category')
         ->with('city.province.country')
@@ -120,129 +104,23 @@ class PostController extends Controller
         ->with('jobTagRelations.tag')
         ->with('address');
 
-        
+        //アプライリスト
         if($applies){
-            $user = Auth::User();
-            $userId = $user->id;
-    
-            $applyJobNo = \JobListService::getApplyList();
+            \Log::info("apply list");
+            return \PostService::getApplyList($query);
 
-            $query->with('applyRecords.messages');
-
-            $query->with(['applyRecords' => function ($query) use($userId){
-                $query->where('user_id', '=', $userId);
-            }]);
-
-            $query->whereIn('id',$applyJobNo);
-
-        }else if($companyId == null || $companyId == ""){
-            $query->where('job_status','A');
         }
         
-        
+        //likeリスト
         if($likes){
-            $likedJobNo = \JobListService::getLikeList();
-            $query->whereIn('id',$likedJobNo);
+            \Log::info("like list");
+            return \PostService::getLikeList($query);
+
         }
 
-
-        if($companyId != null && $companyId != ""){
-            $query->where('company_id',$companyId);
-        }
-
-        if($categoryName != null && $categoryName != ""){
-            \Log::info("category name = " . $categoryName);
-            $query->whereHas('category', function ($query) use($categoryName)  {
-                return $query->where('category_name', '=', $categoryName);
-            });
-        }
-        if($categoryId != null && $categoryId != ""){
-            \Log::info("category Id = " . $categoryId);
-            $query->whereHas('category', function ($query) use($categoryId)  {
-                return $query->where('id', '=', $categoryId);
-            });
-        }
-
-        if($cityId != null && $cityId != ""){
-            \Log::info("cityId Id = " . $cityId);
-
-            $query->where('city_id',$cityId);
-        }
-        if($provinceId != null && $provinceId != ""){
-            \Log::info("provinceId Id = " . $provinceId);
-            $query->whereHas('city.province', function ($query) use($provinceId)  {
-                return $query->where('id', '=', $provinceId);
-            });
-        }
-        if($countryId != null && $countryId != ""){
-            \Log::info("countryId Id = " . $countryId);
-
-            $query->whereHas('city.province.country', function ($query) use($countryId)  {
-                return $query->where('id', '=', $countryId);
-            });
-        }
-
-        if($jobTypeId != null && $jobTypeId != ""){
-            \Log::info("jobTypeId Id = " . $jobTypeId);
-
-            $query->where('job_type_id',$jobTypeId);
-        }
-
-        if($countryName != null && $countryName != ""){
-            \Log::info("country name = " . $countryName);
-
-            $query->whereHas('city.province.country', function ($query) use($countryName)  {
-                return $query->where('country_name', '=', $countryName);
-            });
-        }
-
-        if($keyWord != null && $keyWord != ""){
-            \Log::info("keyWord  = " . $keyWord);
-            $query->where(function($query) use($keyWord){
-                $query->orWhere('job_title','LIKE','%'.$keyWord.'%')
-                ->orWhereHas('company', function ($query) use($keyWord)  {
-                    return $query->where('company_name','LIKE','%'.$keyWord.'%');
-                })
-                ->orWhereHas('jobDescription', function ($query) use($keyWord)  {
-                    return $query->where('description','LIKE','%'.$keyWord.'%')
-                    ->orWhere('requirement','LIKE','%'.$keyWord.'%')
-                    ->orWhere('benefit','LIKE','%'.$keyWord.'%')
-                    ->orWhere('experience','LIKE','%'.$keyWord.'%')
-                    ->orWhere('job_title','LIKE','%'.$keyWord.'%');
-                });            
-            });
-        }
-
-        if($tags != null && $tags != ""){
-
-            $tagIds = [];
-            $tagNames = [];
-
-            foreach($tags as $tag){
-                array_push($tagIds,$tag['id']);
-                array_push($tagNames,$tag['tag_name']);
-            }
-
-            \Log::info("tag list　= " . implode(",",$tagNames));
-
-            $query->whereHas('jobTagRelations.tag', function ($query) use($tagIds)  {
-                return $query->whereIn('id', $tagIds);
-            });
-        }
-
-        $post = $query->get();
-        \Log::info($post);
-        return $post;
+        //通常検索
+        return \PostService::getPosts($request);
     }
-
-
-    public function closePost(Request $request){
-        $targetPostId = $request->input('targetPostId');
-        $post = Job::find($targetPostId);
-
-        \PostService::closePost($post);
-    }
-
 }
 
 
