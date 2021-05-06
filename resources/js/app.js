@@ -50,6 +50,7 @@ Vue.component('select-tag-component', require('./components/common/SelectTagComp
 Vue.component('tag-component', require('./components/common/TagComponent.vue').default);
 Vue.component('select-experience-component', require('./components/common/SelectExperienceComponent.vue').default);
 Vue.component('video-upload-component', require('./components/common/VideoUploadComponent.vue').default);
+Vue.component('video-chat-component', require('./components/common/VideoChat.vue').default);
 
 Vue.component('spinner', require('vue-simple-spinner'));
 

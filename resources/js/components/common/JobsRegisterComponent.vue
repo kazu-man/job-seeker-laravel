@@ -2,7 +2,9 @@
 <div class="job-content">
     <div class="form-title">New Job Offer</div>
 
+
     <div class="job-register-area">  
+            <video-chat-component></video-chat-component>
         <div class="form-group title-form">
             <label>
                 Job Title: 

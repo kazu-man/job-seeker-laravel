@@ -14,7 +14,8 @@ const state = {
     settingCountryReloadFlg:false,
     scoutInfo:null,
     scoutedIds:[],
-    loadingFlg:false
+    loadingFlg:false,
+    interviewCancelTarget:[]
   }
     
 const mutations = {
@@ -63,6 +64,10 @@ const mutations = {
     setLoadingFlg(state, target){
         state.loadingFlg = target
     },
+    setInterviewCancelTarget(state, target){
+        state.interviewCancelTarget = target
+
+    }
 
 }
 
@@ -121,8 +126,6 @@ const actions = {
     },
     alertModalUp (context,　{data, successMessage, close, reload}) {
         console.log('modal up');
-        console.log(close);
-        console.log(successMessage);
         if(close == null){
             close = true;
         }
@@ -152,6 +155,17 @@ const actions = {
             context.commit('setModalTarget', 'scoutModal');
         });
     },
+    setInterviewModal(context){
+    
+        context.commit('setModalTarget', 'interviewModal');
+    },
+    setInterviewConfirmModal(context,event){
+
+        context.commit('setInterviewCancelTarget', event);
+        context.commit('setModalTarget', 'interviewConfirmModal');
+
+    }
+
   
 }
 

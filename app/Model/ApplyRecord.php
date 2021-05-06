@@ -21,5 +21,10 @@ class ApplyRecord extends Model
     {
         return $this->hasMany('App\Model\Message');
     }
+    public function interviews()
+    {
+        return $this->hasMany('App\Model\Interview');
+    }
+
 
 }

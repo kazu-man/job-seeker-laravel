@@ -16,6 +16,7 @@ import categoryShow from './components/setting/CategoryShowComponent.vue'
 import AdminPlaceShowComponent from './components/setting/AdminPlaceShowComponent.vue'
 import SearchUserComponent from './components/jobList/SearchUserComponent.vue'
 import MyScoutListComponent from './components/jobList/MyScoutListComponent.vue'
+import VideoChat from './components/common/VideoChat.vue'
 
 import store from './store' 
 import { UNAUTHORIZED } from './util'
@@ -260,6 +261,13 @@ const routes = [
   //       }
   //   }
   // },
+  {
+    path: '/video_chat/:token',
+    component: VideoChat,
+    beforeEnter (to, from, next) {
+        next()
+    }
+  },
   {
     path: '/500',
     component: SystemError

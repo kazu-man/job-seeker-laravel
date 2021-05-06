@@ -15,7 +15,6 @@
             " size="40"></spinner>
         </div>
 
-
         <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType">
             <span  class="menu-btn hide" @click="changeMenuType('normal')" :key="'toggle1'">Menu</span>
             <span  v-if="loginCheck && loginUser != null &&loginUser.user_type == 'A'" class="menu-btn hide setting" @click="changeMenuType('admin')" :key="'toggle2'">Setting</span>

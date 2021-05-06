@@ -12,8 +12,9 @@ use App\Model\Profile;
 use App\Model\Experience;
 use App\Model\ApplyRecord;
 use App\Mail\MailController;
-use Illuminate\Http\Request;
 use App\Model\JobDescription;
+use App\Model\Interview;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
@@ -547,5 +548,217 @@ class JobsListController extends Controller
             \Log::info($ex->getMessage());
             return response()->json([], 503);
         }
+    }
+
+    public function setUpInterview(Request $request){
+        $date = $request->input('interviewDate');
+        $time = $request->input('interviewTime');
+        $duration = $request->input('interviewDuration');
+        $applyId = $request->input('applyId');
+        
+        $dateTime = $date . " " . $time;
+
+        $token = str_random(16);
+        
+        $interview = new Interview();
+
+        $interview->apply_record_id = $applyId;
+        $interview->interview_duration = $duration;
+        $interview->interview_date_time = $dateTime;
+        $interview->interview_token = $token;
+
+
+        $message = new Message();
+
+        $message = "WEB面接が予約されました。 \n"
+                    ."\n"
+                    ."開始時間: ".$dateTime ."\n"
+                    ."予定時間: ".$duration ."分\n"
+                    ."URL: " .config('app.url') . "/video_chat/" .$token;
+
+        $user = Auth::User();
+        $userType = $user->user_type;
+        
+
+        $sendTo = "U";
+
+        $newMessage = new Message();
+
+        $newMessage->apply_record_id = $applyId;
+        $newMessage->message = $message;
+        $newMessage->sent_to = $sendTo;
+        $newMessage->checked = 0;
+
+        DB::transaction(function () use ($interview,$newMessage,$applyId,$user) {
+            $interview->save();
+            $newMessage->save();
+            $apply = ApplyRecord::where("id",$applyId)->with("user")->first();
+
+            $userName = $apply->user->email;
+                
+            if($apply->user->name != null){
+                
+                $userName = $apply->user->name;
+                
+            }
+            
+            if($apply->user->user_firstname != null && $apply->user->user_lastname != null){
+                
+                $userName = $apply->user->user_firstname . " " . $apply->user->user_lastname;
+                
+            }
+
+            \Log::info($userName);
+            //メール送信
+            $mailName = config('app.name') . " - Web面接予約のお知らせ";
+            $text = '';
+            $view = 'mail.interviewNotification';
+            $data = [
+                'reset_url' => url('/top'),
+                'name' => $userName,
+                'company_name' => $user->company->company_name,
+                'dateTime' => $interview->interview_date_time,
+                'duration' => $interview->interview_duration
+            ];
+            //実際のメールアドレスは登録されないので、全て自分のメールに送る
+            $to = config('app.my_temp_address');
+            Mail::to($to)
+            ->send(new MailController($mailName, $text, $view, $data));  
+        });
+
+
+
+
+    }
+
+    public function findInterviewToken(Request $request){
+        $token = $request->input("token");
+        $interview = Interview::where("interview_token",$token)->with('applyRecord.job.company')->first();
+        \Log::info($interview);
+
+        $tokenFindFlg = 0;
+        $result = [
+            "tokenFindFlg" => 0,
+            "targetId" => null,
+        ];
+
+        if(!empty($interview)){
+
+            $tokenFindFlg = 1;
+            $result["tokenFindFlg"] = $tokenFindFlg;
+
+        }else{
+
+            $result["tokenFindFlg"] = $tokenFindFlg;
+            return $result;
+        }
+
+        $user = Auth::User();
+        $loginUserId = $user->id;
+        $correctUserFlg = false;
+
+        if($user->user_type == "C"){
+
+            $result["targetId"] = $interview->applyRecord->user_id;
+            $correctUserFlg = $interview->applyRecord->job->company->user_id == $loginUserId ? true : false;
+
+        }else{
+            
+            $result["targetId"] = $interview->applyRecord->job->company->user_id;
+            $correctUserFlg = $interview->applyRecord->user_id == $loginUserId ? true : false;
+
+        }
+
+        if(!$correctUserFlg){
+            $result["tokenFindFlg"] = 0;
+        }
+
+        
+        return $result;
+    }
+    
+    public function getInterview(){
+
+        $result = [];
+        $user = Auth::User();
+        $userId = $user->id;
+        $query = Interview::with('applyRecord.job.company')->with('applyRecord.user');
+
+        if($user->user_type == "C"){
+            $query->whereHas('applyRecord.job.company', function ($query) use($userId)  {
+                return $query->where('user_id', '=', $userId);
+            });
+
+        }else{
+            $query->whereHas('applyRecord', function ($query) use($userId)  {
+                return $query->where('user_id', '=', $userId);
+            });
+
+        }
+        
+        
+        $interview = $query->get();
+        
+        foreach($interview as $each){
+
+            if($user->user_type == "C"){
+                
+                $userName = $each->applyRecord->user->email;
+                
+                if($each->applyRecord->user->name != null){
+                    
+                    $userName = $each->applyRecord->user->name;
+                    
+                }
+                
+                if($each->applyRecord->user->user_firstname != null && $each->applyRecord->user->user_lastname != null){
+                    
+                    $userName = $each->applyRecord->user->user_firstname . " " . $each->applyRecord->user->user_lastname;
+                    
+                }
+                
+                $eachRow = [
+                    "id" => $each->id,
+                    "title" => $userName,
+                    "date" => str_replace('/',"-",$each->interview_date_time),
+                    "data" => ["video_url" => config('app.url') . "/video_chat/" .$each->interview_token,
+                                "video_duration" => $each->interview_duration,
+                                "user_type" => "C"
+                                ]
+                    
+                ];
+                
+            }else{
+
+                $userName = $each->applyRecord->job->company->company_name;
+                                
+                $eachRow = [
+                    "id" => $each->id,
+                    "title" => $userName,
+                    "date" => str_replace('/',"-",$each->interview_date_time),
+                    "data" => ["video_url" => config('app.url') . "/video_chat/" .$each->interview_token,
+                                "video_duration" => $each->interview_duration,
+                                "user_type" => "U"
+                                ]
+                    
+                ];
+
+            }
+
+
+            array_push($result,$eachRow);
+        }
+        
+        \Log::info($result);
+        return $result;
+    }
+
+    public function cancelInterview(Request $request){
+        
+        $interviewId = $request->input("id");
+        $targetInterview = Interview::where("id",$interviewId)->first();
+
+        $targetInterview->delete();
+
     }
 }

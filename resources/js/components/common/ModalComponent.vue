@@ -342,30 +342,30 @@
                     </div>
 
                     <div class="row border mt-0 mx-4" style="border-radius:5px">
-                        <div class="col-md-6 col-sm-12 row  p-2">
+                        <div class="col-md-6 col-sm-12 row  pr-2" style="margin-top:12px">
                             <div class="col-4 pr-0"><strong>Name: </strong></div>
-                            <div class="col-8 text-left p-0" v-if="applicantProfile.user.user_lastname != null && applicantProfile.user.user_firstname != null">
+                            <div class="col-8 text-left pr-0" v-if="applicantProfile.user.user_lastname != null && applicantProfile.user.user_firstname != null">
                                 {{applicantProfile.user.user_lastname}} {{applicantProfile.user.user_firstname}}
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-sm-12 row  p-2">
+                        <div class="col-md-6 col-sm-12 row  pr-2">
                             <div class="col-4 pr-0"><strong>Email: </strong></div>
-                            <div class="col-8 text-left p-0" v-if="applicantProfile.user.email != null">
+                            <div class="col-8 text-left pr-0" v-if="applicantProfile.user.email != null">
                             {{applicantProfile.user.email}}
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-sm-12 row  p-2">
+                        <div class="col-md-6 col-sm-12 row  pr-2">
                             <div class="col-4 pr-0"><strong>Birth Day: </strong></div>
-                            <div class="col-8 text-left p-0" v-if="applicantProfile.user.user_birthday != 'null'">
+                            <div class="col-8 text-left pr-0" v-if="applicantProfile.user.user_birthday != 'null'">
                                 {{applicantProfile.user.user_birthday}}
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-sm-12 row  p-2">
+                        <div class="col-md-6 col-sm-12 row  pr-2">
                             <div class="col-4 pr-0"><strong>Gender: </strong></div>
-                            <div class="col-8 text-left p-0">
+                            <div class="col-8 text-left pr-0">
                                 {{applicantProfile.gender}}
                             </div>
                         </div>
@@ -421,14 +421,48 @@
             
              <modal name="messageModal" :height="600" :width="800" class="messageModal">
 
-                <div class="modal-header">
+                <div class="modal-header" style="position:relative;padding:3px;">
                     <p v-if="loginUser !=  null && loginUser.user_type == 'U'">Messages <br> <span class=" message-to">[ To: {{applyRecord.companyName}} ]</span></p>
                     <p v-else-if="loginUser !=  null && loginUser.user_type == 'C'">Messages <br><span class=" message-to">[ To: {{applyRecord.applicantName}} ]</span></p>
                     <div v-on:click="modalHide('messageModal')" class="close">X</div>
+                    <div class="btn btn-info interview-btn" @click="interviewPopUpFlg = !interviewPopUpFlg" v-if="loginUser !=  null && loginUser.user_type == 'C'">
+                        interview
+                    </div>
+
                 </div>
 
-                <div class="messages-area" id="messages-area" style="height:360px;overflow-y:scroll" v-if="messagesList != null">
-                    <div class="message">
+                <div class="messages-area" id="messages-area" style="height:374px;overflow-y:scroll" v-if="messagesList != null" >
+                    <div class="schedule-interview" v-if="interviewPopUpFlg">
+                        <div class="triangle"></div>
+                        <div class="schedule-interview-header">
+                            Web面接を設定
+                            <div data-v-47cf1a59="" class="close" @click="interviewPopUpFlg = false">X</div>
+                        </div>
+                        <div class="schedule-interview-body">
+
+                            <div class="schedule-element row">
+                                <div class="col-5" style="padding-top: 20px;">面接日時</div>
+                                <div class="col-7"><input type="date"  v-model="interviewForm.interviewDate" name="interview_date" id="interview_date" class="form-control" value="" required=""></div>
+                            </div>
+                            <div class="schedule-element row">
+                                <div class="col-5" style="padding-top: 20px;">面接時間</div>
+                                <div class="col-7"><input type="time"  v-model="interviewForm.interviewTime" name="interview_date" id="interview_date" class="form-control" value="" required=""></div>
+                            </div>
+
+                            <div class="schedule-element row">
+                                <div class="col-5" style="padding-top: 20px;font-size: 15px;">面接予定時間（分）</div>
+                                <div class="col-7"><input type="number"  v-model="interviewForm.interviewDuration" name="interview_duration" id="interview_duration" class="form-control" value="" required=""></div>
+                            </div>
+                            <div style="text-align: center;margin-top: 20px;">
+                                <div class="btn btn-info" @click="setUpInterview()">
+                                    send
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="message" @click="interviewPopUpFlg = false">
                         <transition-group name="message">
                             <div v-for="message in messagesList" class="message-text" :key="message.id">
 
@@ -626,6 +660,64 @@
                     </div>
                 </div>  
             </modal> 
+
+            <modal name="interviewModal" :draggable="false" :resizable="false" :height="500" :width="700" style="text-align:center;" class="interview">
+                <div v-on:click="modalHide('interviewModal')" class="close">X</div>
+                <div class="interviewPopUp">
+                    <InterviewCalendarComponent ref="interviewComponent"></InterviewCalendarComponent>
+                </div>
+            </modal> 
+
+            <modal name="interviewConfirmModal" :draggable="false" class="interviewConfirmModal">
+                <div class="modal-header">
+                    <p v-if="interviewCancelTarget != null">
+                        <span v-if="interviewCancelTarget.extendedProps != null && interviewCancelTarget.extendedProps.data.user_type == 'C'">受験者</span>
+                        <span v-else>企業名</span>
+                        ：{{interviewCancelTarget.title}}</p>
+                    <div v-on:click="modalHide('interviewConfirmModal')" class="close">X</div>
+                </div>
+                <div class="modal-body" style="width:100%;padding-top:40px;">
+
+                    <div>
+                        <div v-if="interviewCancelTarget.start != null">日時：{{interviewCancelTarget.start.toLocaleString("ja")}}</div>
+                        <div v-if="interviewCancelTarget.extendedProps != null">予定時間：{{interviewCancelTarget.extendedProps.data.video_duration}} 分</div>
+                    </div>  
+
+                    <div class="row button-area" style="margin-top:30px">
+                        <div class="col-6" :class="{marginAuto:interviewCancelTarget.extendedProps != null && interviewCancelTarget.extendedProps.data.user_type == 'U'}">
+                            <button  v-bind:disabled="checkInterviewTime(interviewCancelTarget.start)" @click="startVideoChat(interviewCancelTarget.extendedProps.data)" name="interviewConfirmModal" class="btn btn-block btn-warning btn-md p-2 text-danger interviewConfirmModalBtn">
+                                <span class="icon-heart-o mr-2 text-danger">開始する</span>
+                            </button>
+                        </div>
+                        <div class="col-6" v-if="interviewCancelTarget.extendedProps != null && interviewCancelTarget.extendedProps.data.user_type == 'C'">
+                            <button v-bind:disabled="checkInterviewTime(interviewCancelTarget.start)" @click="cancelInterviewConfirm" type="button" class="btn btn-primary p-2 btn-block interviewConfirmModalBtn">
+                                キャンセルする
+                            </button>
+                        </div>
+                    </div>
+                </div>  
+            </modal> 
+
+            <modal name="interviewCancelConfirmModal" :draggable="false" :resizable="false" :height="'auto'" :width="320" class="interviewCancelConfirmModal">
+                <div class="modal-header">
+                    <p style="font-size: 15px;">こちらの面接をキャンセルしますか？</p>
+                </div>
+                <div class="modal-body" style="width:90%;">
+
+                    <div class="row">
+                        <div class="col-6">
+                            <button v-on:click="modalHide('interviewCancelConfirmModal')" name="closePost" class="btn btn-block btn-warning btn-md p-2 text-danger">
+                                <span class="icon-heart-o mr-2 text-danger">閉じる</span>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button @click="cancelInterview" type="button" class="btn btn-primary p-2 btn-block">
+                                送信する
+                            </button>
+                        </div>
+                    </div>
+                </div>  
+            </modal> 
             
 
             <!-- 一番下固定 -->
@@ -648,6 +740,7 @@
 <script>
 import { UNAUTHORIZED ,OK, UNPROCESSABLE_ENTITY} from '../../util';
 import methodMixIn from './CommonMethodsMixIn.vue';
+import InterviewCalendarComponent from '../common/InterviewCalendarComponent.vue';
 
 export default {
     data() {
@@ -684,6 +777,13 @@ export default {
         messageForm:{
             applyRecordId:"",
             message:""
+        },
+        interviewPopUpFlg:false,
+        interviewForm:{
+            interviewDate:"",
+            interviewTime:"",
+            interviewDuration:"",
+            applyId:""
         },
         asCompany:false,            
             //あとで消す
@@ -745,6 +845,8 @@ export default {
                     this.$modal.hide('login');
                     this.$modal.hide('bgChangeModal');
                     this.$modal.hide('scoutModal');
+                    this.$modal.hide('interviewConfirmModal');
+                    this.$modal.hide('interviewCancelConfirmModal');
                 }else{
                     reloadFlg = false;
                 }
@@ -904,6 +1006,36 @@ export default {
                 this.$store.dispatch('common/refreshMessage', this.applyRecord.id)
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'送信しました'});
             });
+        },
+        setUpInterview:function(){
+            this.interviewForm.applyId = this.applyRecord.id;
+
+            if(this.interviewForm.interviewDate == ""){
+                this.$store.dispatch('common/alertModalUp', {data:200, successMessage:'面接日を入力して下さい'});
+                reutrn;
+            }else if(this.interviewForm.interviewTime == ""){
+                this.$store.dispatch('common/alertModalUp', {data:200, successMessage:'面接時間を入力して下さい'});
+                reutrn;
+            }else if(this.interviewForm.interviewDuration == ""){
+                this.$store.dispatch('common/alertModalUp', {data:200, successMessage:'面接予定時間を入力して下さい'});
+                reutrn;
+            }else{
+                this.$store.commit('common/setLoadingFlg', true);
+                axios.post('/api/setUpInterview',this.interviewForm).then(res => {
+                    this.$store.commit('common/setLoadingFlg', false);
+    
+                    this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'面接を予約しました'});
+                    this.$store.dispatch('common/refreshMessage', this.applyRecord.id)
+                    this.interviewPopUpFlg = false;
+                    this.interviewForm.interviewDate = "";
+                    this.interviewForm.interviewTime = "";
+                    this.interviewForm.interviewDuration = "";
+
+                });
+            }
+
+
+
         },
         closePost(){
             this.$store.commit('common/setLoadingFlg', true);
@@ -1066,6 +1198,42 @@ export default {
         },
         loadingOrNot:function(flg){
             this.mapLoading = flg;
+        },
+        cancelInterviewConfirm:function(){
+            this.modalShow("interviewCancelConfirmModal");
+        },
+        cancelInterview:function(){
+            this.$store.commit('common/setLoadingFlg', true);
+
+            axios.post('/api/cancelInterview',{id:this.interviewCancelTarget.id}).then(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+                if(res.status != 200){
+                    return false;
+                }
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'WEB面接をキャンセルしました。',close:true});
+                this.$refs.interviewComponent.removeInterview(this.interviewCancelTarget.id);
+            })
+            .catch(res => {
+                this.$store.commit('common/setLoadingFlg', false);
+
+                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'キャンセル処理でエラーが発生しました。'});
+            });
+
+        },
+        startVideoChat:function(data){
+
+            window.open(data.video_url, "name", 'width=900, height=620, top=0, left=0, personalbar=0, toolbar=0, scrollbars=1, resizable=!'); 
+        },
+        checkInterviewTime:function(time){
+            var interviewTime = new Date(time);
+            var interviewNextDate = interviewTime.setDate( interviewTime.getDate() + 1 );
+            var now = new Date();
+
+            if(interviewNextDate < now){
+                return true;
+            }else{
+                return false;
+            }
         }
 
 
@@ -1134,6 +1302,9 @@ export default {
         scoutInfo:function(){
             return this.$store.state.common.scoutInfo;
         },
+        interviewCancelTarget:function(){
+            return this.$store.state.common.interviewCancelTarget;
+        }
 
 
 
@@ -1220,6 +1391,9 @@ export default {
     },
     props:["jobTypes","category"],
     mixins: [methodMixIn],
+    components: {
+        InterviewCalendarComponent
+    }
 
 }
 </script>
@@ -1363,8 +1537,7 @@ label.userType{
 .send-message-area{
     position: absolute;
     bottom: 0;
-    left: 16px;
-    width: 100%;
+    width: 105%;
     background:#dee2e6;
     border-top:1px solid #dee2e6;
     padding-left:60px
@@ -1393,6 +1566,9 @@ label.userType{
     text-align:none;
     padding-bottom: 10px;
 }
+.message-text{
+    position:relative;
+}
 .messages-area .balloon1-right {
  position: relative;
     margin: 1.5em 0 1.5em 15px;
@@ -1407,6 +1583,7 @@ label.userType{
     border-radius: 15px;
     margin-bottom:0;
     display: inline-block;   
+    white-space:break-spaces;
 
 }
 
@@ -1442,6 +1619,7 @@ label.userType{
     margin-bottom:0;
     margin-left: 10px;
     display: inline-block;   
+    white-space:break-spaces;
 }
 
 .messages-area .balloon1-left:before {
@@ -1478,6 +1656,8 @@ label.userType{
     display: inline-block;
     vertical-align: top;
     margin-top:1.5em;
+    margin-left: 3px;
+
 }
 .company-logo-message img{
     width:100%;
@@ -1488,6 +1668,7 @@ label.userType{
 }
 .message-to{
     margin-left:25px;
+    font-size:15px;
 }
 
 .message-enter,
@@ -1502,6 +1683,50 @@ label.userType{
 }
 .message-move {
   transition: transform 500ms;
+}
+
+.interview-btn{
+    padding: 5px 3px;
+    font-size: 10px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.schedule-interview{
+    position: absolute;
+    right: 3px;
+    z-index: 100;
+    opacity: 1;
+    min-width: 300px;
+    margin-top: 5px;
+    width: 50%;
+}
+.schedule-interview-header{
+    background:lightgray;
+    padding:2%;
+    text-align:center;
+    border-radius:10px 10px 0 0 ;
+}
+.schedule-interview-body{
+    background:white;
+    border:1px solid lightgray;
+    padding:20px;
+    border-radius:0 0 5px 5px;
+}
+
+.interviewConfirmModalBtn{
+    width: 60%;
+    margin: auto;
+}
+
+.triangle{
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid lightgray;
+    border-left: 10px solid transparent;
+    width: 13px;
+    right: 20px;
+    top: -10px;
+    position: absolute;
 }
 .country-bg-image {
     width:200px;
@@ -1555,6 +1780,21 @@ label.userType{
 }
 .scout-job-check input, .scout-job-check label{
     cursor:pointer;
+}
+
+.interviewPopUp{
+    width:100%;
+    background:white;
+    padding:0 5px 5px 5px;
+    z-index: 99;
+    border: solid lightgray 4px;
+    border-radius: 10px;
+    max-height:100%;
+    min-height:100%;
+    overflow-y: scroll;
+}
+.marginAuto{
+    margin:auto;
 }
 </style>
 <style>

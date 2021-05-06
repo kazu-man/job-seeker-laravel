@@ -85,6 +85,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/getScout', 'ScoutController@getScout')->name('getScout');
     Route::post('/sendScout', 'ScoutController@sendScout')->name('sendScout');
     Route::get('/getScoutsByReciever', 'ScoutController@getScoutsByReciever')->name('getScoutsByReciever');
+    Route::post('/setUpInterview', 'JobsListController@setUpInterview')->name('setUpInterview');
+    Route::post('/findInterviewToken', 'JobsListController@findInterviewToken')->name('findInterviewToken');
+    Route::get('/getInterview', 'JobsListController@getInterview')->name('getInterview');
+    Route::post('/cancelInterview', 'JobsListController@cancelInterview')->name('cancelInterview');
 
 });
 

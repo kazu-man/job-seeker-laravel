@@ -1,6 +1,16 @@
 <template>
     <div class="job-content apply-table">
-        <div class="form-title">Applies</div>
+        <div class="form-title" style="padding-top: 18px;">Applies
+            <span @click="interviewModal()" class="calendar-span">
+            
+            <div>
+                <img src="/images/calendar.png" class="calendar">
+                <div style="font-size: 15px;">interviews</div>            
+            </div>
+            
+            </span>
+        </div>
+
             <div style="min-width:500px;">
             <spinner v-if="loading" style="
                 position:absolute;
@@ -88,6 +98,7 @@ export default {
             ],
             loading:true,
             rows: [],
+            calendarFlg:false
         }
     },
     methods:{
@@ -122,12 +133,16 @@ export default {
 
             this.$store.dispatch('common/setMessageModal', record)
         },
+        interviewModal:function(){
+            this.$store.dispatch('common/setInterviewModal')
+
+        }
     },
     mounted:function() {
         this.getApplyRecords();
     },
     components: {
-        VueGoodTable,
+        VueGoodTable
     }
 }
 </script>
@@ -218,6 +233,20 @@ label {
 .message-btn {
     width:80px;
     padding:6px 0px !important;
+}
+
+.calendar{
+    width: 30px;
+}
+
+.calendar-span{
+    float: right;
+    font-weight: normal;
+    text-align: center;
+    position: absolute;
+    top: -3px;
+    right: 0px;
+    cursor:pointer;
 }
 @media (max-width:414px){
     .message-btn{

@@ -8,6 +8,14 @@
         </div>
         <div class="title" v-else-if="searchInfo.pageType == 'applies'">
             Your applies
+            <span @click="interviewModal()" class="calendar-span">
+            
+                <div>
+                    <img src="/images/calendar.png" class="calendar">
+                    <div style="font-size: 15px;">interviews</div>            
+                </div>
+            
+            </span>
         </div>
 
         <div class="title" v-if="searchInfo.pageType == 'scout'" v-cloak>
@@ -191,6 +199,11 @@ export default {
                 this.searchInfo.jobTypeId = ""
                 this.searchInfo.keyWord = ""
         },
+        interviewModal:function(){
+            this.$store.dispatch('common/setInterviewModal')
+
+        }
+
         
     },
     components: {
@@ -278,6 +291,19 @@ export default {
 .post-move {
   transition: transform 500ms;
 }
+.calendar{
+    width: 30px;
+}
+.calendar-span{
+    float: right;
+    font-weight: normal;
+    text-align: center;
+    position: absolute;
+    top: -3px;
+    right: 0px;
+    cursor:pointer;
+}
+
 
 [v-cloak] {
   display: none;

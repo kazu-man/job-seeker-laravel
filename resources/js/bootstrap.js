@@ -61,6 +61,9 @@ window.axios.interceptors.request.use(config => {
   		return Promise.reject(error)
     }
   )
+
+  window.Peer = require('simple-peer');
+  window.Pusher = require('pusher-js');
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

@@ -68,7 +68,7 @@
                     　@addExForm="addExForm"
                     　:experiences="profileForm.experiences"></select-experience-component>
 
-                    <div class="form-group">
+                    <div class="form-group" style="padding-top: 10px;">
                         <label for="">Experience Details</label>
                         <textarea  v-model="profileForm.experience" name="experience" id="Experience" cols="30" rows="10" class="form-control">
                             </textarea>

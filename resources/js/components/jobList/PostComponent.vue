@@ -17,13 +17,13 @@
                 <transition-group name="content">
                     <div class="post-header row" @click="toggleSlide" :key="'header'">
                         <div class="col-2 pc-view">
-                            <div class="p-2 d-inline-block mr-5 rounded-circle company-logo" :class="{bgBlue:openFlg}">
+                            <div class="p-2 d-inline-block mr-5 rounded-circle company-logo" style="margin: 16% auto auto auto !important;" :class="{bgBlue:openFlg}">
                                 <img v-if="post.company.company_image != undefined && post.company.company_image != null && post.company.company_image != ''" :src="post.company.company_image" class="m-auto p-auto image rounded-circle" alt="image" style="width:100px;height:100px">
                                 <img v-else :src="defaultLogo" class="m-auto p-auto image rounded-circle" alt="image" style="width:100px;height:100px">
                             </div>
                         </div>
 
-                        <div class="col-md-10 col-sm-12 row">
+                        <div class="col-md-10 col-sm-10 row">
                             <div class="col-1 pt-1 pl-0">
                                 <span class="badge px-2 py-1 mb-3" 
                                 :class="{'badge-warning':post.job_type.job_type == 'FullTime',
@@ -472,6 +472,7 @@ export default {
 }
 .post-header .col-2{
     padding-left:10px !important;
+    text-align: center;
 }
 .post-main {
     word-break: break-all;
@@ -613,7 +614,7 @@ export default {
     }
 
 }
-@media (max-width:667px){
+@media (max-width:767px){
     .pc-view{
         display: none;
     }
