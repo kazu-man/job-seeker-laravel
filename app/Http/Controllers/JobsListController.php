@@ -8,12 +8,14 @@ use App\Model\Like;
 use App\Model\Scout;
 use App\Model\Company;
 use App\Model\Message;
+use App\Model\MessageNoticeModel;
 use App\Model\Profile;
 use App\Model\Experience;
 use App\Model\ApplyRecord;
 use App\Mail\MailController;
 use App\Model\JobDescription;
 use App\Model\Interview;
+use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -362,10 +364,6 @@ class JobsListController extends Controller
         $user = Auth::User();
 
         $applyRecord = ApplyRecord::where("id",$id)->with('user.profile')->with('job')->first();
-        \Log::info("Single Apply Record");
-
-        \Log::info($id);
-        \Log::info($applyRecord);
 
         $res = [
             "id" => $applyRecord->id,
@@ -379,9 +377,6 @@ class JobsListController extends Controller
             "companyLogo" => $applyRecord->job->company->company_image,
             "companyName" => $applyRecord->job->company->company_name
         ];        
-        
-        \Log::info($res);
-
         
         return $res;
 
@@ -399,7 +394,6 @@ class JobsListController extends Controller
         DB::transaction(function () use ($messages) {
 
             $user = Auth::User();
-
             foreach($messages as $message){
                 if($message->checked == 0 && $message->sent_to == $user->user_type){
                     $message->checked = 1;
@@ -472,8 +466,22 @@ class JobsListController extends Controller
                 Mail::to($to)
                 ->send(new MailController($mailName, $text, $view, $data));  
             }
-
             $newMessage->save();
+
+            $targetMessage = Message::where("id",$newMessage->id)->with("ApplyRecord.user")->with("ApplyRecord.job.company")->first();
+            $notice = new MessageNoticeModel();
+
+            if($userType == "C"){
+                $notice->toId = $targetMessage->applyRecord->user->id;
+            }else{
+                $notice->toId = $targetMessage->applyRecord->job->company->user_id;
+            }
+
+            $notice->date = $targetMessage->created_at;
+            $notice->applyId = $targetMessage->applyRecord->id;
+            //PUSHERに通知
+            event(new MessageSent($user, $notice));
+
             return "message sent";
         });
 
@@ -484,7 +492,6 @@ class JobsListController extends Controller
         if($user == null){
             return false;
         }
-        \Log::info($user);
         $userId = $user->id;
         $userType = $user->user_type;
         $messages = 0;
@@ -495,6 +502,7 @@ class JobsListController extends Controller
                         ->where('messages.checked',0)
                         ->where('apply_records.user_id',$userId)
                         ->count();
+
         }else if($userType == "C"){
             $companyid = $user->company->id;;
 

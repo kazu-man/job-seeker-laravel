@@ -15,6 +15,8 @@
             " size="40"></spinner>
         </div>
 
+        <mailAlert ref="mailAlert" :loginCheck="loginCheck" :loginUser="loginUser"></mailAlert>
+
         <side-header-component v-slot:default="slotProps" ref="header" :selectedMenuType="selectedMenuType">
             <span  class="menu-btn hide" @click="changeMenuType('normal')" :key="'toggle1'">Menu</span>
             <span  v-if="loginCheck && loginUser != null &&loginUser.user_type == 'A'" class="menu-btn hide setting" @click="changeMenuType('admin')" :key="'toggle2'">Setting</span>
@@ -139,6 +141,7 @@
 
 <script>
 import modal from '../common/ModalComponent.vue';
+import mailAlert from '../common/MailAlertComponent.vue';
 import { VueLoading } from 'vue-loading-template'
 
 export default {
@@ -159,6 +162,7 @@ export default {
             loading:false,
             init:true,
             changeBgShow:true,
+            test:false
             // categories:null,
             // countries:null,
             // placeData:"",
@@ -389,6 +393,13 @@ export default {
         },
         changeBg:function(){
             this.changeBgShow = !this.changeBgShow;
+        },
+        //チャットの通信を開始
+        startListen:function(){
+            console.log("start listenning")
+            Echo.channel("chat").listen("MessageSent", e => {
+                this.$store.commit('common/setLiveMessage', e);                
+            });
         }
     },
     watch:{
@@ -419,7 +430,14 @@ export default {
         },
         loadingFlg:function(newVal,old){
             this.loading = newVal;
+        },
+        liveMessage:function(val,old){
+            if(this.loginCheck && this.loginUser != undefined && this.loginUser.id == val.message.toId){
+                console.log("message to this user!!")
+                this.$store.dispatch('auth/getNewMessageExistFlg');
+            }
         }
+
         
     },
     computed: {
@@ -485,15 +503,21 @@ export default {
         },
         placeData:function(){
             return this.$store.getters['auth/placeData'];
-        }
+        },
+        liveMessage:function(){
+            return this.$store.state.common.liveMessage;
+        },
+
     },
     created : function() {
         this.initData();
         this.scrollTop();
+        this.startListen();
     },
     components: {
         modal,
-        VueLoading
+        VueLoading,
+        mailAlert
     },
     filters: {
         omittedText(text) {

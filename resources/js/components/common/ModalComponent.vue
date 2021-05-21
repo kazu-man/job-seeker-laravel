@@ -1304,7 +1304,11 @@ export default {
         },
         interviewCancelTarget:function(){
             return this.$store.state.common.interviewCancelTarget;
-        }
+        },
+        liveMessage:function(){
+            return this.$store.state.common.liveMessage;
+        },
+
 
 
 
@@ -1384,9 +1388,17 @@ export default {
 
         },
         messagesList:function(){
+            if(document.getElementById("messages-area") == undefined){
+                return;
+            }
             setTimeout(() => {
                 this.scrollBottomOfMessage();
             },50);
+        },
+        liveMessage:function(val,old){
+            if(document.getElementById("messages-area") != undefined && this.applyRecord != undefined && this.applyRecord.id == val.message.applyId){
+                this.$store.dispatch('common/refreshMessage', val.message.applyId);
+            }
         }
     },
     props:["jobTypes","category"],

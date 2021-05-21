@@ -15,7 +15,8 @@ const state = {
     scoutInfo:null,
     scoutedIds:[],
     loadingFlg:false,
-    interviewCancelTarget:[]
+    interviewCancelTarget:[],
+    liveMessage:null
   }
     
 const mutations = {
@@ -67,7 +68,12 @@ const mutations = {
     setInterviewCancelTarget(state, target){
         state.interviewCancelTarget = target
 
+    },
+    setLiveMessage(state, target){
+        state.liveMessage = target
+
     }
+
 
 }
 

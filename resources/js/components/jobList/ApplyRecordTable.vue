@@ -103,7 +103,6 @@ export default {
     },
     methods:{
         getApplyRecords(){
-            this.loading = true;
             axios.get('/api/getApplyRecords').then(res => {
                 this.rows = res.data;
                 console.log('getApplyRecords');
@@ -138,7 +137,25 @@ export default {
 
         }
     },
+    computed:{
+        liveMessage:function(){
+            return this.$store.state.common.liveMessage;
+        },
+        loginUser:function() {
+            return this.$store.state.auth.user;
+        },
+
+    },
+    watch:{
+        liveMessage:function(val,old){
+            if(this.loginUser != undefined && this.loginUser.id == val.message.toId){
+                this.getApplyRecords();
+            }
+        },
+        
+    },
     mounted:function() {
+        this.loading = true;
         this.getApplyRecords();
     },
     components: {
