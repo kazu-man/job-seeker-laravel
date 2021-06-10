@@ -4,7 +4,6 @@
 
 
     <div class="job-register-area">  
-            <video-chat-component></video-chat-component>
         <div class="form-group title-form">
             <label>
                 Job Title: 
