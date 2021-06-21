@@ -14,6 +14,10 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->app->bind('App\Services\JobListService'); 
+        $this->app->bind('App\Services\PostService'); 
+        $this->app->bind('App\Services\InterviewService'); 
+        
     }
 
     /**

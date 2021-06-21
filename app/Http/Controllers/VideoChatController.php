@@ -8,8 +8,8 @@ use Pusher\Pusher;
 class VideoChatController extends Controller
 {
 
-    public function auth(Request $request) {    // Pusherの認証
-        \Log::info("kokodoorimasu");
+    // Pusherの認証
+    public function auth(Request $request) { 
         $user = $request->user();
         $socket_id = $request->socket_id;
         $channel_name = $request->channel_name;

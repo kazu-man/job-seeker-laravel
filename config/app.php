@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         // Google Login Api
         Laravel\Socialite\SocialiteServiceProvider::class,
+        App\Providers\JobSeekerServiceProvider::class,
 
     ],
 
@@ -229,6 +230,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         //Google Logint Api
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'JobListService' => App\Facades\JobListServiceFacade::class,
+        'PostService' => App\Facades\PostServiceFacade::class,
+        'InterviewService' => App\Facades\InterviewServiceFacade::class,
 
     ],
 

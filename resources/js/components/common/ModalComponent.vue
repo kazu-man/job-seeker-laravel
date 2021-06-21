@@ -982,7 +982,7 @@ export default {
             axios.post('/api/apply', data).then(res => {
 
                 this.$store.commit('common/setLoadingFlg', false);
-
+                console.log(res);
                 if(res.data.status != null){
                     this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:res.data.status});
                     return;
