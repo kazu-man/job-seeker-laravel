@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use DB;
-
+use App\Http\Requests\InterviewRequest;
 
 class DefaultUser {
     public $userType = 'NoLogin';
@@ -290,7 +290,8 @@ class JobsListController extends Controller
         }
     }
 
-    public function setUpInterview(Request $request){
+    public function setUpInterview(InterviewRequest $request){
+
         $date = $request->input('interviewDate');
         $time = $request->input('interviewTime');
         $duration = $request->input('interviewDuration');

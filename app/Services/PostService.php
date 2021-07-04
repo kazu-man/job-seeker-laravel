@@ -127,13 +127,7 @@ class PostService {
 
                 $this->videoUpload($video);
             }
-            $updatedPost = Job::with('company')
-            ->with('category')
-            ->with('city.province.country')
-            ->with('jobType')
-            ->with('jobDescription')
-            ->with('jobTagRelations.tag')
-            ->with('address')
+            $updatedPost = $this->getPostQuery()
             ->where('id',$job->id)
             ->first();
 
@@ -326,8 +320,6 @@ class PostService {
     //全文検索でポストを検索・取得
     public function getPosts(Request $request){
 
-        \Log::info("SCOUT SEARCH");
-
         $pageType = $request->input('pageType');
         $keyWord = $request->input('keyWord');
         $countryName = $request->input('countryName');
@@ -411,7 +403,8 @@ class PostService {
 
         $list = $list
         ->paginate(100);
-
+        
+        //リレーションを取得
         $loaded = $list->load('company')
         ->load('category')
         ->load('city.province.country')
@@ -426,6 +419,19 @@ class PostService {
         \Log::info($time);
         
         return $list;
+    }
+
+    //post表示字共通で使うクエリ
+    public function getPostQuery(){
+
+        return Job::with('company')
+        ->with('category')
+        ->with('city.province.country')
+        ->with('jobType')
+        ->with('jobDescription')
+        ->with('jobTagRelations.tag')
+        ->with('address');
+
     }
 
 }

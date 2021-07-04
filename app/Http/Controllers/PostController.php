@@ -24,49 +24,28 @@ use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
 use DB;
 use Laravel\Scout\Builder;
+use App\Http\Requests\PostRequest;
 
 class PostController extends Controller
 {
     //新規追加
-    public function registerJob(Request $request){
+    public function registerJob(PostRequest $request){
         
         return \PostService::saveJob($request);
      
     }
 
     // 更新
-    public function updatePost(Request $request){
-
-        $this->validate($request,[
-            'title' => 'required',
-            'salary' => 'required',
-            'category' => 'required',
-            'city' => 'required',
-            'type' => 'required',
-            'type' => [function($attribute, $value, $fail){
-                if($value < 1 && $value > 3){
-                    return $fail('エラーが発生しました。');
-                }
-            },
-            'required',
-            ]
-
-        ]);
-
+    public function updatePost(PostRequest $request){
+        
         $updatedPost = \PostService::updatePost($request);
         return [ "updatedPost" => $updatedPost ];
     }
 
     //単一ポストの取得
     public function getSinglePost($id){
-        $result = Job::with('company')
-        ->with('category')
-        ->with('city.province.country')
-        ->with('jobType')
-        ->with('jobDescription')
+        $result = \PostService::getPostQuery()
         ->where('id',$id)
-        ->with('jobTagRelations.tag')
-        ->with('address')
         ->get();
 
         return $result;
@@ -96,13 +75,7 @@ class PostController extends Controller
 
         }
 
-        $query = Job::with('company')
-        ->with('category')
-        ->with('city.province.country')
-        ->with('jobType')
-        ->with('jobDescription')
-        ->with('jobTagRelations.tag')
-        ->with('address');
+        $query = \PostService::getPostQuery();
 
         //アプライリスト
         if($applies){
