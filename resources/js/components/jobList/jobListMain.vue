@@ -135,11 +135,13 @@
         </transition>
 
         <modal ref="modal" :placeData="placeData" :category="categories" :jobTypes="jobTypes"></modal>
+        <scrollTop></scrollTop>
     </div>
 </template>
 
 
 <script>
+import scrollTop from '../common/GoTopComponent.vue';
 import modal from '../common/ModalComponent.vue';
 import mailAlert from '../common/MailAlertComponent.vue';
 import { VueLoading } from 'vue-loading-template'
@@ -517,7 +519,8 @@ export default {
     components: {
         modal,
         VueLoading,
-        mailAlert
+        mailAlert,
+        scrollTop
     },
     filters: {
         omittedText(text) {
