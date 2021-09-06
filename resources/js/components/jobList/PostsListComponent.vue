@@ -132,11 +132,15 @@ export default {
                 }
                 console.log('getPost');
                 console.log(res.data);
-                this.countUp(this.posts.length);
+                this.countUp(res.data.total);
                 this.loading = false;
             })
             .catch(res => {
-                  window.location.href = store.getters['auth/routePath'];
+                if(store.getters['auth/routePath'] == undefined){
+                    window.location.reload();
+                }else{
+                    window.location.href = store.getters['auth/routePath'];
+                }
             });
         },
         init:function(){
