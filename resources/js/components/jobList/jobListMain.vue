@@ -108,6 +108,12 @@
                             :key="'scoutListTitle'" v-bind:class="{selectedBg:selectedMenu == 'scoutList'}">Scout List</div>
 
                         </div>
+
+                        <div class="about" :key="'about'">
+                            <div class="menu-title" @click="switchMenu('about')" 
+                                :key="'about'" v-bind:class="{selectedBg:selectedMenu == 'about'}">About this page</div>
+
+                        </div>
                 </transition-group>
                     </div>
             </section>
@@ -344,6 +350,16 @@ export default {
                     this.loading = false;
                 })
                 .catch(()=>{});
+            }else if(selectVal == "about"){
+                await this.$router.push(`${this.routePath}/about`)
+                .then(() => {
+                    this.menuClear();
+                    this.scrollTop();
+                    this.selectedContentsBg = this.selectedMenu;
+                    this.loading = false;
+                })
+                .catch(()=>{
+                });
             }
 
             if(this.loading ){
@@ -478,7 +494,8 @@ export default {
                     || this.selectedContentsBg == 'setting/category'
                     || this.selectedContentsBg == 'setting/users'
                     || this.selectedContentsBg == 'scoutList'
-                    || this.selectedContentsBg == 'sendScout',
+                    || this.selectedContentsBg == 'sendScout'
+                    || this.selectedContentsBg == 'about',
                 countryBg:(this.selectedContentsBg == 'country' && this.selectedCountry != '' )
             }
         },
@@ -760,6 +777,16 @@ export default {
     opacity: 0.5;
     z-index: 9999999;
     position: fixed;
+}
+
+.about{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.about .menu-title{
+    font-size: 13px;
 }
 
 </style>

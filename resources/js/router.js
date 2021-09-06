@@ -17,6 +17,7 @@ import AdminPlaceShowComponent from './components/setting/AdminPlaceShowComponen
 import SearchUserComponent from './components/jobList/SearchUserComponent.vue'
 import MyScoutListComponent from './components/jobList/MyScoutListComponent.vue'
 import VideoChat from './components/common/VideoChat.vue'
+import About from './components/jobList/AboutComponent.vue'
 
 import store from './store' 
 import { UNAUTHORIZED } from './util'
@@ -40,6 +41,11 @@ const routes = [
             path: 'top',
             props: { pageType: "top",initPage: "top" },
             component: top
+          },
+          {
+            path: 'about',
+            props: { pageType: "about",initPage: "about" },
+            component: About
           },    
           {
             path: 'password/reset/:token',

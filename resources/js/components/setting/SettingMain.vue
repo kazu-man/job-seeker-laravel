@@ -87,6 +87,7 @@ export default {
     opacity:0.95;
     max-width:800px;
     margin:0 auto 50px auto;
+    position:relative;
 }
 /* 表示・非表示アニメーション中 */
 .v-enter-active{
