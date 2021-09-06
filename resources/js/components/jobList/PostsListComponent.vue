@@ -210,6 +210,7 @@ export default {
                 this.searchInfo.categoryId = ""
                 this.searchInfo.jobTypeId = ""
                 this.searchInfo.keyWord = ""
+                this.searchInfo.tagList = ""
         },
         interviewModal:function(){
             this.$store.dispatch('common/setInterviewModal')

@@ -12,6 +12,8 @@ use App\Model\JobTagRelation;
 use App\Model\Scout;
 use App\Model\ScoutJobRelation;
 use App\Model\Address;
+use App\Model\Country;
+use App\Model\Category;
 use Illuminate\Http\Request;
 use App\Model\JobDescription;
 use Illuminate\Support\Carbon;
@@ -319,7 +321,6 @@ class PostService {
     
     //全文検索でポストを検索・取得
     public function getPosts(Request $request){
-
         $pageType = $request->input('pageType');
         $keyWord = $request->input('keyWord');
         $countryName = $request->input('countryName');
@@ -354,12 +355,20 @@ class PostService {
         if($countryName != null && $countryName != ""){
             \Log::info("countryName = " . $countryName);
 
-            $list = $list->where('country',$countryName);
+            $selectedCountry = Country::where("country_name",$countryName)->first();
+            $countryId = $selectedCountry != null ? $selectedCountry->id : "";
+        }
+
+        if($countryId != null && $countryId != ""){
+            \Log::info("countryId = " . $countryId);
+            $list = $list->where('country_id',$countryId);
         }
 
         if($categoryName != null && $categoryName != ""){
             \Log::info("categoryName = " . $categoryName);
-            $list = $list->where('category',$categoryName);
+            $selectedCategory = Category::where("category_name",$categoryName)->first();
+            $categoryId = $selectedCategory != null ? $selectedCategory->id : "";
+
         }
 
         if($categoryId != null && $categoryId != ""){
