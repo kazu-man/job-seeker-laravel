@@ -8,14 +8,14 @@
             <label>
                 Job Title: 
             </label>
-            <input type="text" name="title" v-model="title" class="form-control">
+            <input type="text" name="title" v-model="job_title" class="form-control">
         </div>
         <div class="form-group salary-form">
 
             <label>
                 Anual Salary: 
             </label>
-            <input type="text" name="salary" v-model="salary" class="form-control">
+            <input type="text" name="salary" v-model="annual_salary" class="form-control">
         </div>
 
         <div class="form-group place-form">
@@ -93,8 +93,8 @@
 export default {
     data() {
         return {
-            title:'',
-            salary:'',
+            job_title:'',
+            annual_salary:'',
             type:'',
             category:'',
             city:'',
@@ -110,8 +110,8 @@ export default {
     methods: {
         postData() {
             var data = {
-                            title:this.title,
-                            salary:this.salary,
+                            job_title:this.job_title,
+                            annual_salary:this.annual_salary,
                             type:this.type,
                             city:this.city,
                             description:this.description,

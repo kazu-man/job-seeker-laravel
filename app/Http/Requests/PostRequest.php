@@ -33,8 +33,8 @@ class PostRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required',
-            'salary' => 'required',
+            'job_title' => 'required',
+            'annual_salary' => 'required',
             'category' => 'required',
             'city' => 'required',
             'type' => 'required',

@@ -219,9 +219,9 @@ export default {
         initFlg:true,
         hidePost:false,
         editForm:{
-            jobId:'',
-            title:'',
-            salary:'',
+            id:'',
+            job_title:'',
+            annual_salary:'',
             type:'',
             category:'',
             city:'',
@@ -317,15 +317,13 @@ export default {
         setEditForm:function(){
             this.editFlg = !this.editFlg;
 
-            this.editForm.jobId = this.post.id;
-            this.editForm.title = this.post.job_title;
-            this.editForm.salary = this.post.annual_salary;
+            //オブジェクトをコピー
+            this.editForm = JSON.parse(JSON.stringify(this.post));
+
             this.editForm.description = this.post.job_description.description;
             this.editForm.requirement = this.post.job_description.requirement;
             this.editForm.benefit = this.post.job_description.benefit;
             this.editForm.experience = this.post.job_description.experience;
-            this.editForm.city = this.post.city;
-
             this.editForm.type = this.post.job_type.id;
             this.editForm.category = this.post.category.id;
 
@@ -336,7 +334,6 @@ export default {
             this.editForm.tagList = tagList;
 
             this.editForm.addressObj = this.post.address != null ? this.post.address : this.defaultAddressObj;
-            this.editForm.videoUrl = this.post.video_url;
             this.videoOptions.sources[0].src = this.post.video_url;
             this.$store.dispatch('common/setEditForm', this.editForm);
         },

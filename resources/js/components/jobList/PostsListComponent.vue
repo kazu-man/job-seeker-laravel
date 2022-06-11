@@ -101,8 +101,6 @@ export default {
         },
         getPostList:function(page = 1){
 
-            console.log("function getPostList");
-            console.log(this.searchInfo);
             this.count = 0;
             //再建策の場合は初期化
             if(page == 1){
@@ -121,7 +119,6 @@ export default {
                 if(this.searchInfo.pageType == 'applies'){
                     this.posts.forEach(post => {
                         var newMessageFlg = false;
-                        console.log("post")
                         for(var message of post.apply_records[0].messages){
                             if(message.checked == 0 && message.sent_to == "U"){
                                 newMessageFlg = true; 
@@ -130,8 +127,6 @@ export default {
                         post["newMessageFlg"] = newMessageFlg;
                     });
                 }
-                console.log('getPost');
-                console.log(res.data);
                 this.countUp(res.data.total);
                 this.loading = false;
             })
@@ -190,31 +185,21 @@ export default {
             this.getPostList();
         },
         commitSearchKeys:function(searchKeys){
-                this.searchInfo.cityId = searchKeys.cityId
-                this.searchInfo.countryId = searchKeys.countryId
-                this.searchInfo.provinceId = searchKeys.provinceId
-                this.searchInfo.categoryId = searchKeys.categoryId
-                this.searchInfo.jobTypeId = searchKeys.jobTypeId
-                this.searchInfo.keyWord = searchKeys.keyWord
-                this.searchInfo.tagList = searchKeys.tagList
-                this.getPostList();
+
+            Object.entries(searchKeys).forEach(([infoKey]) => {
+                this.searchInfo[infoKey] = searchKeys[infoKey]
+            });
+
+            this.getPostList();
         },
         searchInfoClear:function(){
-                this.searchInfo.pageType = ""
-                this.searchInfo.searchedBy = ""
-                this.searchInfo.companyId = ""
-                this.searchInfo.countryName = ""
-                this.searchInfo.categoryName = ""
-                this.searchInfo.categoryId = ""
-                this.searchInfo.likes = false
-                this.searchInfo.applies = false
-                this.searchInfo.cityId = ""
-                this.searchInfo.countryId = ""
-                this.searchInfo.provinceId = ""
-                this.searchInfo.categoryId = ""
-                this.searchInfo.jobTypeId = ""
-                this.searchInfo.keyWord = ""
-                this.searchInfo.tagList = ""
+
+            Object.keys(this.searchInfo).forEach((val) => {
+                this.searchInfo[val] = ""
+            });
+            this.searchInfo.likes = false
+            this.searchInfo.applies = false
+
         },
         interviewModal:function(){
             this.$store.dispatch('common/setInterviewModal')
@@ -225,7 +210,6 @@ export default {
             this.postsInDisplay ++;
             var lastFlg = this.postsInDisplay % 90;
             if(lastFlg  == 0){
-                console.log("一番下！");
                 var nextPage = this.postsInDisplay / 90 + 1;
                 this.getPostList(nextPage);
             }
@@ -254,20 +238,9 @@ export default {
 
                 if(post.id == this.updatedPost.id){
 
-                    post.id = this.updatedPost.id;
-                    post.job_title = this.updatedPost.job_title;
-                    post.annual_salary = this.updatedPost.annual_salary;
-                    post.job_description.description = this.updatedPost.job_description.description;
-                    post.job_description.requirement = this.updatedPost.job_description.requirement;
-                    post.job_description.benefit = this.updatedPost.job_description.benefit;
-                    post.job_description.experience = this.updatedPost.job_description.experience;
-                    post.city = this.updatedPost.city;
-                    post.category = this.updatedPost.category;
-                    post.job_type = this.updatedPost.job_type;
-                    post.job_status = this.updatedPost.job_status;
-                    post.job_tag_relations = this.updatedPost.job_tag_relations;
-                    post.address = this.updatedPost.address;
-                    post.video_url = this.updatedPost.video_url;
+                    Object.entries(post).forEach(([key]) => {
+                        post[key] = this.updatedPost[key];
+                    });
 
                     break;
                 }

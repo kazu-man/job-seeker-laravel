@@ -38,7 +38,7 @@ class PostService {
             $description->requirement = $request->input('requirement');
             $description->benefit = $request->input('benefit');
             $description->experience = $request->input('experience');
-            $description->job_title = $request->input('title');
+            $description->job_title = $request->input('job_title');
             $video = $request->input('videoFile');
             
             $description->save();
@@ -46,8 +46,8 @@ class PostService {
             $newDescriptionId = $description->id;
 
 
-            $job->job_title = $request->input('title');
-            $job->annual_salary = $request->input('salary');
+            $job->job_title = $request->input('job_title');
+            $job->annual_salary = $request->input('annual_salary');
             $job->job_description_id = $newDescriptionId;
             $job->company_id = $request->input('company');
             $job->category_id = $request->input('category');
@@ -78,7 +78,7 @@ class PostService {
         return DB::transaction(function () use ($request) {
 
             // \Log::info($request->all());
-            $jobId = $request->input('jobId');
+            $jobId = $request->input('id');
 
             $job = Job::find($jobId);
             $description = JobDescription::find($job->job_description_id);
@@ -89,12 +89,12 @@ class PostService {
             $description->requirement = $request->input('requirement');
             $description->benefit = $request->input('benefit');
             $description->experience = $request->input('experience');
-            $description->job_title = $request->input('title');
+            $description->job_title = $request->input('job_title');
 
             $description->save();
 
-            $job->job_title = $request->input('title');
-            $job->annual_salary = $request->input('salary');
+            $job->job_title = $request->input('job_title');
+            $job->annual_salary = $request->input('annual_salary');
             // $job->job_description_id = $description->id;
             // $job->company_id = $request->input('company');
             $job->category_id = $request->input('category');

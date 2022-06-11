@@ -78,12 +78,9 @@
       props:['countries','initPage','placeData','categories','jobTypes'],
       methods: {
         changeSelectedCategory:function(val){
-          console.log(val);
           this.searchKeys.categoryId = val;
         },
         changeSelectedPlace:function(val){
-          console.log("val");
-          console.log(val);
           this.searchKeys.cityId = "";
           this.searchKeys.provinceId = "";
           this.searchKeys.countryId = "";
@@ -97,7 +94,6 @@
           }
         },
         changeSelectedType:function(val){
-          console.log(val);
           this.searchKeys.jobTypeId = val;
         },
         refreshList:function(){
@@ -109,14 +105,9 @@
           this.$emit('changeCountry',val)
         },
         searchKeysClear:function(){
-          this.searchKeys = {
-              cityId:"",
-              countryId:"",
-              provinceId:"",
-              categoryId:"",
-              jobTypeId:"",
-              keyWord:""
-          }
+            Object.keys(this.searchKeys).forEach((val) => {
+                this.searchKeys[val] = ""
+            });
         }
 
       },

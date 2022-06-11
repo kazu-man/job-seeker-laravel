@@ -64,9 +64,9 @@
                     </div>
 
                     <select-experience-component 
-                    　@selectExperience="changeSelectedCategory" 
-                    　@addExForm="addExForm"
-                    　:experiences="profileForm.experiences"></select-experience-component>
+                    @selectExperience="changeSelectedCategory" 
+                    @addExForm="addExForm"
+                    :experiences="profileForm.experiences"></select-experience-component>
 
                     <div class="form-group" style="padding-top: 10px;">
                         <label for="">Experience Details</label>
@@ -106,7 +106,6 @@
 
 <script>
 import methodMixIn from '../common/CommonMethodsMixIn.vue';
-import { OK} from '../../util';
 
 export default {
     data() {
@@ -163,27 +162,25 @@ export default {
 
                 this.$store.dispatch('auth/currentUser');
                 this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'プロフィールを更新しました。'});
-                console.log(res.data);
             })
         },
         getProfile() {
             axios.get('/api/getProfile').then(res => {
-                var data = res.data;
-                console.log(data.experiences);
-                if(data.profileType == 'U'){
-                    this.profileForm.experience = data.experience != undefined ? data.experience : "" ;
-                    this.profileForm.skill = data.skill != undefined ? data.skill : "" ;
-                    this.profileForm.gender = data.gender != undefined ? data.gender : "" ;
-                    this.profileForm.education = data.education != undefined ? data.education : "" ;
-                    this.currentResume = data.resume != undefined ? data.resume : "" ;
-                    if(data.experiences != undefined){
-                        this.profileForm.experiences = data.experiences ;
+
+                const {profileType,experiences,experience,skill,gender,education,resume,company_name,company_image} = res.data;
+
+                if(profileType == 'U'){
+                    this.profileForm.experience = experience != undefined ? experience : "" ;
+                    this.profileForm.skill = skill != undefined ? skill : "" ;
+                    this.profileForm.gender = gender != undefined ? gender : "" ;
+                    this.profileForm.education = education != undefined ? education : "" ;
+                    this.currentResume = resume != undefined ? resume : "" ;
+                    if(experiences != undefined){
+                        this.profileForm.experiences = experiences ;
                     }
-                    console.log('user profile');
-                }else if(data.profileType == 'C'){
-                    this.profileForm.companyName = data.company_name;
-                    this.currentLogo = data.company_image;
-                    console.log('company profile');
+                }else if(profileType == 'C'){
+                    this.profileForm.companyName = company_name;
+                    this.currentLogo = company_image;
                 }
             });
         },
@@ -201,8 +198,6 @@ export default {
             // 読み込み完了時の処理を追加
             fileReader.onload = function() {
                 newFile = this.result;
-                console.log("onload");
-                console.log(this.result);
                 vc.previewLogo = newFile;
             };
     
@@ -216,11 +211,8 @@ export default {
                 return;
             }
             this.profileForm.resume = target;
-            console.log(file);
-            console.log(file);
         },
         changePassModalUp:function(){
-            console.log('osita?');
             this.$store.commit('common/setModalTarget', 'changePassword');
         },
         resumeDownLoad(){
@@ -230,27 +222,26 @@ export default {
             }
             this.download(data);
         },
-        changeSelectedCategory:function(val,experience,index){
-
+        changeSelectedCategory:function(val,ex,index){
           this.profileForm.experiences[index].category_id = val;
 
         },
         addExForm:function(){
-            var length = this.profileForm.experiences.length;
             this.profileForm.experiences.push(
                 { 
-                        id : "", category_id : "", experience_years : "" 
+                    id : "", category_id : "", experience_years : "" 
                 }
             );
         }
 
     },
     created: function(){
-        this.profileForm.email = this.$store.state.auth.user.email != null ? this.$store.state.auth.user.email : "" ;
-        this.profileForm.accountName = this.$store.state.auth.user.name != null ? this.$store.state.auth.user.name : "" ;
-        this.profileForm.userLastname = this.$store.state.auth.user.user_lastname != null ? this.$store.state.auth.user.user_lastname : "" ;
-        this.profileForm.userFirstname = this.$store.state.auth.user.user_firstname != null ? this.$store.state.auth.user.user_firstname : "" ;
-        this.profileForm.userBirthday = this.$store.state.auth.user.user_birthday != null ? this.$store.state.auth.user.user_birthday : "" ;
+        const {email,name,user_lastname,user_firstname,user_birthday} = this.$store.state.auth.user;
+        this.profileForm.email = email != null ? email : "" ;
+        this.profileForm.accountName = name != null ? name : "" ;
+        this.profileForm.userLastname = user_lastname != null ? user_lastname : "" ;
+        this.profileForm.userFirstname = user_firstname != null ? user_firstname : "" ;
+        this.profileForm.userBirthday = user_birthday != null ? user_birthday : "" ;
         this.getProfile();
     },
     mixins:[methodMixIn],

@@ -214,14 +214,14 @@
                             <label>
                                 Job Title: 
                             </label>
-                            <input type="text" name="title" v-model="editPostForm.title" class="form-control">
+                            <input type="text" name="title" v-model="editPostForm.job_title" class="form-control">
                         </div>
                         <div class="form-group salary-form">
 
                             <label>
                                 Anual Salary: 
                             </label>
-                            <input type="text" name="salary" v-model="editPostForm.salary" class="form-control">
+                            <input type="text" name="salary" v-model="editPostForm.annual_salary" class="form-control">
                         </div>
 
                         <div class="form-group place-form">
@@ -285,7 +285,7 @@
                         <label>
                             Video: 
                         </label>
-                        <video-upload-component ref="videoUploadComponent" :initVideo="editPostForm.videoUrl"></video-upload-component>                      
+                        <video-upload-component ref="videoUploadComponent" :initVideo="editPostForm.video_url"></video-upload-component>                      
 
                         <div class="form-group submit-form">
                             <button class="btn submit-btn" @click="updatePost" v-bind:disabled="mapLoading">Submit</button>       
@@ -762,9 +762,9 @@ export default {
         },
 
         editPostForm:{
-            jobId:'',
-            title:'',
-            salary:'',
+            id:'',
+            job_title:'',
+            annual_salary:'',
             type:'',
             category:'',
             city:'',
@@ -928,30 +928,15 @@ export default {
         },
         initEditPostModal:function(){
             var postInfo = this.$store.state.common.editPost;
-            this.editPostForm.jobId = postInfo.jobId;
-            this.editPostForm.title = postInfo.title;
-            this.editPostForm.salary = postInfo.salary;
-            this.editPostForm.description = postInfo.description;
-            this.editPostForm.requirement = postInfo.requirement;
-            this.editPostForm.benefit = postInfo.benefit;
-            this.editPostForm.experience = postInfo.experience;
-            this.editPostForm.type = postInfo.type;
-            this.editPostForm.category = postInfo.category;
-            this.editPostForm.city = postInfo.city;
-            this.editPostForm.tagList = postInfo.tagList;
-            this.editPostForm.addressObj = postInfo.addressObj;
-            console.log("postInfo.addressObj");
-            console.log(postInfo.addressObj);
+            this.editPostForm = postInfo;
             if(postInfo.addressObj != null && postInfo.addressObj != undefined){
                 this.editPostForm.latLng =  { lat: postInfo.addressObj.lat, lng: postInfo.addressObj.lng } ;
             }
-            this.editPostForm.videoUrl = postInfo.videoUrl;
 
         },
         updatePost:function(){
-            var tc = this;
-            this.editPostForm.tagList = this.$refs.selectTagComponent.selectedTagList;
 
+            this.editPostForm.tagList = this.$refs.selectTagComponent.selectedTagList;
             this.editPostForm.latLng = this.$refs.placeShowComponent.lastMarkerPosition,
             this.editPostForm.mapFlg = this.$refs.placeShowComponent.mapShow
             this.editPostForm.videoFile = this.$refs.videoUploadComponent.uploadVideoUrl;
