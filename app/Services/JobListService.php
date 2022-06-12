@@ -227,7 +227,6 @@ class JobListService {
 
             $applyRecord->user_id = $userId;
             $applyRecord->job_id = $postId;
-            // $applyRecord->company_id = $companyid;
             $applyRecord->apply_date = Carbon::now();
 
             $applyRecord->save();

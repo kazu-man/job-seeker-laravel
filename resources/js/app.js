@@ -3,32 +3,30 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-import './bootstrap'
+import "./bootstrap";
 // require('./bootstrap');
-import Vue from 'vue'
-import Vuetify from 'vuetify';
-
+import Vue from "vue";
+import Vuetify from "vuetify";
 
 Vue.use(VModal);
 Vue.use(VueGoogleMaps, {
     load: {
         key: process.env.MIX_APP_GOOGLE_MAP_KEY,
-        libraries: 'places',
-        region: 'JP',
-        language: 'ja'
+        libraries: "places",
+        region: "JP",
+        language: "ja"
     }
-})
+});
 Vue.use(Geocoder, {
     defaultCountryCode: null, // e.g. 'CA'
-    defaultLanguage:    null, // e.g. 'en'
-    defaultMode:        'address', // or 'lat-lng'
-    googleMapsApiKey:   process.env.MIX_APP_GOOGLE_MAP_KEY
+    defaultLanguage: null, // e.g. 'en'
+    defaultMode: "address", // or 'lat-lng'
+    googleMapsApiKey: process.env.MIX_APP_GOOGLE_MAP_KEY
 });
 
 Vue.use(Vuetify);
 
-window.Vue = require('vue');
-
+window.Vue = require("vue");
 
 /**
  * The following block of code may be used to automatically register your
@@ -41,18 +39,48 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('place-show-component', require('./components/setting/PlaceShowComponent.vue').default);
-Vue.component('place-show-component2', require('./components/common/PlaceShowComponent2.vue').default);
-Vue.component('side-header-component', require('./components/common/SideHeaderComponent.vue').default);
-Vue.component('select-box-component', require('./components/common/SelectBox.vue').default);
-Vue.component('posts-component', require('./components/jobList/PostComponent.vue').default);
-Vue.component('select-tag-component', require('./components/common/SelectTagComponent.vue').default);
-Vue.component('tag-component', require('./components/common/TagComponent.vue').default);
-Vue.component('select-experience-component', require('./components/common/SelectExperienceComponent.vue').default);
-Vue.component('video-upload-component', require('./components/common/VideoUploadComponent.vue').default);
-Vue.component('video-chat-component', require('./components/common/VideoChat.vue').default);
+Vue.component(
+    "place-show-component",
+    require("./components/setting/PlaceShowComponent.vue").default
+);
+Vue.component(
+    "place-show-component2",
+    require("./components/common/PlaceShowComponent2.vue").default
+);
+Vue.component(
+    "side-header-component",
+    require("./components/common/SideHeaderComponent.vue").default
+);
+Vue.component(
+    "select-box-component",
+    require("./components/common/SelectBox.vue").default
+);
+Vue.component(
+    "posts-component",
+    require("./components/jobList/PostComponent.vue").default
+);
+Vue.component(
+    "select-tag-component",
+    require("./components/common/SelectTagComponent.vue").default
+);
+Vue.component(
+    "tag-component",
+    require("./components/common/TagComponent.vue").default
+);
+Vue.component(
+    "select-experience-component",
+    require("./components/common/SelectExperienceComponent.vue").default
+);
+Vue.component(
+    "video-upload-component",
+    require("./components/common/VideoUploadComponent.vue").default
+);
+Vue.component(
+    "video-chat-component",
+    require("./components/common/VideoChat.vue").default
+);
 
-Vue.component('spinner', require('vue-simple-spinner'));
+Vue.component("spinner", require("vue-simple-spinner"));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -61,34 +89,33 @@ Vue.component('spinner', require('vue-simple-spinner'));
  */
 
 // ルーティングの定義をインポートする
-import router from './router'
+import router from "./router";
 // // ルートコンポーネントをインポートする
-import App from './App.vue'
+import App from "./App.vue";
 
-import VModal from 'vue-js-modal'
-import store from './store'
-import * as VueGoogleMaps from 'vue2-google-maps'   
+import VModal from "vue-js-modal";
+import store from "./store";
+import * as VueGoogleMaps from "vue2-google-maps";
 import Geocoder from "@pderas/vue2-geocoder";
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/dist/vuetify.min.css'
-import 'video.js/dist/video-js.css';
+import "@mdi/font/css/materialdesignicons.css";
+import "vuetify/dist/vuetify.min.css";
+import "video.js/dist/video-js.css";
 
 const createApp = async () => {
-    await store.dispatch('auth/currentUser')
-    
+    await store.dispatch("auth/currentUser");
+
     const app = new Vue({
-        el: '#app',
+        el: "#app",
         router, // ルーティングの定義を読み込む
         components: { App }, // ルートコンポーネントの使用を宣言する
-        template: '<App />', // ルートコンポーネントを描画する
+        template: "<App />", // ルートコンポーネントを描画する
         store,
         vuetify: new Vuetify({
             icons: {
-                iconfont: 'mdi', // 追加
-              },
-        }),
+                iconfont: "mdi" // 追加
+            }
+        })
     });
+};
 
-}
-
-createApp()
+createApp();

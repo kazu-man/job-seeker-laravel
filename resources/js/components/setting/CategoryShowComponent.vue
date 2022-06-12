@@ -1,158 +1,183 @@
 <template>
     <div>
-        <div class="component-title" :key="'title'" >Category List</div>
-        <div  class="category-show-area">
-                <spinner v-if="loading" style="
+        <div class="component-title" :key="'title'">Category List</div>
+        <div class="category-show-area">
+            <spinner
+                v-if="loading"
+                style="
                     position:absolute;
                     top:50%;
                     left:50%;
-                " size="40"
+                "
+                size="40"
                 line-fg-color="#f00"
-                ></spinner>
+            ></spinner>
 
-            <categoryRegisterComponent @loading="loadingChange"></categoryRegisterComponent>
-            <div v-show="listSize > 0" class="list-count">{{listSize}} registered</div>
-                <ul style="padding-left:0">
-            <transition-group class="flex">
-                    <li v-for="category in categories" :key="category.id + 'test' + category.created_at" @mouseover="mouseOverAction(category.id)" v-on:mouseleave="mouseLeaveAction(category.id)">
-                        <span v-if="hoverFlag && hoverIndex == category.id" @click="deleteCategory(category.id)" class="del-btn btn">X</span>
-                        <span v-else style="display:inline-block;width:20px;">{{category.id}}.</span> {{category.category_name}}
+            <categoryRegisterComponent
+                @loading="loadingChange"
+            ></categoryRegisterComponent>
+            <div v-show="listSize > 0" class="list-count">
+                {{ listSize }} registered
+            </div>
+            <ul style="padding-left:0">
+                <transition-group class="flex">
+                    <li
+                        v-for="category in categories"
+                        :key="category.id + 'test' + category.created_at"
+                        @mouseover="mouseOverAction(category.id)"
+                        v-on:mouseleave="mouseLeaveAction(category.id)"
+                    >
+                        <span
+                            v-if="hoverFlag && hoverIndex == category.id"
+                            @click="deleteCategory(category.id)"
+                            class="del-btn btn"
+                            >X</span
+                        >
+                        <span v-else style="display:inline-block;width:20px;"
+                            >{{ category.id }}.</span
+                        >
+                        {{ category.category_name }}
                     </li>
-            </transition-group>
-                </ul>
+                </transition-group>
+            </ul>
         </div>
-        </div>
+    </div>
 </template>
-
 
 <script>
 // var categoryRegisterComponent = Vue.component('categoryRegisterComponent', require('./CategoryRegisterComponent.vue').default);
-import categoryRegisterComponent from './CategoryRegisterComponent.vue'
+import categoryRegisterComponent from "./CategoryRegisterComponent.vue";
 
 export default {
-    data() {return{
-        hoverFlag:false,
-        hoverIndex:null,
-        loading:false
-    }},
-    props:[
-        "categories",
-    ],
-    components:{
-        categoryRegisterComponent,
+    data() {
+        return {
+            hoverFlag: false,
+            hoverIndex: null,
+            loading: false
+        };
     },
-    methods:{
-        mouseOverAction(i){
+    props: ["categories"],
+    components: {
+        categoryRegisterComponent
+    },
+    methods: {
+        mouseOverAction(i) {
             this.hoverIndex = i;
             this.hoverFlag = true;
-        },      
-        mouseLeaveAction(i){
+        },
+        mouseLeaveAction(i) {
             this.hoverIndex = i;
             this.hoverFlag = false;
         },
         deleteCategory(id) {
-            var data = {"id": id};
-            this.loading = true
-            axios.post('/api/category/delete', data).then(res => {
-                this.loading = false;
-                if(res.status == 503){
-                    this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:res.data.message});
-                    return false;
-                }
-                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'削除しました。'});
-                console.log(res.data);
-                this.$store.dispatch('auth/refreshCategories');
-            })
-            .catch(res => {
-                this.loading = false;
-
-            });
+            var data = { id: id };
+            this.loading = true;
+            axios
+                .post("/api/category/delete", data)
+                .then(res => {
+                    this.loading = false;
+                    if (res.status == 503) {
+                        this.$store.dispatch("common/alertModalUp", {
+                            data: res.status,
+                            successMessage: res.data.message
+                        });
+                        return false;
+                    }
+                    this.$store.dispatch("common/alertModalUp", {
+                        data: res.status,
+                        successMessage: "削除しました。"
+                    });
+                    this.$store.dispatch("auth/refreshCategories");
+                })
+                .catch(res => {
+                    this.loading = false;
+                });
         },
-        loadingChange:function(state){
-            this.loading = state
+        loadingChange: function(state) {
+            this.loading = state;
         }
     },
-    computed:{
-        listSize:function(){
+    computed: {
+        listSize: function() {
             return this.categories.length;
         }
     },
-    watch:{
-        categories:{
-            handler: function (val, old) {
+    watch: {
+        categories: {
+            handler: function(val, old) {
                 this.loading = false;
             },
-            deep:true
+            deep: true
         }
     }
-
-}
+};
 </script>
-
 
 <style scoped>
 .category-show-area {
-    background:white;
-    border-radius:10px;
+    background: white;
+    border-radius: 10px;
 }
 .category-show-title {
-    font-size:24px;
-    width:30%;
-    display:inline-block;
+    font-size: 24px;
+    width: 30%;
+    display: inline-block;
 }
 ul {
-    height:280px;
-    margin:1rem 0;
+    height: 280px;
+    margin: 1rem 0;
 }
 .flex {
     display: flex;
     flex-flow: column wrap;
-    height:280px;
-    overflow:scroll;
-    background:#c5b9b917;
-    border-radius:10px;
-    padding:10px;
-    border:1px solid lightgray;
+    height: 280px;
+    overflow: scroll;
+    background: #c5b9b917;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid lightgray;
 }
 ul li {
-   list-style:none;
-   width:45%;
-   float:left;
-   min-width:300px;
+    list-style: none;
+    width: 45%;
+    float: left;
+    min-width: 300px;
 }
 .category-show-area {
-    border:solid 2px lightgray;
-    border-radius:10px;
-    padding:20px;
-    width:100%;
+    border: solid 2px lightgray;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
 }
 .del-btn {
-    padding:0;
-    margin:0;
-    margin-right:3px;
-    width:20px;
-    height:20px;
-    border-radius:5px;
-    background:red;
-    color:white;
+    padding: 0;
+    margin: 0;
+    margin-right: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: red;
+    color: white;
 }
 
 /* 表示・非表示アニメーション中 */
-.v-enter-active, .v-leave-active {
-  transition: all 500ms;
+.v-enter-active,
+.v-leave-active {
+    transition: all 500ms;
 }
 /* 表示アニメーション開始時 ・ 非表示アニメーション後 */
-.v-enter, .v-leave-to {
-  opacity: 0;
+.v-enter,
+.v-leave-to {
+    opacity: 0;
 }
-.list-count{
+.list-count {
     text-align: right;
     margin-top: 10px;
 }
-.component-title{
-    color:white;
-    font-size:25px;
-    padding-left:5%;
+.component-title {
+    color: white;
+    font-size: 25px;
+    padding-left: 5%;
     margin-bottom: 15px;
 }
 </style>

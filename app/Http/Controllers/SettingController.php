@@ -47,8 +47,6 @@ class SettingController extends Controller
     public function getPlaceData() 
     {
         $country = Country::with('provinces.cities')
-        // ->where('city_status','!=','D')
-        // ->where('province_status','!=','D')
             ->whereHas('provinces.cities', function ($query) {
                 return $query->where('city_status','!=','D');
             })
@@ -105,7 +103,6 @@ class SettingController extends Controller
     public function getTagList() 
     {
         return TagType::with('tags')->get();
-        // return Tag::All();
     }
 
     public function deleteCity($id){

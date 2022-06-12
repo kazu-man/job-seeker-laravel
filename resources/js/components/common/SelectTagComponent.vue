@@ -1,107 +1,104 @@
-<template> 
-        <div>
-            <div class="tagShownArea">
-                <span class="add-btn" v-if="!listShow" @click="tagListShow">+</span>    
-                <span class="add-btn" v-else @click="tagListShow">-</span>    
+<template>
+    <div>
+        <div class="tagShownArea">
+            <span class="add-btn" v-if="!listShow" @click="tagListShow">+</span>
+            <span class="add-btn" v-else @click="tagListShow">-</span>
 
-            <tag-component v-for="tag in selectedTagList" 
-                :key="tag.id" 
-                :value="tag.id" 
-                :tag="tag" 
+            <tag-component
+                v-for="tag in selectedTagList"
+                :key="tag.id"
+                :value="tag.id"
+                :tag="tag"
                 :active="false"
-                 >
+            >
             </tag-component>
-
-                
-            </div>
-            <transition name="content">
+        </div>
+        <transition name="content">
             <div class="tagListArea" v-show="listShow">
-
-                <div class="tagTypeArea" v-for="tagType in tagTypeList" :key="'type:'+tagType.id">
-                    <div class="tagTypeName">{{tagType.type_name}}</div>
-                    <tag-component v-for="tag in tagType.tags"
-                        :key="tag.id" 
-                        :tag="tag" 
+                <div
+                    class="tagTypeArea"
+                    v-for="tagType in tagTypeList"
+                    :key="'type:' + tagType.id"
+                >
+                    <div class="tagTypeName">{{ tagType.type_name }}</div>
+                    <tag-component
+                        v-for="tag in tagType.tags"
+                        :key="tag.id"
+                        :tag="tag"
                         :active="true"
                         :initialList="initialList"
-                        @updateTag="updateTag">
+                        @updateTag="updateTag"
+                    >
                     </tag-component>
-
                 </div>
-                
             </div>
-            </transition>
-
-        </div>
+        </transition>
+    </div>
 </template>
 
 <script>
-import TagComponent from './TagComponent.vue';
+import TagComponent from "./TagComponent.vue";
 
 export default {
-  components: { TagComponent },
+    components: { TagComponent },
     data() {
-        return{
-        data:{},
-        // selectedVal:"",
-        listShow:false,
-        selectedTagList:[]
-    }},
-    props:["initialList"],
+        return {
+            data: {},
+            listShow: false,
+            selectedTagList: []
+        };
+    },
+    props: ["initialList"],
     methods: {
-        tagListShow:function() {
+        tagListShow: function() {
             this.listShow = !this.listShow;
         },
-        updateTag:function(newTag){
-
-            for(var target of this.selectedTagList){
-                if(target.id == newTag.id){
+        updateTag: function(newTag) {
+            for (var target of this.selectedTagList) {
+                if (target.id == newTag.id) {
                     this.reduceTag(newTag);
                     return;
                 }
             }
             this.selectedTagList.push(newTag);
         },
-        reduceTag:function(targetTag){
+        reduceTag: function(targetTag) {
             var updatedTagList = [];
-            for( var el of this.selectedTagList){
-                if(el.id != targetTag.id){
+            for (var el of this.selectedTagList) {
+                if (el.id != targetTag.id) {
                     updatedTagList.push(el);
                 }
             }
             this.selectedTagList = updatedTagList;
         }
-
     },
-    computed:{
-        tagTypeList:function(){
-            return this.$store.getters['auth/tagTypeList'];
+    computed: {
+        tagTypeList: function() {
+            return this.$store.getters["auth/tagTypeList"];
         },
 
-        route:function(){
-          return this.$route.path;
+        route: function() {
+            return this.$route.path;
         }
     },
-    watch:{
-        route:function(){
+    watch: {
+        route: function() {
             this.selectedTagList = [];
             this.listShow = false;
         }
     },
 
-    created:function(){
-        console.log(this.initialList)
-        if(this.initialList != null && this.initialList != undefined){
+    created: function() {
+        if (this.initialList != null && this.initialList != undefined) {
             this.selectedTagList = this.initialList;
         }
     }
-}
+};
 </script>
-
 
 <style scoped>
 select {
-    width:30%;
+    width: 30%;
 }
 .tagShownArea {
     width: 100%;
@@ -109,7 +106,7 @@ select {
     border-radius: 5px;
     padding-left: 20px;
     position: relative;
-    margin-bottom:20px;
+    margin-bottom: 20px;
 }
 .tagListArea {
     width: 100%;
@@ -117,22 +114,21 @@ select {
     border-radius: 5px;
     background: white;
     padding: 1px 5% 15px 5%;
-    overflow:scroll;
-
+    overflow: scroll;
 }
-.tagTypeArea{
-    color:black;
+.tagTypeArea {
+    color: black;
 }
 
-.tagTypeName{
+.tagTypeName {
     font-size: 18px;
     /* border-bottom: solid 2px darkgray; */
     margin: 0 auto;
     padding: 0px 20px;
     margin: 20px 0px;
-    font-weight:500;
+    font-weight: 500;
 }
-.tagTypeName:after{
+.tagTypeName:after {
     background-color: darkgray;
     border-radius: 5px;
     content: "";
@@ -142,7 +138,7 @@ select {
     margin-left: -3%;
 }
 
-.add-btn{
+.add-btn {
     border-radius: 100%;
     border: 1px solid white;
     padding: 0px;
@@ -154,62 +150,56 @@ select {
     text-align: center;
     position: absolute;
     left: 0px;
-    color:white;
+    color: white;
 }
-
-
-
-
 
 .register-btn {
-    width:100px;
-    padding:10px 5px;
-    margin-left:20px;
+    width: 100px;
+    padding: 10px 5px;
+    margin-left: 20px;
 }
 .place-show-area {
-    border:solid 2px lightgray;
-    border-radius:10px;
-    padding:20px;
-    width:100%;
+    border: solid 2px lightgray;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
 }
 
 .form-title {
-    font-size:24px;
+    font-size: 24px;
 }
 
 .form-group {
-    margin:10px auto;
-    text-align:center;
+    margin: 10px auto;
+    text-align: center;
 }
 .countryRow {
-    color:red;
+    color: red;
 }
 
 .provinceRow {
-    color:blue;
+    color: blue;
 }
 
 /* 表示・非表示アニメーション中 */
-.content-enter-active{
-  transition: ease-in-out 500ms;
+.content-enter-active {
+    transition: ease-in-out 500ms;
 }
-.content-leave-active{
-  transition: ease-in-out 500ms;
+.content-leave-active {
+    transition: ease-in-out 500ms;
 }
 
 /* 表示アニメーション開始時 ・ 非表示アニメーション後 */
 .content-enter,
 .content-leave-to,
-.content-leave{
-  height:0;
-  margin:0;
-  padding-top:0;
-  padding-bottom:0;
+.content-leave {
+    height: 0;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .content-move {
-    transition:ease-in-out 300ms;
+    transition: ease-in-out 300ms;
 }
-
-
 </style>

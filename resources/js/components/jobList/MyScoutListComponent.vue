@@ -1,42 +1,34 @@
-<template> 
+<template>
     <div>
-      <transition name="fade" appear>
-        <postsListComponent 
-          :initFlg="false"
-          :initPage="initPage"
-          ref="postList"></postsListComponent>
-      </transition>
+        <transition name="fade" appear>
+            <postsListComponent
+                :initFlg="false"
+                :initPage="initPage"
+                ref="postList"
+            ></postsListComponent>
+        </transition>
     </div>
-
 </template>
 
 <script>
-import { UNAUTHORIZED ,OK, UNPROCESSABLE_ENTITY} from '../../util';
 import postsListComponent from "./PostsListComponent.vue";
 
 export default {
     data() {
-        return{
-            initPage:"scout"
-
-        }
+        return {
+            initPage: "scout"
+        };
     },
-    methods: {
-
-    },
-    created:function(){
-    },
-    components:{
+    methods: {},
+    created: function() {},
+    components: {
         postsListComponent
-    },
-
-
-}
+    }
+};
 </script>
 
-
 <style scoped>
-.search-user-main{
+.search-user-main {
     width: 100%;
     background: white;
     margin: auto;
@@ -44,42 +36,40 @@ export default {
     border-radius: 10px;
 }
 
-.search-user-from{
-    width:90%;
-    margin:30px auto;
+.search-user-from {
+    width: 90%;
+    margin: 30px auto;
 }
-.key-word-area label{
-    width:100%;
-    display:block;
+.key-word-area label {
+    width: 100%;
+    display: block;
     margin: 50px 0 5px 0;
 }
-.key-word-area input{
-    width:48%;
-    display:inline-block;
-    margin:5px auto;
+.key-word-area input {
+    width: 48%;
+    display: inline-block;
+    margin: 5px auto;
 }
 
-.key-word-area input:nth-child(even){
-    margin-right:1%;
+.key-word-area input:nth-child(even) {
+    margin-right: 1%;
 }
 
-.search-btn-area{
+.search-btn-area {
     text-align: center;
     margin-top: 20px;
 }
 
-.search-btn-area button{
-    margin:auto;
+.search-btn-area button {
+    margin: auto;
 }
 
-.user-table{
-    position:relative;
-    overflow:scroll;
-
+.user-table {
+    position: relative;
+    overflow: scroll;
 }
 
-.scouted{
-    background:#33b5e56b !important;
+.scouted {
+    background: #33b5e56b !important;
 }
-
 </style>

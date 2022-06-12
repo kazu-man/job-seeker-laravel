@@ -77,13 +77,10 @@ class PostService {
 
         return DB::transaction(function () use ($request) {
 
-            // \Log::info($request->all());
             $jobId = $request->input('id');
 
             $job = Job::find($jobId);
             $description = JobDescription::find($job->job_description_id);
-
-            // $descriptionId = $request->input('descriptionId');
 
             $description->description = $request->input('description');
             $description->requirement = $request->input('requirement');
@@ -95,8 +92,6 @@ class PostService {
 
             $job->job_title = $request->input('job_title');
             $job->annual_salary = $request->input('annual_salary');
-            // $job->job_description_id = $description->id;
-            // $job->company_id = $request->input('company');
             $job->category_id = $request->input('category');
             $job->city_id = $request->input('city');
             $job->job_type_id = $request->input('type');

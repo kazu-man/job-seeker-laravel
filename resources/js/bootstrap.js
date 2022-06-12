@@ -1,4 +1,4 @@
-window._ = require('lodash');
+window._ = require("lodash");
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -7,10 +7,10 @@ window._ = require('lodash');
  */
 
 try {
-    window.Popper = require('popper.js').default;
-    window.$ = window.jQuery = require('jquery');
+    window.Popper = require("popper.js").default;
+    window.$ = window.jQuery = require("jquery");
 
-    require('bootstrap');
+    require("bootstrap");
 } catch (e) {}
 
 /**
@@ -18,64 +18,69 @@ try {
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
-import { getCookieValue } from './util'
-import { OK,ORIGINAL_ERROR } from './util'
-import store from './store' 
+import { getCookieValue } from "./util";
+import { OK, ORIGINAL_ERROR } from "./util";
+import store from "./store";
 
-window.axios = require('axios');
+window.axios = require("axios");
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 window.axios.interceptors.request.use(config => {
     // クッキーからトークンを取り出してヘッダーに添付する
-    config.headers['X-XSRF-TOKEN'] = getCookieValue('XSRF-TOKEN')
-  
-    return config
-  });
-  
-  window.axios.interceptors.response.use(
+    config.headers["X-XSRF-TOKEN"] = getCookieValue("XSRF-TOKEN");
+
+    return config;
+});
+
+window.axios.interceptors.response.use(
     response => response,
     error => {
-      store.commit('common/setLoadingFlg', false);
-      var status = error.response.status;
-      if(status != OK){
-        store.commit('auth/setApiStatus', false)
-        store.commit('error/setCode', status, { root: true })
-        var message = "";
-        var data = error.response.data;
-        var allErrors = data.errors;
-        for(var error in allErrors){
-            message += allErrors[error] + "\n";
+        store.commit("common/setLoadingFlg", false);
+        var status = error.response.status;
+        if (status != OK) {
+            store.commit("auth/setApiStatus", false);
+            store.commit("error/setCode", status, { root: true });
+            var message = "";
+            var data = error.response.data;
+            var allErrors = data.errors;
+            for (var error in allErrors) {
+                message += allErrors[error] + "\n";
+            }
+            if (status == ORIGINAL_ERROR) {
+                if (data.message != null && data.message != "") {
+                    message += data.message + "\n";
+                }
+            }
+            if (message == "") {
+                message = "エラーが発生しました";
+            }
+            console.log("kokohakiteruna");
+            store.dispatch("common/alertModalUp", {
+                data: status,
+                successMessage: message,
+                close: false,
+                reload: true
+            });
         }
-        if(status == ORIGINAL_ERROR){
-          if(data.message != null && data.message != ""){
-            message += data.message + "\n";
-          }
-        }
-        if(message == ""){
-          message = "エラーが発生しました"
-        }
-        console.log("kokohakiteruna");
-        store.dispatch('common/alertModalUp', {data:status, successMessage:message,close:false,reload:true});
+        return Promise.reject(error);
     }
-  		return Promise.reject(error)
-    }
-  )
+);
 
-  window.Peer = require('simple-peer');
-  // window.Pusher = require('pusher-js');
+window.Peer = require("simple-peer");
+// window.Pusher = require('pusher-js');
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
 
-import Echo from 'laravel-echo';
+import Echo from "laravel-echo";
 
-window.Pusher = require('pusher-js');
+window.Pusher = require("pusher-js");
 
 window.Echo = new Echo({
-    broadcaster: 'pusher',
+    broadcaster: "pusher",
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     encrypted: true

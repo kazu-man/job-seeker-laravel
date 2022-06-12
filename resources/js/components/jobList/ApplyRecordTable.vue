@@ -1,24 +1,27 @@
 <template>
     <div class="job-content apply-table">
-        <div class="form-title" style="padding-top: 18px;">Applies
+        <div class="form-title" style="padding-top: 18px;">
+            Applies
             <span @click="interviewModal()" class="calendar-span">
-            
-            <div>
-                <img src="/images/calendar.png" class="calendar">
-                <div style="font-size: 15px;">interviews</div>            
-            </div>
-            
+                <div>
+                    <img src="/images/calendar.png" class="calendar" />
+                    <div style="font-size: 15px;">interviews</div>
+                </div>
             </span>
         </div>
 
-            <div style="min-width:500px;">
-            <spinner v-if="loading" style="
+        <div style="min-width:500px;">
+            <spinner
+                v-if="loading"
+                style="
                 position:absolute;
                 top:45%;
                 left:50%;
                 z-index: 99999999;
-            " size="40"
-            line-fg-color="#f00"></spinner>
+            "
+                size="40"
+                line-fg-color="#f00"
+            ></spinner>
 
             <vue-good-table
                 :columns="columns"
@@ -28,10 +31,10 @@
                     enabled: true,
                     trigger: 'enter',
                     skipDiacritics: true,
-                    placeholder: 'Search this table',
+                    placeholder: 'Search this table'
                 }"
                 :sort-options="{
-                    enabled: true,
+                    enabled: true
                 }"
                 :pagination-options="{
                     enabled: true,
@@ -42,140 +45,135 @@
                     prevLabel: 'prev',
                     rowsPerPageLabel: 'Rows per page',
                     ofLabel: 'of',
-                    pageLabel: 'page', 
-                    allLabel: 'All',
+                    pageLabel: 'page',
+                    allLabel: 'All'
                 }"
                 styleClass="vgt-table"
-                @on-cell-click="onCellClick">
+                @on-cell-click="onCellClick"
+            >
                 <template slot="table-row" slot-scope="props">
                     <span v-if="props.column.field == 'message'">
                         <transition name="badge">
-                            <span v-if="props.row.newMessageFlg" class="badge badge-danger" style="position:absolute">new</span>
+                            <span
+                                v-if="props.row.newMessageFlg"
+                                class="badge badge-danger"
+                                style="position:absolute"
+                                >new</span
+                            >
                         </transition>
-                        <button @click="setMessageModal(props.row)" class="btn btn-info message-btn">Messages</button>
+                        <button
+                            @click="setMessageModal(props.row)"
+                            class="btn btn-info message-btn"
+                        >
+                            Messages
+                        </button>
                     </span>
                     <span v-else style="cursor:pointer">
-                        {{props.formattedRow[props.column.field]}}
+                        {{ props.formattedRow[props.column.field] }}
                     </span>
                 </template>
             </vue-good-table>
-            
+        </div>
     </div>
-    </div>
-
 </template>
 
 <script>
-
-import 'vue-good-table/dist/vue-good-table.css'
-import { VueGoodTable } from 'vue-good-table';
+import "vue-good-table/dist/vue-good-table.css";
+import { VueGoodTable } from "vue-good-table";
 
 export default {
-    data(){
-        return {            
+    data() {
+        return {
             columns: [
                 {
-                label: 'Job title',
-                field: 'jobTitle',
+                    label: "Job title",
+                    field: "jobTitle"
                 },
                 {
-                label: 'Applicant Name',
-                field: 'applicantName',
+                    label: "Applicant Name",
+                    field: "applicantName"
                 },
                 {
-                label: 'Applied On',
-                field: 'applyDate',
-                type: 'date',
-                dateInputFormat: 'yyyy-MM-dd',
-                dateOutputFormat: 'MM/dd/yyyy',
+                    label: "Applied On",
+                    field: "applyDate",
+                    type: "date",
+                    dateInputFormat: "yyyy-MM-dd",
+                    dateOutputFormat: "MM/dd/yyyy"
                 },
                 {
-                label: '',
-                field: 'message',
-                type: 'message',
-                sortable: false,
-                },
+                    label: "",
+                    field: "message",
+                    type: "message",
+                    sortable: false
+                }
             ],
-            loading:true,
+            loading: true,
             rows: [],
-            calendarFlg:false
-        }
+            calendarFlg: false
+        };
     },
-    methods:{
-        getApplyRecords(){
-            axios.get('/api/getApplyRecords').then(res => {
+    methods: {
+        getApplyRecords() {
+            axios.get("/api/getApplyRecords").then(res => {
                 this.rows = res.data;
-                console.log('getApplyRecords');
-                console.log(res.data);
                 this.loading = false;
             });
         },
-        onCellClick(props){
-            
-            console.log("props");
-            console.log(props);
-            if(props.column.field == 'jobTitle'){
+        onCellClick(props) {
+            if (props.column.field == "jobTitle") {
                 this.seePost(props.row.jobId);
-            }else if(props.column.field == 'applicantName'){
+            } else if (props.column.field == "applicantName") {
                 this.seeProfile(props.row.profileId);
             }
         },
-        seePost(jobId){
-            this.$store.dispatch('common/setSinglePostModal', jobId)
+        seePost(jobId) {
+            this.$store.dispatch("common/setSinglePostModal", jobId);
         },
-        seeProfile(profileId){
-            this.$store.dispatch('common/setApplicantProfileModal', profileId)
+        seeProfile(profileId) {
+            this.$store.dispatch("common/setApplicantProfileModal", profileId);
         },
-        setMessageModal(record){
+        setMessageModal(record) {
             record.newMessageFlg = false;
-            this.$store.commit('common/setLoadingFlg', true);
+            this.$store.commit("common/setLoadingFlg", true);
 
-            this.$store.dispatch('common/setMessageModal', record)
+            this.$store.dispatch("common/setMessageModal", record);
         },
-        interviewModal:function(){
-            this.$store.dispatch('common/setInterviewModal')
-
+        interviewModal: function() {
+            this.$store.dispatch("common/setInterviewModal");
         }
     },
-    computed:{
-        liveMessage:function(){
+    computed: {
+        liveMessage: function() {
             return this.$store.state.common.liveMessage;
         },
-        loginUser:function() {
+        loginUser: function() {
             return this.$store.state.auth.user;
-        },
-
+        }
     },
-    watch:{
-        liveMessage:function(val,old){
-            if(this.loginUser != undefined && this.loginUser.id == val.message.toId){
+    watch: {
+        liveMessage: function(val, old) {
+            if (
+                this.loginUser != undefined &&
+                this.loginUser.id == val.message.toId
+            ) {
                 this.getApplyRecords();
             }
-        },
-        
+        }
     },
-    mounted:function() {
+    mounted: function() {
         this.loading = true;
         this.getApplyRecords();
     },
     components: {
         VueGoodTable
     }
-}
+};
 </script>
-
-
-
-
-
-
-
-
 
 <style scoped>
 .form-group {
-    margin:10px auto;
-    text-align:left;
+    margin: 10px auto;
+    text-align: left;
 }
 .title-form,
 .salary-form {
@@ -185,47 +183,47 @@ export default {
     padding-right: 2%;
 }
 .container {
-    z-index:100;
+    z-index: 100;
     height: 100%;
 }
 
 .job-content {
-    width:100%;
-    margin:auto;
+    width: 100%;
+    margin: auto;
 }
 .form-control {
-    width:15%;
-    display:inline-block;
-    width:100%;
+    width: 15%;
+    display: inline-block;
+    width: 100%;
 }
 label {
-    text-align:left;
-    padding-top:15px;
+    text-align: left;
+    padding-top: 15px;
 }
 .submit-form {
-    width:100px;
-    text-align:center;
+    width: 100px;
+    text-align: center;
 }
 .submit-btn {
-    padding:20px 20px;
-    border-radius:10px;
+    padding: 20px 20px;
+    border-radius: 10px;
 }
-.job-register-area {  
-    border:solid 2px lightgray;
-    border-radius:10px;
-    padding:20px;
-    width:100%;
-    color:white;
-    height:100%;
+.job-register-area {
+    border: solid 2px lightgray;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    color: white;
+    height: 100%;
 
-    background:gray;
-    opacity:0.9;
+    background: gray;
+    opacity: 0.9;
 }
 
 .form-title {
-    font-size:24px;
-    color:white;
-    font-weight:bold;
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
     position: sticky;
     top: 0;
     left: 0;
@@ -233,50 +231,49 @@ label {
 
 /* 表示・非表示アニメーション中 */
 .badge-enter-active {
-  transition: ease-in-out 500ms;
+    transition: ease-in-out 500ms;
 }
-.badge-leave-active{
-  transition: ease-in-out 500ms;
+.badge-leave-active {
+    transition: ease-in-out 500ms;
 }
 
 .badge-enter,
 .badge-leave-to,
-.badge-leave{
-  opacity:0;
+.badge-leave {
+    opacity: 0;
 }
-.apply-table{
-    overflow:scroll;
+.apply-table {
+    overflow: scroll;
 }
 .message-btn {
-    width:80px;
-    padding:6px 0px !important;
+    width: 80px;
+    padding: 6px 0px !important;
 }
 
-.calendar{
+.calendar {
     width: 30px;
 }
 
-.calendar-span{
+.calendar-span {
     float: right;
     font-weight: normal;
     text-align: center;
     position: absolute;
     top: -3px;
     right: 0px;
-    cursor:pointer;
+    cursor: pointer;
 }
-@media (max-width:414px){
-    .message-btn{
+@media (max-width: 414px) {
+    .message-btn {
         width: 60px;
         padding: 7px 0px !important;
         font-size: 10px;
     }
 }
-
 </style>
-<style >
-@media (max-width:414px){
-    .show-on-pc{
+<style>
+@media (max-width: 414px) {
+    .show-on-pc {
         display: none;
     }
 }

@@ -1,18 +1,26 @@
-<template> 
-<div>
-    <div style="font-size:20px;font-weight:bold;color:white">Find Wokers</div>
+<template>
+    <div>
+        <div style="font-size:20px;font-weight:bold;color:white">
+            Find Wokers
+        </div>
         <div class="search-user-main">
-
             <div class="search-user-from">
+                <select-experience-component
+                    @selectExperience="changeSelectedCategory"
+                    @addExForm="addExForm"
+                    :experiences="experiences"
+                ></select-experience-component>
 
-                <select-experience-component 
-                　@selectExperience="changeSelectedCategory" 
-                　@addExForm="addExForm"
-                　:experiences="experiences"></select-experience-component>
-
-                <div class="key-word-area" >
+                <div class="key-word-area">
                     <label>Key Words</label>
-                    <input type="text" class="form-control" v-for="(keyWord, index) in keyWords" :key="index" :obj="keyWord" v-model="keyWord.value">
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-for="(keyWord, index) in keyWords"
+                        :key="index"
+                        :obj="keyWord"
+                        v-model="keyWord.value"
+                    />
                 </div>
 
                 <div class="search-btn-area">
@@ -20,21 +28,29 @@
                         <span class="icon-heart-o mr-2">Search</span>
                     </button>
                 </div>
-
             </div>
         </div>
 
         <div class="job-content user-table">
-            <div class="list-scout-btn" @click="getMyScout" :class="{selectedBtn:onlyMyScoutFlg}">List Your Scouts</div>
+            <div
+                class="list-scout-btn"
+                @click="getMyScout"
+                :class="{ selectedBtn: onlyMyScoutFlg }"
+            >
+                List Your Scouts
+            </div>
             <div style="min-width:500px;">
-
-                <spinner v-if="loading" style="
+                <spinner
+                    v-if="loading"
+                    style="
                     position:absolute;
                     top:45%;
                     left:50%;
                     z-index: 99999999;
-                " size="40"
-                line-fg-color="#f00"></spinner>
+                "
+                    size="40"
+                    line-fg-color="#f00"
+                ></spinner>
 
                 <vue-good-table
                     :columns="columns"
@@ -44,10 +60,10 @@
                         enabled: true,
                         trigger: 'enter',
                         skipDiacritics: true,
-                        placeholder: 'Search this table',
+                        placeholder: 'Search this table'
                     }"
                     :sort-options="{
-                        enabled: true,
+                        enabled: true
                     }"
                     :pagination-options="{
                         enabled: true,
@@ -58,175 +74,190 @@
                         prevLabel: 'prev',
                         rowsPerPageLabel: 'Rows per page',
                         ofLabel: 'of',
-                        pageLabel: 'page', 
-                        allLabel: 'All',
+                        pageLabel: 'page',
+                        allLabel: 'All'
                     }"
                     styleClass="vgt-table"
-                    @on-cell-click="onCellClick">
+                    @on-cell-click="onCellClick"
+                >
                     <template slot="table-row" slot-scope="props">
-                        <span v-if="props.column.field == 'resume'" style="cursor:pointer;white-space:pre-line;overflow-wrap: break-word;color:blue">{{props.formattedRow[props.column.field] == "" ? "" : "Resume"}}</span>
-                        <span v-else-if="props.column.field == 'scout'" style="cursor:pointer;white-space:pre-line;overflow-wrap: break-word;color:blue"><button @click="setScoutModal(props.row)" class="btn btn-info message-btn" :class="{scouted:props.row.scoutFlg || checkScoutOrNot(props.row.user_id)}" style="padding:7px">{{props.row.scoutFlg || checkScoutOrNot(props.row.user_id)? "scouted" : "scout"}}</button></span>
-                        <span v-else style="cursor:pointer;white-space:pre-line;overflow-wrap: break-word;">{{props.formattedRow[props.column.field]}}</span>
+                        <span
+                            v-if="props.column.field == 'resume'"
+                            style="cursor:pointer;white-space:pre-line;overflow-wrap: break-word;color:blue"
+                            >{{
+                                props.formattedRow[props.column.field] == ""
+                                    ? ""
+                                    : "Resume"
+                            }}</span
+                        >
+                        <span
+                            v-else-if="props.column.field == 'scout'"
+                            style="cursor:pointer;white-space:pre-line;overflow-wrap: break-word;color:blue"
+                            ><button
+                                @click="setScoutModal(props.row)"
+                                class="btn btn-info message-btn"
+                                :class="{
+                                    scouted:
+                                        props.row.scoutFlg ||
+                                        checkScoutOrNot(props.row.user_id)
+                                }"
+                                style="padding:7px"
+                            >
+                                {{
+                                    props.row.scoutFlg ||
+                                    checkScoutOrNot(props.row.user_id)
+                                        ? "scouted"
+                                        : "scout"
+                                }}
+                            </button></span
+                        >
+                        <span
+                            v-else
+                            style="cursor:pointer;white-space:pre-line;overflow-wrap: break-word;"
+                            >{{ props.formattedRow[props.column.field] }}</span
+                        >
                     </template>
                 </vue-good-table>
-                
             </div>
         </div>
-</div>
-
+    </div>
 </template>
 
 <script>
-import 'vue-good-table/dist/vue-good-table.css'
-import { VueGoodTable } from 'vue-good-table';
-
-import { UNAUTHORIZED ,OK, UNPROCESSABLE_ENTITY} from '../../util';
-import methodMixIn from '../common/CommonMethodsMixIn.vue';
+import "vue-good-table/dist/vue-good-table.css";
+import { VueGoodTable } from "vue-good-table";
+import methodMixIn from "../common/CommonMethodsMixIn.vue";
 
 export default {
     data() {
-        return{
-        experiences:[
-                { 
-                        id : "", category_id : "", experience_years : "" 
+        return {
+            experiences: [
+                {
+                    id: "",
+                    category_id: "",
+                    experience_years: ""
                 }
-        ],
-        keyWords:[
-            {
-                value:""
-            },
-        ],
-        users:[],
-        columns: [
+            ],
+            keyWords: [
                 {
-                label: 'User Name',
-                field: 'user_name',
+                    value: ""
+                }
+            ],
+            users: [],
+            columns: [
+                {
+                    label: "User Name",
+                    field: "user_name"
                 },
                 {
-                label: 'Experiences',
-                field: 'experiences',
+                    label: "Experiences",
+                    field: "experiences"
                 },
                 {
-                label: 'Resume',
-                field: 'resume',
+                    label: "Resume",
+                    field: "resume"
                 },
                 {
-                label: '',
-                field: 'scout',
-                },
-
-        ],
-        rows:[],
-        loading:false,
-        onlyMyScoutFlg:false
-    }},
+                    label: "",
+                    field: "scout"
+                }
+            ],
+            rows: [],
+            loading: false,
+            onlyMyScoutFlg: false
+        };
+    },
     methods: {
-
-        changeSelectedCategory:function(val,experience,index){
-          console.log(val);
-          console.log(experience);
-          this.experiences[index].category_id = val;
+        changeSelectedCategory: function(val, experience, index) {
+            this.experiences[index].category_id = val;
         },
-        addExForm:function(){
-            var length = this.experiences.length;
-            this.experiences.push(
-                { 
-                        id : "", category_id : "", experience_years : "" 
-                }
-            );
+        addExForm: function() {
+            this.experiences.push({
+                id: "",
+                category_id: "",
+                experience_years: ""
+            });
         },
-        addKeyWord:function(){
-            this.keyWords.push(
-                {value:""
-                }
-            );
+        addKeyWord: function() {
+            this.keyWords.push({ value: "" });
         },
-        seachSubmit:function(){
-
+        seachSubmit: function() {
             var formData = new FormData();
             formData.append("experiences", JSON.stringify(this.experiences));
             formData.append("keyWords", JSON.stringify(this.keyWords));
             formData.append("onlyMyScoutFlg", this.onlyMyScoutFlg);
             this.loading = true;
 
-            axios.post('/api/searchUser', formData).then(res => {
-
+            axios.post("/api/searchUser", formData).then(res => {
                 this.rows = res.data;
                 this.loading = false;
             });
         },
-        getMyScout:function(){
+        getMyScout: function() {
             this.onlyMyScoutFlg = !this.onlyMyScoutFlg;
             this.seachSubmit();
         },
-        getScout:function(){
+        getScout: function() {
             this.onlyMyScoutFlg = false;
             this.seachSubmit();
-
         },
-        onCellClick(props){
-            
-            if(props.column.field == 'jobTitle'){
-                this.seePost(props.row.jobId);
-            }else if(props.column.field == 'user_name'){
-                this.seeProfile(props.row.profile_id);
-            }else if(props.column.field == "resume"){
-                if(props.row.resume != null && props.row.resume != ""){
-                    this.resumeDownLoad(props.row.resume)
+        onCellClick(props) {
+            const { column, row } = props;
+
+            if (column.field == "jobTitle") {
+                this.seePost(row.jobId);
+            } else if (column.field == "user_name") {
+                this.seeProfile(row.profile_id);
+            } else if (column.field == "resume") {
+                if (row.resume != null && row.resume != "") {
+                    this.resumeDownLoad(row.resume);
                 }
             }
         },
-        resumeDownLoad(resume){
+        resumeDownLoad(resume) {
             var data = {
-                "resumeFilePath":resume,
-                "resumeFile":resume.substr(resume.lastIndexOf('/') + 1)
-            }
+                resumeFilePath: resume,
+                resumeFile: resume.substr(resume.lastIndexOf("/") + 1)
+            };
             this.download(data);
         },
-        seeProfile(profileId){
-            this.$store.dispatch('common/setApplicantProfileModal', profileId)
+        seeProfile(profileId) {
+            this.$store.dispatch("common/setApplicantProfileModal", profileId);
         },
-        setScoutModal(record){
-
-            this.$store.dispatch('common/setScoutModal', record)
-
-        },
-
+        setScoutModal(record) {
+            this.$store.dispatch("common/setScoutModal", record);
+        }
     },
-    watch:{
-        keyWords:{
-            handler: function (val, old) {
+    watch: {
+        keyWords: {
+            handler: function(val, old) {
                 var lastKey = val.slice(-1)[0];
 
-                if(lastKey.value != ""){
+                if (lastKey.value != "") {
                     this.addKeyWord();
                 }
             },
-            deep:true
+            deep: true
         }
-    },    
-    components: {
-        VueGoodTable,
     },
-    computed:{
-        checkScoutOrNot:function () {
-
-            return function (target) {
-                return this.$store.getters['common/scoutedIds'].includes(target);
-
+    components: {
+        VueGoodTable
+    },
+    computed: {
+        checkScoutOrNot: function() {
+            return function(target) {
+                return this.$store.getters["common/scoutedIds"].includes(
+                    target
+                );
             };
         }
-        
     },
-    mixins: [methodMixIn],
-
-
-}
+    mixins: [methodMixIn]
+};
 </script>
 
-
 <style scoped>
-.search-user-main{
+.search-user-main {
     width: 100%;
     background: white;
     margin: auto;
@@ -234,46 +265,46 @@ export default {
     border-radius: 10px;
 }
 
-.search-user-from{
-    width:90%;
-    margin:30px auto;
+.search-user-from {
+    width: 90%;
+    margin: 30px auto;
 }
-.key-word-area label{
-    width:100%;
-    display:block;
+.key-word-area label {
+    width: 100%;
+    display: block;
     margin: 50px 0 5px 0;
 }
-.key-word-area input{
-    width:48%;
-    display:inline-block;
-    margin:5px auto;
+.key-word-area input {
+    width: 48%;
+    display: inline-block;
+    margin: 5px auto;
 }
 
-.key-word-area input:nth-child(even){
-    margin-right:1%;
+.key-word-area input:nth-child(even) {
+    margin-right: 1%;
 }
 
-.search-btn-area{
+.search-btn-area {
     text-align: center;
     margin-top: 20px;
 }
 
-.search-btn-area button{
-    margin:auto;
+.search-btn-area button {
+    margin: auto;
 }
 
-.user-table{
-    position:relative;
-    overflow:scroll;
-    padding-top:40px;
+.user-table {
+    position: relative;
+    overflow: scroll;
+    padding-top: 40px;
 }
 
-.scouted{
-    background:#33b5e56b !important;
+.scouted {
+    background: #33b5e56b !important;
 }
 
-.list-scout-btn{
-    position:absolute;
+.list-scout-btn {
+    position: absolute;
     padding: 5px 6px;
     margin-right: 8px;
     margin-left: 1px;
@@ -282,15 +313,14 @@ export default {
     border-radius: 6px;
     box-shadow: 0 0 3px #ddd;
     white-space: nowrap;
-    background-color: #58ACFA;
+    background-color: #58acfa;
     right: -8px;
     top: 10px;
     z-index: 1;
     cursor: pointer;
 }
 
-.selectedBtn{
-    background-color: #a6d0f7 ;
+.selectedBtn {
+    background-color: #a6d0f7;
 }
-
 </style>
