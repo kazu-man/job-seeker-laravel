@@ -156,7 +156,9 @@ return [
         'type' => 'タイプ',
         'title' => 'タイトル',
         'category' => 'カテゴリー',
-        'salary' => '給与'
+        'salary' => '給与',
+        'job_title' => 'タイトル',
+        'annual_salary' => '給与',
     ],
 
 ];

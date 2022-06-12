@@ -8,6 +8,8 @@ use App\Model\Company;
 use App\Model\Country;
 use App\Model\Message;
 use App\Model\Profile;
+use App\Model\Tag;
+use App\Model\TagType;
 
 use App\Model\Category;
 use App\Model\Province;
@@ -174,5 +176,19 @@ $factory->define(Message::class, function (Faker $faker) {
         'checked' => 0, 
         'sent_to' => random_int(0,1) == 1 ? 'U' : 'C', 
         'apply_record_id' => 1, 
+    ];
+});
+
+$factory->define(TagType::class, function (Faker $faker) {
+    return [
+        'type_name' => $faker->colorName, 
+    ];
+});
+
+$factory->define(Tag::class, function (Faker $faker) {
+    $tagTypeLength = count(TagType::all());
+    return [
+        'tag_name' => $faker->colorName, 
+        'tag_type_id' => random_int(1,$tagTypeLength), 
     ];
 });

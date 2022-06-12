@@ -81,10 +81,20 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/sendMessage', 'JobsListController@sendMessage')->name('sendMessage');
     Route::get('/getNewMessageExistFlg', 'JobsListController@getNewMessageExistFlg')->name('getNewMessageExistFlg');
     Route::post('/resumeDownload',  'JobsListController@resumeDownload');    
+    Route::post('/searchUser', 'ScoutController@searchUser')->name('searchUser');
+    Route::post('/getScout', 'ScoutController@getScout')->name('getScout');
+    Route::post('/sendScout', 'ScoutController@sendScout')->name('sendScout');
+    Route::get('/getScoutsByReciever', 'ScoutController@getScoutsByReciever')->name('getScoutsByReciever');
+    Route::post('/setUpInterview', 'JobsListController@setUpInterview')->name('setUpInterview');
+    Route::post('/findInterviewToken', 'JobsListController@findInterviewToken')->name('findInterviewToken');
+    Route::get('/getInterview', 'JobsListController@getInterview')->name('getInterview');
+    Route::post('/cancelInterview', 'JobsListController@cancelInterview')->name('cancelInterview');
+
 });
 
-
-
+//google login
+Route::get('/auth/{service}', 'OAuthLoginController@getGoogleAuth')->where('service', 'google');
+Route::get('/auth/callback/google', 'OAuthLoginController@authGoogleCallback');
 
 
 

@@ -171,9 +171,16 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        // Google Login Api
+        Laravel\Socialite\SocialiteServiceProvider::class,
+        App\Providers\JobSeekerServiceProvider::class,
+        //elastic search
+        App\Providers\ElasticsearchServiceProvider::class, 
+
+
 
     ],
 
@@ -225,6 +232,11 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        //Google Logint Api
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'JobListService' => App\Facades\JobListServiceFacade::class,
+        'PostService' => App\Facades\PostServiceFacade::class,
+        'InterviewService' => App\Facades\InterviewServiceFacade::class,
 
     ],
 

@@ -6,10 +6,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Model\Scout;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -56,6 +59,21 @@ class User extends Authenticatable
     {   
         return $this->belongsTo('App\Model\Company');
     }
+
+    public function recievedScouts()
+    {
+        return $this->hasMany(Scout::class, 'reciever_id', 'id');
+    }
+    public function sentScouts()
+    {
+        return $this->hasMany(Scout::class, 'sender_id', 'id');
+    }
+
+    public function searchableAs()
+    {
+        return 'users';
+    }
+
 
         /**
      * パスワードリセット通知の送信をオーバーライド

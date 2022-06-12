@@ -10,10 +10,13 @@ use App\Model\Country;
 use App\Model\JobType;
 use App\Model\Category;
 use App\Model\Province;
+use App\Model\Tag;
+use App\Model\TagType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use DB;
 
 class SettingController extends Controller
 {
@@ -44,8 +47,6 @@ class SettingController extends Controller
     public function getPlaceData() 
     {
         $country = Country::with('provinces.cities')
-        // ->where('city_status','!=','D')
-        // ->where('province_status','!=','D')
             ->whereHas('provinces.cities', function ($query) {
                 return $query->where('city_status','!=','D');
             })
@@ -99,23 +100,29 @@ class SettingController extends Controller
     {
         return JobType::where('id','<=','3')->get();
     }
+    public function getTagList() 
+    {
+        return TagType::with('tags')->get();
+    }
 
     public function deleteCity($id){
-        \Log::info($id);
-
+        
         $jobs = Job::where('city_id',$id)->get();
-
+        
         if(count($jobs) > 0){
             return response()->json([
                 'message' => 'すでに使用されている都市は削除できません。',
             ], 503);
         }
-
+        
         $targetCity = City::find($id);
         $targetCity->city_status = "D";
-        $targetCity->save();
 
-        return $targetCity;
+        DB::transaction(function () use ($targetCity) {
+            $targetCity->save();
+        });
+
+            return $targetCity;
     }
 
     public function registerCountry(Request $request){
@@ -159,9 +166,10 @@ class SettingController extends Controller
 
 
         }
-
-        $targetCountry->save();
-        \Log::info($targetCountry);        
+        DB::transaction(function () use ($targetCountry) {
+            $targetCountry->save();
+            \Log::info($targetCountry);        
+        });
     }
 
     public function registerProvince(Request $request){
@@ -172,8 +180,9 @@ class SettingController extends Controller
         $newProvince->province_name = $provinceName;
         $newProvince->country_id = $countryId;
 
-        $newProvince->save();
-
+        DB::transaction(function () use ($newProvince) {
+            $newProvince->save();
+        });
     }
 
     public function getTargetProvinces($country_id){     
@@ -192,8 +201,10 @@ class SettingController extends Controller
         $newCity->city_name = $cityName;
         $newCity->province_id = $provinceId;
 
-        $newCity->save();
-        
+        DB::transaction(function () use ($newCity) {
+
+            $newCity->save();
+        });
     }
 
     public function userDelete(Request $request){
@@ -205,7 +216,10 @@ class SettingController extends Controller
         }else{
             $targetUser->user_status = "D";
         }
-        $targetUser->save();
+        DB::transaction(function () use ($targetUser) {
+
+            $targetUser->save();
+        });
     }
 
 
@@ -232,7 +246,12 @@ class SettingController extends Controller
         
         $category = Category::find($request->id);
         $category->category_status = "D";
-        $category->save();
+
+        DB::transaction(function () use ($category) {
+
+            $category->save();
+
+        });
 
         return $category;
 
@@ -243,9 +262,12 @@ class SettingController extends Controller
         $category = new Category();
         $category->category_name = $request->category;
 
-        $category->save();
+        DB::transaction(function () use ($category) {
 
-        return "category saved";
+            $category->save();
+            return "category saved";
+
+        });
     }
 
     public function passwordUpdate(Request $request)
@@ -260,11 +282,14 @@ class SettingController extends Controller
                 
         if (isset($form['password'])) {
         
-        $form['password'] = Hash::make($form['password']);
+            $form['password'] = Hash::make($form['password']);
         
-         }
-        
-        $auth->fill($form)->save();
+        }
+        DB::transaction(function () use ($auth, $form) {
+
+            $auth->fill($form)->save();
+            
+        });
     }
 
     public function getInitData(){
@@ -272,12 +297,14 @@ class SettingController extends Controller
         $countries = $this->getCountries();
         $placeData = $this->getPlaceData();
         $jobTypes = $this->getJobType();
+        $tagTypeList = $this->getTagList();
 
         return [
             "categories" => $categories,
             "countries" => $countries,
             "placeData" => $placeData,
-            "jobTypes" => $jobTypes
+            "jobTypes" => $jobTypes,
+            "tagTypeList" => $tagTypeList
         ];
 
     }    

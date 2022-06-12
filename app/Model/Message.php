@@ -8,6 +8,6 @@ class Message extends Model
 {
     public function ApplyRecord()
     {
-        return $this->belongsTo('App\ApplyRecord');
+        return $this->belongsTo('App\Model\ApplyRecord');
     }
 }

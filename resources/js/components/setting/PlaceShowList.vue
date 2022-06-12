@@ -1,13 +1,17 @@
-<template> 
-        <div class="place-show-area">
-            <div style="min-width:500px">
-                <spinner v-if="loading" style="
+<template>
+    <div class="place-show-area">
+        <div style="min-width:500px">
+            <spinner
+                v-if="loading"
+                style="
                     position:absolute;
                     top:35%;
                     left:50%;
                     z-index: 99999999;
-                " size="40"
-                line-fg-color="#f00"></spinner>
+                "
+                size="40"
+                line-fg-color="#f00"
+            ></spinner>
 
             <vue-good-table
                 :columns="columns"
@@ -17,10 +21,10 @@
                     enabled: true,
                     trigger: 'enter',
                     skipDiacritics: true,
-                    placeholder: 'Search this table',
+                    placeholder: 'Search this table'
                 }"
                 :sort-options="{
-                    enabled: true,
+                    enabled: true
                 }"
                 :pagination-options="{
                     enabled: true,
@@ -31,80 +35,101 @@
                     prevLabel: 'prev',
                     rowsPerPageLabel: 'Rows per page',
                     ofLabel: 'of',
-                    pageLabel: 'page', 
-                    allLabel: 'All',
+                    pageLabel: 'page',
+                    allLabel: 'All'
                 }"
-                >
+            >
                 <template slot="table-row" slot-scope="props">
-                    <span v-if="props.column.field == 'delBtn'" >
-                        <button 
-                            @mouseover="mouseOverAction(props.row, props.column.field)"
-                            @mouseleave="mouseLeaveAction(props.row, props.column.field)"
-                            class="btn delete-btn" 
-                            v-bind:class="{hoveredBtn:hoverFlag && hoverIndex == props.row && hoverColumn == 'delBtn'}" 
-                            @click="deleteCity(props.row.delBtn)">X
+                    <span v-if="props.column.field == 'delBtn'">
+                        <button
+                            @mouseover="
+                                mouseOverAction(props.row, props.column.field)
+                            "
+                            @mouseleave="
+                                mouseLeaveAction(props.row, props.column.field)
+                            "
+                            class="btn delete-btn"
+                            v-bind:class="{
+                                hoveredBtn:
+                                    hoverFlag &&
+                                    hoverIndex == props.row &&
+                                    hoverColumn == 'delBtn'
+                            }"
+                            @click="deleteCity(props.row.delBtn)"
+                        >
+                            X
                         </button>
-
                     </span>
-                    <span v-else-if="props.column.field == 'country'" >
-                        {{props.formattedRow[props.column.field]}}    
-                        <button 
-                            @mouseover="mouseOverAction(props.row, props.column.field)"
-                            @mouseleave="mouseLeaveAction(props.row, props.column.field)"
-                            class="btn delete-btn" 
-                            v-bind:class="{hoveredBtn:hoverFlag && hoverIndex == props.row && hoverColumn == 'country'}" 
-                            @click="changeBg(props.row.countryData)">background image
+                    <span v-else-if="props.column.field == 'country'">
+                        {{ props.formattedRow[props.column.field] }}
+                        <button
+                            @mouseover="
+                                mouseOverAction(props.row, props.column.field)
+                            "
+                            @mouseleave="
+                                mouseLeaveAction(props.row, props.column.field)
+                            "
+                            class="btn delete-btn"
+                            v-bind:class="{
+                                hoveredBtn:
+                                    hoverFlag &&
+                                    hoverIndex == props.row &&
+                                    hoverColumn == 'country'
+                            }"
+                            @click="changeBg(props.row.countryData)"
+                        >
+                            background image
                         </button>
                     </span>
                     <span v-else>
-                        {{props.formattedRow[props.column.field]}}
+                        {{ props.formattedRow[props.column.field] }}
                     </span>
                 </template>
             </vue-good-table>
-        </div>        
-        </div>        
+        </div>
+    </div>
 </template>
 
 <script>
-import { VueGoodTable } from 'vue-good-table';
+import { VueGoodTable } from "vue-good-table";
 
 export default {
     data() {
-        return{
-            countries:{},
-            provinces:{},
-            cities:{},
+        return {
+            countries: {},
+            provinces: {},
+            cities: {},
             checkedCountry: "",
             checkedProvince: "",
             checkedCity: "",
 
-            hoverFlag:false,
-            hoverIndex:null,
-            hoverColumn:null,
-            placeData:{},
+            hoverFlag: false,
+            hoverIndex: null,
+            hoverColumn: null,
+            placeData: {},
 
-            loading:false,
+            loading: false,
 
             columns: [
                 {
-                label: 'country',
-                field: 'country',
+                    label: "country",
+                    field: "country"
                 },
                 {
-                label: 'province',
-                field: 'province',
+                    label: "province",
+                    field: "province"
                 },
                 {
-                label: 'city',
-                field: 'city',
+                    label: "city",
+                    field: "city"
                 },
                 {
-                label: '',
-                field: 'delBtn',
-                },
+                    label: "",
+                    field: "delBtn"
+                }
             ],
-            rows: [],
-        }
+            rows: []
+        };
     },
     mounted: function() {
         this.getTableData();
@@ -112,148 +137,146 @@ export default {
     methods: {
         getTableData: function() {
             this.loading = true;
-            axios.get('/api/getPlaceForShowList').then(res => {
+            axios.get("/api/getPlaceForShowList").then(res => {
                 this.placeData = res.data;
                 this.setTableData(res.data);
                 this.loading = false;
             });
         },
-        setTableData: function(placeData){
+        setTableData: function(placeData) {
             var result = [];
-            for(var target of placeData){
+            for (var target of placeData) {
                 var place = {
-                        "country":target.country_name,
-                        "province":target.province_name,
-                        "city":target.city_name,
-                        "delBtn":target.id,
-                        "countryData":target
-                    };
+                    country: target.country_name,
+                    province: target.province_name,
+                    city: target.city_name,
+                    delBtn: target.id,
+                    countryData: target
+                };
                 result.push(place);
             }
             this.rows = result;
         },
-        deleteCity: function(id){
-            axios.get('/api/deleteCity/' + id).then(res => {
-                
-                if(res.status == 503){
-                    this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:res.data.message});
+        deleteCity: function(id) {
+            axios.get("/api/deleteCity/" + id).then(res => {
+                if (res.status == 503) {
+                    this.$store.dispatch("common/alertModalUp", {
+                        data: res.status,
+                        successMessage: res.data.message
+                    });
                     return false;
                 }
-                this.$store.dispatch('common/alertModalUp', {data:res.status, successMessage:'削除しました。'});
-                console.log(id  + "を削除しました");
-                console.log(res.data);
-                console.log("テーブルを更新");
+                this.$store.dispatch("common/alertModalUp", {
+                    data: res.status,
+                    successMessage: "削除しました。"
+                });
 
                 this.getTableData();
             });
         },
-        mouseOverAction(i,hoverColumn){
+        mouseOverAction(i, hoverColumn) {
             this.hoverIndex = i;
             this.hoverFlag = true;
             this.hoverColumn = hoverColumn;
-        },      
-        mouseLeaveAction(i,hoverColumn){
+        },
+        mouseLeaveAction(i, hoverColumn) {
             this.hoverIndex = i;
             this.hoverFlag = false;
             this.hoverColumn = hoverColumn;
         },
-        updatePlaceTable(){
+        updatePlaceTable() {
             this.getTableData();
         },
-        changeBg(countryData){
-            this.$store.dispatch('common/setBgChangeModal',countryData);
+        changeBg(countryData) {
+            this.$store.dispatch("common/setBgChangeModal", countryData);
         }
-        
-    }, 
+    },
     components: {
-        VueGoodTable,
+        VueGoodTable
     },
-    computed:{
-        tableReloadFlg:function(){
+    computed: {
+        tableReloadFlg: function() {
             return this.$store.state.common.settingCountryReloadFlg;
-
         }
     },
-    watch:{
-        tableReloadFlg:function(newVal,old){
-            if(newVal != old){
-                console.log('table更新')
+    watch: {
+        tableReloadFlg: function(newVal, old) {
+            if (newVal != old) {
                 this.updatePlaceTable();
             }
         }
     }
-
-}
+};
 </script>
 
-
 <style scoped>
-
 .form-control {
-    width:15%;
-    display:inline-block;
+    width: 15%;
+    display: inline-block;
 }
 .register-btn {
-    width:100px;
-    padding:10px 5px;
-    margin-left:20px;
+    width: 100px;
+    padding: 10px 5px;
+    margin-left: 20px;
 }
 .place-show-area {
-    border:solid 2px lightgray;
-    border-radius:10px;
-    padding:0px !important;
-    width:100%;
-    overflow:scroll;
-    position:relative;
+    border: solid 2px lightgray;
+    border-radius: 10px;
+    padding: 0px !important;
+    width: 100%;
+    overflow: scroll;
+    position: relative;
 }
 
 .form-title {
-    font-size:24px;
+    font-size: 24px;
 }
 
 .form-group {
-    margin:10px auto;
-    text-align:center;
+    margin: 10px auto;
+    text-align: center;
 }
 
 .delete-btn {
-    padding:5px 10px;
-    opacity:0.5;
-    font-size:10px;
-    float:right;
+    padding: 5px 10px;
+    opacity: 0.5;
+    font-size: 10px;
+    float: right;
 }
 
 table,
 tr {
-    text-align:center;
-    width:100%;
+    text-align: center;
+    width: 100%;
 }
-td{
-    width:25%;
+td {
+    width: 25%;
 }
-.hoveredBtn{
-    opacity:1;
+.hoveredBtn {
+    opacity: 1;
 }
 
 /* 表示・非表示アニメーション中 */
-.showList-enter-active, .showList-leave-active {
-  transition: all 500ms;
+.showList-enter-active,
+.showList-leave-active {
+    transition: all 500ms;
 }
 
 /* 表示アニメーション開始時 ・ 非表示アニメーション後 */
-.showList-enter, .showList-leave-to {
-  opacity: 0;
-  background:lightgray;
+.showList-enter,
+.showList-leave-to {
+    opacity: 0;
+    background: lightgray;
 }
 .showList-leave-to {
-    background:red;
+    background: red;
 }
 
 .showList-leave-active {
-    width:100%;
-    position:absolute; 
+    width: 100%;
+    position: absolute;
 }
 .showList-move {
-  transition: transform 500ms;
+    transition: transform 500ms;
 }
 </style>

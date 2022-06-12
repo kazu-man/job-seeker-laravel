@@ -22,6 +22,7 @@ class CreateJobsTable extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('job_type_id');
+            $table->string('video_url')->nullable();
             $table->date('job_created_date')->nullable();
             $table->string('job_status')->default('A');
             $table->timestamps();

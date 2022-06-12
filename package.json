@@ -19,21 +19,35 @@
         "laravel-mix": "^5.0.5",
         "lodash": "^4.17.13",
         "popper.js": "^1.12",
+        "pusher-js": "^7.0.3",
         "resolve-url-loader": "^2.3.1",
         "sass": "^1.15.2",
         "sass-loader": "^7.1.0",
+        "simple-peer": "^9.11.0",
+        "video.js": "^7.11.8",
         "vue": "^2.5.17",
         "vue-router": "^3.4.3",
         "vue-template-compiler": "^2.6.12",
         "vuex": "^3.5.1"
     },
     "dependencies": {
+        "@fullcalendar/core": "^5.6.0",
+        "@fullcalendar/daygrid": "^5.6.0",
+        "@fullcalendar/interaction": "^5.6.0",
+        "@fullcalendar/list": "^5.6.0",
+        "@fullcalendar/timegrid": "^5.6.0",
+        "@fullcalendar/vue": "^5.6.0",
+        "@mdi/font": "^5.9.55",
+        "@pderas/vue2-geocoder": "^1.1.0",
         "animejs": "^3.2.0",
         "file-saver": "^2.0.2",
+        "laravel-echo": "^1.10.0",
         "vue-good-table": "^2.21.0",
         "vue-js-modal": "^2.0.0-rc.6",
         "vue-loading-template": "^1.3.2",
         "vue-simple-spinner": "^1.2.10",
-        "vue-spinner": "^1.0.4"
+        "vue-spinner": "^1.0.4",
+        "vue2-google-maps": "^0.10.7",
+        "vuetify": "^2.4.9"
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-use App\Model\User;
-use App\Model\Province;
 use Illuminate\Http\Request;
 
 /*
@@ -15,4 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::group(['middleware' => 'auth'], function(){
+
+    Route::post('auth/video_chat', 'VideoChatController@auth'); // 認証ページ
+
+});
 Route::get('/{any?}', 'JobsListController@index')->where('any', '.+');
+
+
