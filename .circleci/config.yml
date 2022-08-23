@@ -22,6 +22,7 @@ jobs:
       - run:
           name: get ready for mysql
           command: |
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B8B
             sudo apt-get update
             sudo apt-get install libpq-dev
             sudo docker-php-ext-install pdo_mysql
