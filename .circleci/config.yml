@@ -22,6 +22,7 @@ jobs:
       - run:
           name: get ready for mysql
           command: |
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B8B
             sudo apt-get update
             sudo apt-get install libpq-dev
             sudo docker-php-ext-install pdo_mysql
@@ -45,19 +46,20 @@ jobs:
               cd ../../ && \
               docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
               docker exec job_seeker_laravel_app npm ci && \
+              docker exec job_seeker_laravel_app npm run prod && \
               docker exec job_seeker_laravel_app php artisan migrate --force && \
               docker exec job_seeker_laravel_app php artisan config:cache"
-      - run:
-          name: deploy2
-          command: |
-            ssh -o StrictHostKeyChecking=no -t webapp@${HOST_NAME_2} "cd job-seeker-on-docker/src/job-seeker-laravel && \
-              git checkout . && \
-              git pull origin main && \
-              cd ../../ && \
-              docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
-              docker exec job_seeker_laravel_app npm ci && \
-              docker exec job_seeker_laravel_app php artisan migrate --force && \
-              docker exec job_seeker_laravel_app php artisan config:cache"
+      # - run:
+      #     name: deploy2
+      #     command: |
+      #       ssh -o StrictHostKeyChecking=no -t webapp@${HOST_NAME_2} "cd job-seeker-on-docker/src/job-seeker-laravel && \
+      #         git checkout . && \
+      #         git pull origin main && \
+      #         cd ../../ && \
+      #         docker exec job_seeker_laravel_app composer install -n --no-dev --prefer-dist && \
+      #         docker exec job_seeker_laravel_app npm ci && \
+      #         docker exec job_seeker_laravel_app php artisan migrate --force && \
+      #         docker exec job_seeker_laravel_app php artisan config:cache"
 workflows:
   version: 2
   build_deploy:
