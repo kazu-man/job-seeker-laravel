@@ -8,8 +8,10 @@
 .env.example
 .env.docker
 .env.backup
+.env.prod
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+/public/mix-manifest.json
