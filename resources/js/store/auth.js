@@ -161,7 +161,6 @@ const actions = {
             if (user != null) {
                 context.commit("setLoginCheck", true);
             }
-            console.log("cuurent");
 
             return false;
         }
@@ -178,11 +177,9 @@ const actions = {
         if (response.status === OK) {
             context.commit("setApiStatus", true);
             if (user != null) {
-                console.log("access OK");
                 context.commit("setUser", user);
                 return true;
             }
-            console.log("access NG");
             return false;
         }
 

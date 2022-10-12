@@ -515,7 +515,6 @@ export default {
                         this.loading = false;
                     })
                     .catch(error => {
-                        console.log(error);
                     });
             } else if (selectVal == "applies") {
                 this.loading = true;
@@ -528,7 +527,6 @@ export default {
                         this.loading = false;
                     })
                     .catch(error => {
-                        console.log(error);
                     });
             }
 

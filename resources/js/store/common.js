@@ -88,7 +88,6 @@ const actions = {
     },
     setApplicantProfileModal(context, profileId) {
         axios.get("/api/getApplicantProfile/" + profileId).then(res => {
-            console.log(res.data);
 
             context.commit("setApplicantProfile", res.data);
             context.commit("setModalTarget", "applicantProfile");
@@ -96,7 +95,6 @@ const actions = {
     },
     setSinglePostModal(context, postId) {
         axios.get("/api/getSinglePost/" + postId).then(res => {
-            console.log(res.data);
 
             context.commit("setSinglepost", res.data[0]);
             context.commit("setModalTarget", "singlePost");
@@ -120,7 +118,6 @@ const actions = {
         context.commit("setSinglepost", post);
     },
     alertModalUp(context, { data, successMessage, close, reload }) {
-        console.log("modal up");
         if (close == null) {
             close = true;
         }
@@ -146,7 +143,6 @@ const actions = {
     },
     setScoutModal(context, record) {
         axios.post("/api/getScout", record).then(res => {
-            console.log(res.data);
             var response = res.data;
 
             context.commit("setScoutInfo", response);

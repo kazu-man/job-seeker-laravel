@@ -508,7 +508,6 @@ export default {
             if (this.toggleDisable != null && this.toggleDisable == true) {
                 return;
             }
-            console.log("truenisuru");
             this.openFlg = !this.openFlg;
         },
         handleScroll() {
@@ -533,8 +532,6 @@ export default {
                 this.$store.commit("common/setModalTarget", "login");
                 return;
             }
-            console.log(jobId);
-            // this.toggleSlide();
             this.$store.commit("common/setLoadingFlg", true);
             axios.post("/api/addLike", { jobId: jobId }).then(res => {
                 this.$store.commit("common/setLoadingFlg", false);
@@ -551,8 +548,6 @@ export default {
                 return;
             }
 
-            console.log(jobId);
-            // this.toggleSlide();
             this.$store.commit("common/setLoadingFlg", true);
             axios.post("/api/removeLike", { jobId: jobId }).then(res => {
                 this.$store.commit("common/setLoadingFlg", false);
@@ -621,7 +616,6 @@ export default {
     },
     mounted() {
         this.init();
-        console.log("mounted!!");
     },
     destroyed() {
         window.removeEventListener("scroll", this.handleScroll);

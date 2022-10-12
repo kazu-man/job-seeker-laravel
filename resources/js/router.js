@@ -169,7 +169,6 @@ const routes = [
                                 value &&
                                 id == store.state.auth.user.id
                             ) {
-                                console.log("mada");
                                 next();
                             } else {
                                 window.location.href = "/";
@@ -226,8 +225,6 @@ const routes = [
                             store
                                 .dispatch("auth/accessAllowCheck")
                                 .then(value => {
-                                    console.log("accessAllowed");
-                                    console.log(value);
 
                                     if (
                                         store.state.auth.user != null &&
@@ -249,9 +246,6 @@ const routes = [
                             store
                                 .dispatch("auth/accessAllowCheck")
                                 .then(value => {
-                                    console.log("accessAllowed");
-                                    console.log(value);
-
                                     if (
                                         store.state.auth.user != null &&
                                         value &&
@@ -272,8 +266,6 @@ const routes = [
                             store
                                 .dispatch("auth/accessAllowCheck")
                                 .then(value => {
-                                    console.log("accessAllowed");
-                                    console.log(value);
 
                                     if (
                                         store.state.auth.user != null &&
