@@ -1367,7 +1367,7 @@
             class="alert"
         >
             <div class="modal-body">
-                <p style="white-space: break-spaces;">
+                <p>
                     {{ alertModalMessage }}
                 </p>
             </div>
